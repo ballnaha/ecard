@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import MuiProvider from "./components/MuiProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SetEventWedding | รับจัดงานแต่งงานระดับพรีเมียม",
-  description: "SetEventWedding บริการจัดงานแต่งงานแบบครบวงจร ดูแลทุกรายละเอียดด้วยความเป็นมืออาชีพ ตกแต่งสถานที่หรูหรา สร้างสรรค์ช่วงเวลาสุดพิเศษที่คุณจะจดจำไปตลอดชีวิต",
-  keywords: ["wedding planner", "จัดงานแต่งงาน", "wedding decoration", "set event wedding", "งานแต่งงาน"],
+  title: "Elegant Wedding E-Cards | Modern & Minimalist Invitations",
+  description: "Create premium digital wedding invitations with our elegant e-card service. Minimalist, parallax-driven, and purely sophisticated.",
 };
 
 export default function RootLayout({
@@ -13,8 +13,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        <MuiProvider>
+          {children}
+        </MuiProvider>
+      </body>
     </html>
   );
 }
