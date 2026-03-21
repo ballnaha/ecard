@@ -8,7 +8,7 @@ export default function GiftSection() {
   const bankDetails = {
     bankName: 'KASIKORNBANK (KBank)',
     accountNumber: 'xxx-x-x-5678-x',
-    accountName: 'Chanya & Thanya'
+    accountName: 'Kamonluk'
   };
 
   const qrPlaceholder = "/simple_qr_mockup_wedding_1774067706323.png";
