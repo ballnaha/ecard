@@ -6,38 +6,38 @@ import { motion, Variants } from 'framer-motion';
 
 const assets = {
   heroVideo: "/images/demo/demo1.mp4",
+  heroPoster: "/images/demo/index-cover.png",
 };
 
 const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] } }
+  hidden: { opacity: 0, y: 30 } as any,
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] }
+  } as any
 };
 
 const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 0 } as any,
   visible: {
     opacity: 1,
     transition: { staggerChildren: 0.3 }
-  }
+  } as any
 };
 
 export default function HeroSection() {
-  const [activeVideo, setActiveVideo] = React.useState(0);
-  const videoRef0 = React.useRef<HTMLVideoElement>(null);
-  const videoRef1 = React.useRef<HTMLVideoElement>(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
-  const handleTimeUpdate = (index: number) => {
-    const video = index === 0 ? videoRef0.current : videoRef1.current;
-    const nextVideo = index === 0 ? videoRef1.current : videoRef0.current;
-
-    if (video && nextVideo && activeVideo === index) {
-      if (video.duration - video.currentTime < 1 && nextVideo.paused) {
-        nextVideo.currentTime = 0;
-        nextVideo.play();
-        setActiveVideo(index === 0 ? 1 : 0);
-      }
+  React.useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        if (error.name !== "AbortError") {
+          console.error("Hero video play error:", error);
+        }
+      });
     }
-  };
+  }, []);
 
   return (
     <Box
@@ -55,45 +55,27 @@ export default function HeroSection() {
     >
       {/* Seamless Video Background System */}
       <Box sx={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Box
-          component="video"
-          ref={videoRef0}
-          src={assets.heroVideo}
+        <video
+          ref={videoRef}
           autoPlay
           muted
           playsInline
-          onTimeUpdate={() => handleTimeUpdate(0)}
-          sx={{
+          loop
+          preload="auto"
+          poster={assets.heroPoster}
+          style={{
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            opacity: activeVideo === 0 ? 0.85 : 0,
-            transition: 'opacity 1.5s ease-in-out',
-            visibility: activeVideo === 0 || videoRef0.current?.currentTime ? 'visible' : 'hidden'
+            opacity: 0.85,
           }}
-        />
-        <Box
-          component="video"
-          ref={videoRef1}
-          src={assets.heroVideo}
-          muted
-          playsInline
-          onTimeUpdate={() => handleTimeUpdate(1)}
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: activeVideo === 1 ? 0.85 : 0,
-            transition: 'opacity 1.5s ease-in-out',
-            visibility: activeVideo === 1 || videoRef1.current?.currentTime ? 'visible' : 'hidden'
-          }}
-        />
+        >
+          <source src={assets.heroVideo} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </Box>
 
       {/* Lux Overlay */}
@@ -113,22 +95,22 @@ export default function HeroSection() {
         style={{ position: 'relative', zIndex: 2, textAlign: 'center' }}
       >
         <motion.div variants={fadeInUp}>
-          <Typography variant="overline" sx={{ 
-            color: 'rgba(255,255,255,0.7)', 
-            letterSpacing: '0.6em', 
+          <Typography variant="overline" sx={{
+            color: 'rgba(255,255,255,0.7)',
+            letterSpacing: '0.6em',
             fontSize: { xs: '0.6rem', md: '0.8rem' },
             mb: 4,
             display: 'block'
           }}>
-            SAVE the DATE
+            WEDDING
           </Typography>
         </motion.div>
 
         <Box sx={{ position: 'relative', mb: { xs: 4, md: 6 } }}>
           <motion.div variants={fadeInUp}>
-            <Typography sx={{ 
-              fontFamily: '"Carattere", cursive', 
-              fontSize: { xs: '5rem', md: '11rem' }, 
+            <Typography sx={{
+              fontFamily: '"Carattere", cursive',
+              fontSize: { xs: '5rem', md: '11rem' },
               lineHeight: 0.8,
               color: '#fff',
               textShadow: '0 10px 30px rgba(0,0,0,0.3)',
@@ -143,24 +125,24 @@ export default function HeroSection() {
         <motion.div variants={fadeInUp}>
           <Stack direction="row" spacing={3} alignItems="center" justifyContent="center" sx={{ mb: 4 }}>
             <Box sx={{ height: '1.5px', width: '30px', backgroundColor: 'rgba(255,255,255,0.4)' }} />
-            <Typography sx={{ 
-              fontFamily: '"Bodoni Moda", serif', 
-              fontSize: { xs: '1.2rem', md: '1.8rem' }, 
+            <Typography sx={{
+              fontFamily: '"Bodoni Moda", serif',
+              fontSize: { xs: '1.2rem', md: '1.8rem' },
               color: '#fff',
               letterSpacing: '0.3em',
               fontWeight: 300
             }}>
-              14 . 05 . 29
+              14 . 05 . 26
             </Typography>
             <Box sx={{ height: '1.5px', width: '30px', backgroundColor: 'rgba(255,255,255,0.4)' }} />
           </Stack>
         </motion.div>
 
         <motion.div variants={fadeInUp}>
-          <Typography sx={{ 
-            fontFamily: '"Montserrat", sans-serif', 
-            fontSize: '0.65rem', 
-            letterSpacing: '0.4em', 
+          <Typography sx={{
+            fontFamily: '"Montserrat", sans-serif',
+            fontSize: '0.65rem',
+            letterSpacing: '0.4em',
             color: 'rgba(255,255,255,0.9)',
             textTransform: 'uppercase'
           }}>
@@ -171,10 +153,10 @@ export default function HeroSection() {
 
       {/* Elegant Scroll Indicator */}
       <Box sx={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', zIndex: 2 }}>
-        <motion.div 
-          animate={{ scaleY: [0, 1, 0], opacity: [0, 1, 0] }} 
+        <motion.div
+          animate={{ scaleY: [0, 1, 0], opacity: [0, 1, 0] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          style={{ width: '1px', height: '80px', backgroundColor: 'rgba(255,255,255,0.4)', margin: '0 auto', transformOrigin: 'top' }} 
+          style={{ width: '1px', height: '80px', backgroundColor: 'rgba(255,255,255,0.4)', margin: '0 auto', transformOrigin: 'top' }}
         />
       </Box>
     </Box>

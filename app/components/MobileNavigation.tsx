@@ -1,0 +1,89 @@
+'use client';
+
+import React from 'react';
+import { Box, Paper, BottomNavigation, BottomNavigationAction, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Home as HomeIcon,
+  CalendarMonth as CalendarIcon,
+  AutoAwesome as GalleryIcon,
+  Map as LocationIcon,
+  HowToReg as RsvpIcon
+} from '@mui/icons-material';
+
+export default function MobileNavigation() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [value, setValue] = React.useState(0);
+
+  const scrollToSection = (id: string, index: number) => {
+    setValue(index);
+    const element = document.getElementById(id);
+    if (element) {
+      const topOffset = element.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: topOffset,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  if (!isMobile) return null;
+
+  return (
+    <Box sx={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', width: '90%', zIndex: 1000 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          borderRadius: '24px',
+          overflow: 'hidden',
+          background: 'rgba(255, 255, 255, 0.75)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.5)',
+          boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+        }}
+      >
+        <BottomNavigation
+          showLabels
+          value={value}
+          onChange={(event, newValue) => {
+            // value is index, we need to map it to ids
+            const sectionIds = ['home', 'schedule', 'rsvp', 'location'];
+            scrollToSection(sectionIds[newValue], newValue);
+          }}
+          sx={{
+            height: 70,
+            background: 'transparent',
+            '& .MuiBottomNavigationAction-root': {
+              color: 'rgba(0,0,0,0.4)',
+              transition: 'all 0.3s ease',
+              minWidth: 'auto',
+              padding: '12px 0',
+              '&.Mui-selected': {
+                color: '#8e7d5d', // Gold color from CoupleSection
+                '& .MuiSvgIcon-root': {
+                  transform: 'translateY(-2px)',
+                }
+              }
+            },
+            '& .MuiBottomNavigationAction-label': {
+              fontFamily: '"Montserrat", sans-serif',
+              fontSize: '0.65rem',
+              fontWeight: 600,
+              letterSpacing: '0.05em',
+              marginTop: '4px',
+              textTransform: 'uppercase',
+              '&.Mui-selected': {
+                fontSize: '0.65rem',
+              }
+            }
+          }}
+        >
+          <BottomNavigationAction label="Home" icon={<HomeIcon sx={{ fontSize: '1.4rem' }} />} />
+          <BottomNavigationAction label="Program" icon={<CalendarIcon sx={{ fontSize: '1.4rem' }} />} />
+          <BottomNavigationAction label="RSVP" icon={<RsvpIcon sx={{ fontSize: '1.4rem' }} />} />
+          <BottomNavigationAction label="Location" icon={<LocationIcon sx={{ fontSize: '1.4rem' }} />} />
+        </BottomNavigation>
+      </Paper>
+    </Box>
+  );
+}

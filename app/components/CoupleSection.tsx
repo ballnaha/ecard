@@ -1,165 +1,249 @@
 'use client';
 
 import React from 'react';
-import { Box, Container, Typography, Divider } from '@mui/material';
-import { motion, Variants } from 'framer-motion';
+import { Box, Container, Typography, Stack } from '@mui/material';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const assets = {
-  bride: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80",
-  groom: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80"
-};
-
-const fadeInUp: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] } }
+  bride: "images/demo/bride.png",
+  groom: "images/demo/groom.png"
 };
 
 export default function CoupleSection() {
+  const { scrollYProgress } = useScroll();
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, 80]);
+
   return (
-    <Box sx={{ py: { xs: 15, md: 25 }, backgroundColor: '#faf9f6', position: 'relative', overflow: 'hidden' }}>
-      
+    <Box
+      component="section"
+      sx={{
+        py: { xs: 8, md: 12 },
+        backgroundColor: '#fff',
+        position: 'relative',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Decorative Background Text */}
+      <Typography
+        sx={{
+          position: 'absolute',
+          top: '15%',
+          left: '-5%',
+          fontSize: { xs: '8rem', md: '18rem' },
+          fontFamily: '"Playfair Display", serif',
+          color: 'rgba(142, 125, 93, 0.03)',
+          whiteSpace: 'nowrap',
+          zIndex: 0,
+          userSelect: 'none',
+          pointerEvents: 'none',
+          fontStyle: 'italic'
+        }}
+      >
+        Eternity
+      </Typography>
+
       <Container maxWidth="lg">
-        <Box sx={{ textAlign: 'center', mb: { xs: 10, md: 15 } }}>
-          <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-            <Typography variant="overline" sx={{ 
-              letterSpacing: '0.6em', 
-              color: '#8e7d5d', 
-              fontSize: '0.75rem',
-              mb: 1.5,
-              display: 'block'
-            }}>
-              A Beautiful Beginning
-            </Typography>
-            <Typography variant="h2" sx={{ 
-              fontFamily: '"Playfair Display", serif', 
-              fontWeight: 400,
-              fontSize: { xs: '2.8rem', md: '4rem' },
-              color: '#1a1a1a',
-              fontStyle: 'italic'
-            }}>
-              The Happy Couple
-            </Typography>
-          </motion.div>
-        </Box>
-
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: { xs: 'column', md: 'row' }, 
-          alignItems: 'center', 
+        <Box sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: 'center',
           justifyContent: 'center',
-          gap: { xs: 5, md: 0 },
+          gap: { xs: 12, md: 4 },
           position: 'relative',
-          px: 2
+          zIndex: 1
         }}>
-          
-          {/* Bride Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            style={{ zIndex: 2, width: '100%', display: 'flex', justifyContent: 'center' }}
-          >
-            <Box sx={{ 
-              width: { xs: '100%', sm: '320px', md: '380px' }, 
-              maxWidth: '380px',
-              position: 'relative',
-              mr: { md: -10 },
-              mb: { xs: 8, md: 0 } 
-            }}>
-              <Box sx={{ 
-                width: '100%', 
-                aspectRatio: '3/4', 
-                overflow: 'hidden', 
-                boxShadow: '0 30px 60px rgba(0,0,0,0.1)',
-                position: 'relative',
-                transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
-              }}>
-                <img src={assets.bride} alt="Mook" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </Box>
-              
-              <Box sx={{ 
-                position: 'absolute', 
-                bottom: { xs: -20, md: -30 }, 
-                left: { xs: '50%', md: -40 },
-                transform: { xs: 'translateX(-50%)', md: 'none' },
-                p: { xs: 2.5, md: 4 },
-                width: { xs: '85%', md: '260px' },
-                background: 'rgba(255,255,255,0.85)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.5)',
-                boxShadow: '0 15px 35px rgba(0,0,0,0.08)',
-                zIndex: 3,
-                textAlign: { xs: 'center', md: 'left' }
-              }}>
-                 <Typography sx={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8e7d5d', mb: 0.5 }}>The Bride</Typography>
-                 <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '1.4rem', md: '1.8rem' }, lineHeight: 1, mb: 0.5 }}>Mook</Typography>
-                 <Typography sx={{ fontSize: '0.7rem', color: 'text.secondary', fontFamily: '"Montserrat", sans-serif', opacity: 0.8 }}>Kamonluk Srirat</Typography>
-              </Box>
-            </Box>
-          </motion.div>
 
-          {/* Groom Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            style={{ zIndex: 1, width: '100%', display: 'flex', justifyContent: 'center' }}
-          >
-            <Box sx={{ 
-              width: { xs: '100%', sm: '320px', md: '380px' }, 
-              maxWidth: '380px',
-              position: 'relative',
-              ml: { md: -10 },
-              mt: { md: 15 }
-            }}>
-              <Box sx={{ 
-                width: '100%', 
-                aspectRatio: '3/4', 
-                overflow: 'hidden', 
-                boxShadow: '0 30px 60px rgba(0,0,0,0.1)',
-                position: 'relative',
-                transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
-              }}>
-                <img src={assets.groom} alt="Top" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </Box>
-              
-              <Box sx={{ 
-                position: 'absolute', 
-                bottom: { xs: -20, md: -30 }, 
-                right: { xs: '50%', md: -40 },
-                transform: { xs: 'translateX(50%)', md: 'none' },
-                p: { xs: 2.5, md: 4 },
-                width: { xs: '85%', md: '260px' },
-                background: 'rgba(255,255,255,0.85)',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.5)',
-                boxShadow: '0 15px 35px rgba(0,0,0,0.08)',
+          {/* Bride Section */}
+          <Box sx={{ flex: 1, width: '100%', maxWidth: { md: '450px' }, position: 'relative' }}>
+            <Box sx={{ position: 'relative' }}>
+              <motion.div style={{ y: y1 }}>
+                <Box sx={{
+                  position: 'relative',
+                  zIndex: 2,
+                  mx: 'auto',
+                  width: { xs: '280px', md: '380px' },
+                  height: { xs: '420px', md: '560px' },
+                  borderRadius: '200px 200px 0 0', // Classic Arch Shape
+                  overflow: 'hidden',
+                  boxShadow: '0 40px 100px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(142, 125, 93, 0.1)'
+                }}>
+                  <img
+                    src={assets.bride}
+                    alt="Bride"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </Box>
+              </motion.div>
+
+              {/* Decorative Frame for Bride */}
+              <Box sx={{
+                position: 'absolute',
+                top: '30px',
+                left: '30px',
+                right: '30px',
+                bottom: '-30px',
+                border: '1px solid rgba(142, 125, 93, 0.15)',
+                borderRadius: '200px 200px 0 0',
+                zIndex: 1
+              }} />
+
+              <Box sx={{
+                position: 'absolute',
+                bottom: -40,
+                right: { xs: 0, md: -60 },
                 zIndex: 3,
-                textAlign: { xs: 'center', md: 'right' }
+                textAlign: 'right'
               }}>
-                 <Typography sx={{ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#8e7d5d', mb: 0.5 }}>The Groom</Typography>
-                 <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '1.4rem', md: '1.8rem' }, lineHeight: 1, mb: 0.5 }}>Top</Typography>
-                 <Typography sx={{ fontSize: '0.7rem', color: 'text.secondary', fontFamily: '"Montserrat", sans-serif', opacity: 0.8 }}>Thanapol Krerkrai</Typography>
+                <Typography sx={{
+                  fontFamily: '"Carattere", cursive',
+                  fontSize: { xs: '4.5rem', md: '6rem' },
+                  color: '#8e7d5d',
+                  mb: -2,
+                  lineHeight: 1
+                }}>
+                  Mook
+                </Typography>
+                <Typography sx={{
+                  fontFamily: '"Bodoni Moda", serif',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.4em',
+                  textTransform: 'uppercase',
+                  color: '#1a1a1a',
+                  opacity: 0.6,
+                  fontWeight: 600
+                }}>
+                  The Bride
+                </Typography>
               </Box>
             </Box>
-          </motion.div>
+          </Box>
+
+          {/* Spacer / Ampersand for Desktop */}
+          <Box sx={{
+            flex: '0 0 auto',
+            display: { xs: 'none', md: 'flex' },
+            justifyContent: 'center',
+            mx: 4
+          }}>
+            <Typography sx={{
+              fontFamily: '"Italianno", cursive',
+              fontSize: '10rem',
+              color: 'rgba(142, 125, 93, 0.1)'
+            }}>
+              &
+            </Typography>
+          </Box>
+
+          {/* Groom Section */}
+          <Box sx={{ flex: 1, width: '100%', maxWidth: { md: '450px' }, position: 'relative', mt: { xs: 4, md: 10 } }}>
+            <Box sx={{ position: 'relative' }}>
+              <motion.div style={{ y: y2 }}>
+                <Box sx={{
+                  position: 'relative',
+                  zIndex: 2,
+                  mx: 'auto',
+                  width: { xs: '280px', md: '380px' },
+                  height: { xs: '420px', md: '560px' },
+                  borderRadius: '200px 200px 0 0',
+                  overflow: 'hidden',
+                  boxShadow: '0 40px 100px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(142, 125, 93, 0.1)'
+                }}>
+                  <img
+                    src={assets.groom}
+                    alt="Groom"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </Box>
+              </motion.div>
+
+              {/* Decorative Frame for Groom */}
+              <Box sx={{
+                position: 'absolute',
+                top: '-30px',
+                left: '30px',
+                right: '30px',
+                bottom: '30px',
+                border: '1px solid rgba(142, 125, 93, 0.15)',
+                borderRadius: '200px 200px 0 0',
+                zIndex: 1
+              }} />
+
+              <Box sx={{
+                position: 'absolute',
+                top: -60,
+                left: { xs: 0, md: -60 },
+                zIndex: 3,
+                textAlign: 'left'
+              }}>
+                <Typography sx={{
+                  fontFamily: '"Carattere", cursive',
+                  fontSize: { xs: '4.5rem', md: '6rem' },
+                  color: '#8e7d5d',
+                  mb: -2,
+                  lineHeight: 1
+                }}>
+                  Top
+                </Typography>
+                <Typography sx={{
+                  fontFamily: '"Bodoni Moda", serif',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.4em',
+                  textTransform: 'uppercase',
+                  color: '#1a1a1a',
+                  opacity: 0.6,
+                  fontWeight: 600
+                }}>
+                  The Groom
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
 
         </Box>
 
-        <Box sx={{ textAlign: 'center', mt: { xs: 15, md: 25 }, maxWidth: '600px', mx: 'auto' }}>
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 2, delay: 1 }}
-          >
-            <Typography sx={{ fontFamily: '"Italianno", cursive', fontSize: '3.5rem', color: '#8e7d5d', mb: 2 }}>Together Forever</Typography>
-            <Typography sx={{ fontFamily: '"Cormorant Garamond", serif', fontSize: '1.25rem', lineHeight: 1.8, color: '#4a4a4a', fontStyle: 'italic' }}>
-              "Found my soulmate, found my home. Two souls, one heart, and a lifetime of adventures together. This is where our forever begins."
+        {/* Cinematic Quote Area */}
+        <Box sx={{ textAlign: 'center', mt: { xs: 15, md: 20 }, position: 'relative' }}>
+          <Stack direction="row" justifyContent="center" alignItems="center" spacing={4} sx={{ mb: 6 }}>
+            <Box sx={{ height: '1.5px', width: '80px', backgroundColor: 'rgba(142, 125, 93, 0.2)' }} />
+            <Typography variant="overline" sx={{
+              letterSpacing: '0.8em',
+              color: '#8e7d5d',
+              fontWeight: 500,
+              fontSize: '0.8rem'
+            }}>
+              EST. 2020
             </Typography>
-          </motion.div>
+            <Box sx={{ height: '1.5px', width: '80px', backgroundColor: 'rgba(142, 125, 93, 0.2)' }} />
+          </Stack>
+
+          <Typography sx={{
+            fontFamily: '"Cormorant Garamond", serif',
+            fontSize: { xs: '1.6rem', md: '2.4rem' },
+            fontStyle: 'italic',
+            lineHeight: 1.6,
+            color: '#333',
+            maxWidth: '900px',
+            mx: 'auto',
+            px: 2,
+            fontWeight: 300
+          }}>
+            "Two paths that led to one beautiful journey. Together, we are creating a story that will last a lifetime, filled with love and endless joy."
+          </Typography>
+
+          <Typography sx={{
+            mt: 6,
+            fontFamily: '"Bodoni Moda", serif',
+            fontSize: '0.7rem',
+            letterSpacing: '0.5em',
+            textTransform: 'uppercase',
+            color: '#8e7d5d',
+            opacity: 0.8
+          }}>
+            Kamonluk & Thanapol
+          </Typography>
         </Box>
       </Container>
     </Box>
