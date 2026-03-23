@@ -6,8 +6,8 @@ import { motion } from 'framer-motion';
 import { Map as MapIcon } from 'iconsax-react';
 
 export default function LocationSection() {
-  const mapUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3776.657512297121!2d98.998492!3d18.799797!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30da3007f3521d91%3A0xe21689104084bd2e!2sCross%20Chiang%20Mai%20Riverside!5e0!3m2!1sen!2sth!4v1711000000000!5m2!1sen!2sth";
-  const googleMapsLink = "https://www.google.com/maps/search/?api=1&query=Cross+Chiang+Mai+Riverside";
+  const mapUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2435422830887!2d100.8809428!3d12.95627!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3102beab977fc641%3A0x67ee1c742cf6b5e0!2sCape%20Dara%20Resort%20Pattaya!5e0!3m2!1sen!2sth!4v1711000000000!5m2!1sen!2sth";
+  const googleMapsLink = "https://www.google.com/maps/search/?api=1&query=Cape+Dara+Resort+Pattaya";
 
   return (
     <Box
@@ -83,7 +83,7 @@ export default function LocationSection() {
                 mb: 2,
                 fontWeight: 500
               }}>
-                Cross Chiang Mai Riverside
+                Cape Dara Resort Pattaya
               </Typography>
               <Typography sx={{
                 fontFamily: '"Cormorant Garamond", serif',
@@ -93,7 +93,7 @@ export default function LocationSection() {
                 fontStyle: 'italic',
                 fontWeight: 600
               }}>
-                Chiang Mai, Thailand
+                Chonburi, Thailand
               </Typography>
 
               <Typography sx={{
@@ -104,9 +104,9 @@ export default function LocationSection() {
                 mb: 6,
                 maxWidth: { xs: '100%', md: '400px' }
               }}>
-                369/1 Charoenraj Road, Wat Ket, <br />
-                Amphoe Muang, Chiang Mai 50000 <br />
-                อำเภอเมือง จังหวัดเชียงใหม่ 50000
+                256 Dara Beach, Soi 20, Pattaya-Naklua Road, <br />
+                Pattaya City, Bang Lamung District, Chonburi 20150 <br />
+                เมืองพัทยา อำเภอบางละมุง ชลบุรี 20150
               </Typography>
 
               <Button

@@ -135,7 +135,7 @@ export default function CountdownSection() {
               color: 'rgba(0,0,0,0.4)',
               textTransform: 'uppercase'
             }}>
-              MAY 14, 2026 • CHIANG MAI
+              MAY 14, 2026 • CHONBURI
             </Typography>
           </motion.div>
           

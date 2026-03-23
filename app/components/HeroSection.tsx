@@ -146,7 +146,7 @@ export default function HeroSection() {
             color: 'rgba(255,255,255,0.9)',
             textTransform: 'uppercase'
           }}>
-            THE GLASSHOUSE ESTATE • CHIANG MAI
+            CAPE DARA RESORT PATTAYA • CHONBURI
           </Typography>
         </motion.div>
       </motion.div>
