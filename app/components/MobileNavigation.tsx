@@ -5,13 +5,15 @@ import { Box, Paper, BottomNavigation, BottomNavigationAction, useMediaQuery, us
 import {
   Home as HomeIcon,
   CalendarMonth as CalendarIcon,
-  AutoAwesome as GalleryIcon,
   Map as LocationIcon,
-  HowToReg as RsvpIcon
+  HowToReg as RsvpIcon,
+  Draw as DrawIcon
 } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 
 export default function MobileNavigation() {
   const theme = useTheme();
+  const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [value, setValue] = React.useState(0);
 
@@ -46,9 +48,12 @@ export default function MobileNavigation() {
           showLabels
           value={value}
           onChange={(event, newValue) => {
-            // value is index, we need to map it to ids
-            const sectionIds = ['home', 'schedule', 'rsvp', 'location'];
-            scrollToSection(sectionIds[newValue], newValue);
+            const sectionIds = ['home', 'schedule', 'guestbook', 'rsvp', 'location'];
+            if (sectionIds[newValue] === 'guestbook') {
+              router.push('/guestbook');
+            } else {
+              scrollToSection(sectionIds[newValue], newValue);
+            }
           }}
           sx={{
             height: 70,
@@ -80,6 +85,7 @@ export default function MobileNavigation() {
         >
           <BottomNavigationAction label="Home" icon={<HomeIcon sx={{ fontSize: '1.4rem' }} />} />
           <BottomNavigationAction label="Program" icon={<CalendarIcon sx={{ fontSize: '1.4rem' }} />} />
+          <BottomNavigationAction label="Guestbook" icon={<DrawIcon sx={{ fontSize: '1.4rem' }} />} />
           <BottomNavigationAction label="RSVP" icon={<RsvpIcon sx={{ fontSize: '1.4rem' }} />} />
           <BottomNavigationAction label="Location" icon={<LocationIcon sx={{ fontSize: '1.4rem' }} />} />
         </BottomNavigation>

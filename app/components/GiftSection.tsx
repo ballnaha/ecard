@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Box, Container, Typography, Stack, Paper, Divider } from '@mui/material';
+import { Box, Container, Typography, Stack, Paper, Divider, Button } from '@mui/material';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import DrawIcon from '@mui/icons-material/Draw';
 
 export default function GiftSection() {
   const bankDetails = {
@@ -163,6 +165,42 @@ export default function GiftSection() {
                   }}>
                     {bankDetails.bankName}
                   </Typography>
+                </Box>
+                
+                <Box sx={{ mt: 6, width: '100%' }}>
+                  <Divider sx={{ mb: 4, opacity: 0.1 }} />
+                  <Typography sx={{
+                    fontFamily: '"Bodoni Moda", serif',
+                    fontSize: '1.2rem',
+                    color: '#8e7d5d',
+                    fontStyle: 'italic',
+                    mb: 2
+                  }}>
+                    Write your wishes
+                  </Typography>
+                  <Button 
+                    LinkComponent={Link} 
+                    href="/guestbook"
+                    variant="outlined" 
+                    startIcon={<DrawIcon />}
+                    size="large"
+                    sx={{ 
+                      borderRadius: '30px', 
+                      px: 4, 
+                      py: 1.5,
+                      borderColor: 'rgba(142, 125, 93, 0.5)',
+                      color: '#8e7d5d',
+                      textTransform: 'none',
+                      fontFamily: '"Montserrat", sans-serif',
+                      letterSpacing: '0.05em',
+                      '&:hover': {
+                        borderColor: '#8e7d5d',
+                        backgroundColor: 'rgba(142, 125, 93, 0.05)'
+                      }
+                    }}
+                  >
+                    ส่งคำอวยพร (Digital Guestbook)
+                  </Button>
                 </Box>
               </Stack>
             </Paper>
