@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Paper, BottomNavigation, BottomNavigationAction, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Paper, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import {
   Home as HomeIcon,
   CalendarMonth as CalendarIcon,
@@ -12,9 +12,7 @@ import {
 import { useRouter } from 'next/navigation';
 
 export default function MobileNavigation() {
-  const theme = useTheme();
   const router = useRouter();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [value, setValue] = React.useState(0);
 
   const scrollToSection = (id: string, index: number) => {
@@ -29,10 +27,8 @@ export default function MobileNavigation() {
     }
   };
 
-  if (!isMobile) return null;
-
   return (
-    <Box sx={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', width: '90%', zIndex: 1000 }}>
+    <Box sx={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', width: { xs: '90%', md: 'auto' }, minWidth: { md: 500 }, zIndex: 1000 }}>
       <Paper
         elevation={0}
         sx={{
