@@ -29,7 +29,7 @@ export default function GuestWishesForm() {
   const [eraserWidth, setEraserWidth] = useState(15);
   const [isEraser, setIsEraser] = useState(false);
 
-  const colors = ['#333333', '#8e7d5d', '#d32f2f', '#1976d2', '#2e7d32'];
+  const colors = ['#333333', '#8e7d5d', '#d32f2f', '#e91e63', '#1976d2', '#2e7d32'];
 
   const undo = () => {
     canvasRef.current?.undo();
