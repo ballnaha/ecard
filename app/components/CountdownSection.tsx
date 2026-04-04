@@ -4,10 +4,20 @@ import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Stack } from '@mui/material';
 import { motion } from 'framer-motion';
 import CalendarButton from './CalendarButton';
+import dayjs from 'dayjs';
 
-const TARGET_DATE = new Date('2026-05-14T00:00:00').getTime();
+interface CountdownData {
+  title?: string;
+  subtitle?: string;
+}
 
-export default function CountdownSection() {
+export default function CountdownSection({ data, eventDate, brideName, groomName, venueName }: { 
+  data?: CountdownData; 
+  eventDate?: Date;
+  brideName?: string;
+  groomName?: string;
+  venueName?: string;
+}) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -15,13 +25,17 @@ export default function CountdownSection() {
     seconds: 0
   });
 
+  const target = eventDate ? dayjs(eventDate).valueOf() : dayjs('2026-05-14').valueOf();
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
+    setIsClient(true);
     const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = TARGET_DATE - now;
+      const now = dayjs().valueOf();
+      const distance = target - now;
 
       if (distance < 0) {
-        clearInterval(timer);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
 
@@ -34,13 +48,16 @@ export default function CountdownSection() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [target]);
+
+  // Prevent hydration flicker
+  if (!isClient) return <Box sx={{ minHeight: '300px' }} />;
 
   const TimeUnit = ({ label, value }: { label: string; value: number }) => (
     <Box sx={{ 
       textAlign: 'center', 
       minWidth: { xs: '80px', md: '120px' },
-      px: 2
+      px: { xs: 0, md: 2 }
     }}>
       <Typography sx={{ 
         fontFamily: '"Playfair Display", serif', 
@@ -66,53 +83,21 @@ export default function CountdownSection() {
   );
 
   return (
-    <Box 
-      component="section" 
-      sx={{ 
-        py: { xs: 8, md: 10 }, 
-        backgroundColor: '#faf9f6',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
+    <Box component="section" sx={{ py: { xs: 5, md: 8 }, backgroundColor: '#faf9f6', position: 'relative', overflow: 'hidden' }}>
       {/* Subtle Background Pattern */}
-      <Box sx={{ 
-        position: 'absolute', 
-        inset: 0, 
-        opacity: 0.03,
-        backgroundImage: 'radial-gradient(#8e7d5d 1px, transparent 1px)',
-        backgroundSize: '40px 40px',
-        zIndex: 0
-      }} />
+      <Box sx={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: 'radial-gradient(#8e7d5d 1px, transparent 1px)', backgroundSize: '40px 40px', zIndex: 0 }} />
 
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography variant="overline" sx={{ 
-            color: '#8e7d5d', 
-            letterSpacing: '0.6em', 
-            fontSize: '0.75rem',
-            mb: 2,
-            display: 'block'
-          }}>
-            Counting Down Today
+          <Typography variant="overline" sx={{ color: '#8e7d5d', letterSpacing: '0.6em', fontSize: '0.75rem', mb: 2, display: 'block' }}>
+            {data?.subtitle || 'Counting Down Today'}
           </Typography>
-          <Typography sx={{ 
-            fontFamily: '"Bodoni Moda", serif', 
-            fontSize: { xs: '2rem', md: '3rem' }, 
-            color: '#1a1a1a',
-            fontStyle: 'italic'
-          }}>
-            Until Forever Begins
+          <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '2.2rem', md: '3.5rem' }, color: '#1a1a1a', fontStyle: 'italic', lineHeight: 1.2 }}>
+            {data?.title || 'Until Forever Begins'}
           </Typography>
         </Box>
 
-        <Stack 
-          direction="row" 
-          justifyContent="center" 
-          alignItems="center" 
-          spacing={{ xs: 1, md: 4 }}
-          sx={{ mb: 6 }}
-        >
+        <Stack direction="row" justifyContent="center" alignItems="center" spacing={{ xs: 0, md: 2 }} sx={{ mb: 6 }}>
           <TimeUnit label="Days" value={timeLeft.days} />
           <Box sx={{ height: '40px', width: '1px', backgroundColor: 'rgba(142,125,93,0.3)', mt: -4 }} />
           <TimeUnit label="Hours" value={timeLeft.hours} />
@@ -123,23 +108,20 @@ export default function CountdownSection() {
         </Stack>
 
         <Box sx={{ textAlign: 'center' }}>
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 1.5 }}
-          >
-            <Typography sx={{ 
-              fontFamily: '"Montserrat", sans-serif', 
-              fontSize: '0.7rem', 
-              letterSpacing: '0.4em', 
-              color: 'rgba(0,0,0,0.4)',
-              textTransform: 'uppercase'
-            }}>
-              MAY 14, 2026 • CHONBURI
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 1.5 }}>
+            <Typography sx={{ fontFamily: '"Montserrat", sans-serif', fontSize: '0.75rem', letterSpacing: '0.4em', color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', fontWeight: 500 }}>
+              {eventDate ? dayjs(eventDate).format('MMMM DD, YYYY') : 'MAY 14, 2026'}
             </Typography>
           </motion.div>
           
-          <CalendarButton />
+          <Box sx={{ mt: 4 }}>
+            <CalendarButton 
+              eventDate={eventDate} 
+              brideName={brideName} 
+              groomName={groomName} 
+              venueName={venueName} 
+            />
+          </Box>
         </Box>
       </Container>
     </Box>

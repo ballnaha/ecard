@@ -50,7 +50,7 @@ export default function RSVPSection() {
     <Box
       component="section"
       sx={{
-        py: { xs: 6, md: 8 },
+        py: { xs: 4, md: 6 },
         backgroundColor: '#fafaf9',
         position: 'relative',
         overflow: 'hidden'
@@ -87,7 +87,7 @@ export default function RSVPSection() {
       }} />
 
       <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
-        <Box sx={{ textAlign: 'center', mb: 3 }}>
+        <Box sx={{ textAlign: 'center', mb: 2 }}>
           <Typography variant="overline" sx={{
             color: '#8e7d5d',
             letterSpacing: '0.6em',

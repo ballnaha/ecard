@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import {
   Box, Typography, TextField, Button, IconButton, Paper, Stack, alpha,
-  ToggleButtonGroup, ToggleButton, Tooltip, useTheme
+  ToggleButtonGroup, ToggleButton, Tooltip, useTheme, Snackbar, Alert
 } from '@mui/material';
 import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas';
 
@@ -28,6 +28,20 @@ export default function GuestWishesForm() {
   const [strokeWidth, setStrokeWidth] = useState(4);
   const [eraserWidth, setEraserWidth] = useState(15);
   const [isEraser, setIsEraser] = useState(false);
+
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'info' | 'warning' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
 
   const colors = ['#333333', '#8e7d5d', '#d32f2f', '#e91e63', '#1976d2', '#2e7d32'];
 
@@ -63,7 +77,11 @@ export default function GuestWishesForm() {
     e.preventDefault();
 
     if (!name.trim()) {
-      alert('กรุณากรอกชื่อของคุณ');
+      setSnackbar({
+        open: true,
+        message: 'กรุณากรอกชื่อของคุณ',
+        severity: 'warning'
+      });
       return;
     }
 
@@ -76,7 +94,11 @@ export default function GuestWishesForm() {
       hasDrawing: canvasData // base64 string
     });
 
-    alert('ส่งคำอวยพรเรียบร้อยแล้ว ขอบคุณที่ร่วมยินดีกับเรา!');
+    setSnackbar({
+      open: true,
+      message: 'ส่งคำอวยพรเรียบร้อยแล้ว ขอบคุณที่ร่วมยินดีกับเรา!',
+      severity: 'success'
+    });
 
     setName('');
     setImages([]);
@@ -286,6 +308,48 @@ export default function GuestWishesForm() {
       >
         ส่งคำอวยพร (Send Wishes)
       </Button>
+
+      <Snackbar 
+        open={snackbar.open} 
+        autoHideDuration={4000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ top: '50% !important', transform: 'translateY(-50%)' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ 
+            width: '100%', 
+            minWidth: { xs: '300px', sm: '400px' },
+            borderRadius: '24px', 
+            backgroundColor: snackbar.severity === 'success' ? '#e8f5e9' : '#ffebee', 
+            backdropFilter: 'blur(10px)',
+            color: snackbar.severity === 'success' ? '#2e7d32' : '#c62828',
+            border: '1px solid',
+            borderColor: snackbar.severity === 'success' ? '#a5d6a7' : '#ef9a9a',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.1)',
+            fontFamily: '"Montserrat", sans-serif',
+            fontSize: '1rem',
+            px: 4,
+            py: 2,
+            '& .MuiAlert-message': {
+              textAlign: 'center',
+              width: '100%',
+              fontWeight: 600
+            },
+            '& .MuiAlert-icon': {
+              color: snackbar.severity === 'success' ? '#2e7d32' : '#c62828',
+            },
+            '& .MuiAlert-action': {
+              color: snackbar.severity === 'success' ? '#2e7d32' : '#c62828',
+            }
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

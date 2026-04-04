@@ -24,7 +24,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Montserrat", sans-serif',
+    fontFamily: '"Montserrat", "Prompt", sans-serif',
     h1: {
       fontFamily: '"Playfair Display", serif',
       fontWeight: 500,
@@ -48,14 +48,14 @@ const theme = createTheme({
       color: '#615b56',
     },
     body1: {
-      fontFamily: '"Montserrat", sans-serif',
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
       fontSize: '0.9rem',
       lineHeight: 1.8,
       fontWeight: 300,
       color: '#615b56',
     },
     overline: {
-      fontFamily: '"Montserrat", sans-serif',
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
       fontWeight: 500,
       letterSpacing: '0.15em',
       textTransform: 'uppercase',
@@ -72,9 +72,9 @@ const theme = createTheme({
         root: {
           borderRadius: 50, // Pill shaped buttons like 'Anna De - creator'
           textTransform: 'none', // No uppercase for buttons here
-          fontWeight: 500,
-          fontFamily: '"Cormorant Garamond", serif',
-          fontSize: '1rem',
+          fontWeight: 600,
+          fontFamily: '"Prompt", sans-serif',
+          fontSize: '0.95rem',
           padding: '6px 24px',
           boxShadow: 'none',
         },

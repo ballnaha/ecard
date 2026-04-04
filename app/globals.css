@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Montserrat:wght@100;200;300;400;500;600&family=Italianno&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Marcellus&family=Tenor+Sans&family=Allura&family=Cinzel:wght@400;700;900&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400&family=Pinyon+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Montserrat:wght@100;200;300;400;500;600&family=Prompt:wght@300;400;500;600;700&family=Italianno&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Marcellus&family=Tenor+Sans&family=Allura&family=Cinzel:wght@400;700;900&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400&family=Pinyon+Script&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Carattere&display=swap');
 
 :root {
@@ -54,7 +54,7 @@ html, body {
 
 body {
   font-family: 'Montserrat', 'Prompt', sans-serif;
-  background-color: var(--bg-color);
+  background-color: var(--bg-out);
   color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -62,9 +62,9 @@ body {
 
 /* ═════ SCROLLBAR ═════ */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg-color); }
-::-webkit-scrollbar-thumb { background: var(--gold); }
-::selection { background: var(--gold); color: #fff; }
+::-webkit-scrollbar-track { background: var(--bg-out); }
+::-webkit-scrollbar-thumb { background: #f472b6; }
+::selection { background: #f472b6; color: #fff; }
 
 /* ═════ ANIMATION CLASSES ═════ */
 .reveal {
@@ -84,7 +84,7 @@ body {
 .line-reveal {
   width: 0;
   height: 1px;
-  background-color: var(--gold);
+  background-color: #ccac71;
   transition: width 1.5s var(--ease-slow);
   margin: 20px auto;
 }
@@ -299,7 +299,7 @@ body {
 }
 .floating-element {
   position: absolute;
-  background-color: var(--gold);
+  background-color: #ccac71;
   border-radius: 50%;
   opacity: 0;
   animation: floatUp 6s infinite ease-in;

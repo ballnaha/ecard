@@ -43,13 +43,13 @@ interface PetalProps {
 const Petal = ({ left, duration, delay, size, rotation }: PetalProps) => (
   <Box
     sx={{
-      position: 'fixed',
-      top: '-5vh',
+      position: 'absolute',
+      top: '-10%',
       left: left,
       width: size,
       height: size,
       backgroundColor: '#f8d7da', // Soft pink rose color
-      borderRadius: '50% 0 50% 50%', // Leaf/Petal-like shape
+      borderRadius: '50% 0 50% 50%',
       zIndex: 9999,
       pointerEvents: 'none',
       opacity: 0,
@@ -79,7 +79,7 @@ export default function FallingPetals() {
     // We limit to 15-20 petals for best mobile performance
     const petalCount = 12;
     const newPetals: PetalProps[] = Array.from({ length: petalCount }).map(() => ({
-      left: `${Math.random() * 100}vw`,
+      left: `${Math.random() * 100}%`,
       duration: `${10 + Math.random() * 15}s`, // Slower fall (10-25s) is more cinematic
       delay: `${Math.random() * 10}s`,
       size: `${10 + Math.random() * 15}px`,
@@ -89,7 +89,7 @@ export default function FallingPetals() {
   }, []);
 
   return (
-    <Box sx={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+    <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
       {petals.map((props, i) => (
         <Petal key={i} {...props} />
       ))}

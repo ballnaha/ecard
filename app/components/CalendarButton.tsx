@@ -4,13 +4,24 @@ import React from 'react';
 import { Button, Stack, Typography, Box } from '@mui/material';
 import { CalendarMonth as CalendarIcon, Apple as AppleIcon, Google as GoogleIcon } from '@mui/icons-material';
 
-export default function CalendarButton() {
+import dayjs from 'dayjs';
+ 
+interface CalendarProps {
+  eventDate?: Date;
+  brideName?: string;
+  groomName?: string;
+  venueName?: string;
+}
+
+export default function CalendarButton({ eventDate, brideName, groomName, venueName }: CalendarProps) {
+  const dateStr = eventDate ? dayjs(eventDate).format('YYYYMMDD') : '20260514';
+  
   const eventDetails = {
-    title: 'Wedding: Mook & Top',
-    location: 'The Glasshouse Estate, Chiang Mai',
-    description: 'We are so excited to have you celebrate our special day with us!',
-    startDate: '20260514T110000',
-    endDate: '20260514T210000'
+    title: `Wedding: ${brideName || 'Mook'} & ${groomName || 'Top'}`,
+    location: venueName || 'The Glasshouse Estate, Chiang Mai',
+    description: `We are so excited to have you celebrate our special day with us! \n\nWedding of ${brideName} & ${groomName}`,
+    startDate: `${dateStr}T110000`, // Assume 11 AM start
+    endDate: `${dateStr}T210000`    // Assume 9 PM end
   };
 
   const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventDetails.title)}&dates=${eventDetails.startDate}/${eventDetails.endDate}&details=${encodeURIComponent(eventDetails.description)}&location=${encodeURIComponent(eventDetails.location)}`;
@@ -19,25 +30,29 @@ export default function CalendarButton() {
     const icsContent = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
+      'PRODID:-//Antigravity//Wedding E-Card//EN',
+      'CALSCALE:GREGORIAN',
       'BEGIN:VEVENT',
       `DTSTART:${eventDetails.startDate}`,
       `DTEND:${eventDetails.endDate}`,
       `SUMMARY:${eventDetails.title}`,
-      `DESCRIPTION:${eventDetails.description}`,
+      `DESCRIPTION:${eventDetails.description.replace(/\n/g, '\\n')}`,
       `LOCATION:${eventDetails.location}`,
       'END:VEVENT',
       'END:VCALENDAR'
-    ].join('\n');
+    ].join('\r\n');
 
+    const fileName = `wedding-${(brideName || 'wedding').toLowerCase()}-${(groomName || 'day').toLowerCase()}.ics`.replace(/\s+/g, '-');
     const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'wedding-mook-top.ics');
+    link.setAttribute('download', fileName);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
+   
 
   return (
     <Box sx={{ mt: 6 }}>

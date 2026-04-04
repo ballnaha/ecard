@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   
+  role      String   @default("admin")  // admin, staff, viewer
+  status    String   @default("active") // active, inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id               String   @id @default(cuid())
+
+  slug             String   @unique // URL ปลายทางของลูกค้าเช่น pim-pu
+  brideName        String
+  groomName        String
+  eventDate        DateTime
+  
+  // Theme Config
+  primaryColor     String   @default("#8e7d5d")
+  secondaryColor   String   @default("#faf9f6")
+  fontFamily       String   @default("Prompt")
+  layoutOrder      Json?    // ["hero", "couple", "schedule", "gallery", "countdown", "colorTheme", "gift", "rsvp", "location"]
+
+  // Section Data (เก็บเป็น Json เพื่อความยืดหยุ่นมากๆ ไม่ต้องแก้ Database บ่อยๆ)
+  heroSection      Json?    // { heroVideo: "url", heroPoster: "url", locationText: "" }
+  coupleSection    Json?    // { intro: "", bridePic: "", groomPic: "", brideParents: [], groomParents: [] }
+  scheduleSection  Json?    // [{ time: "09:00", title: "แห่ขันหมาก" }]
+  locationSection  Json?    // { venueName: "", address: "", googleMapUrl: "" }
+  galleryImages    Json?    // ["url1.jpg", "url2.jpg"]
+  countdownSection Json?    // { title: "", subtitle: "", style: "classic" }
+  dressCodeSection Json?    // { title: "DRESS CODE", colors: ["#ff0000", "#00ff00"] }
+  giftSection      Json?    // { title: "", subtitle: "", message: "", bankName: "", accountNumber: "", accountName: "", qrCode: "" }
+  
+  // Relations
+  wishes           Wish[]
+  rsvps            RSVP[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Wish {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name      String
+  message   String   @db.Text
+  image     String?  // รูปแนบคำอวยพร
+  createdAt DateTime @default(now())
+}
+
+model RSVP {
+  id           String   @id @default(cuid())
+  clientId     String
+  client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  name         String
+  attending    Boolean  // มาหรือไม่มา
+  phone        String?
+  guestCount   Int      @default(1)
+  dietary      String?  @db.Text
+  createdAt    DateTime @default(now())
+}
