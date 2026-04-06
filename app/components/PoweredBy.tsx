@@ -9,8 +9,8 @@ export default function PoweredBy() {
   return (
     <Box
       sx={{
-        pb: { xs: 18, md: 8 }, // Extra padding for mobile due to floating menu
-        pt: 4,
+        pb: { xs: 10, md: 8 }, // Brought closer to the bottom nav (80px)
+        pt: 6,
         textAlign: 'center',
         backgroundColor: '#fff',
         borderTop: '0.5px solid rgba(0,0,0,0.05)'
@@ -31,7 +31,7 @@ export default function PoweredBy() {
         }}
       >
         <Typography sx={{
-          fontFamily: '"Montserrat", sans-serif',
+          fontFamily: '"Prompt", sans-serif',
           fontSize: '0.65rem',
           letterSpacing: '0.3em',
           textTransform: 'uppercase',
@@ -51,7 +51,7 @@ export default function PoweredBy() {
           }}
         />
         <Typography sx={{
-          fontFamily: '"Montserrat", sans-serif',
+          fontFamily: '"Prompt", sans-serif',
           fontSize: '0.6rem',
           letterSpacing: '0.1em',
           color: 'rgba(0,0,0,0.4)',

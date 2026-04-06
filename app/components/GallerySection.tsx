@@ -3,16 +3,17 @@
 import React, { useState } from 'react';
 import { Box, Container, Typography, IconButton, Dialog, Fade } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CloseSquare } from 'iconsax-react';
+import { CloseSquare, Maximize1 } from 'iconsax-react';
+import { getFontFamily, isThai } from '../utils/fontHelper';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay, EffectCoverflow, EffectCards, Navigation } from 'swiper/modules';
+import { Pagination, Autoplay, EffectCoverflow, EffectCreative, Navigation } from 'swiper/modules';
 
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import 'swiper/css/effect-coverflow';
-import 'swiper/css/effect-cards';
+import 'swiper/css/effect-creative';
 
 const demoImages = [
   "/images/demo/gallery/1.jpg",
@@ -38,29 +39,73 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
     switch (layout) {
       case 'cards':
         return (
-          <Box sx={{ 
+          <Box sx={{
             width: '100%', py: { xs: 6, md: 10 }, display: 'flex', justifyContent: 'center',
-            '.swiper': { 
-              width: { xs: '280px', md: '400px' }, 
-              height: { xs: '280px', md: '400px' } // 1:1 Ratio
+            '.swiper': {
+              width: { xs: '310px', md: '480px' },
+              height: { xs: '510px', md: '780px' }, // Slightly more height for bullets
+              overflow: 'visible',
+              paddingBottom: '40px'
             },
-            '.swiper-slide': { 
-              borderRadius: '24px', 
-              overflow: 'hidden', 
-              boxShadow: '0 30px 60px rgba(0,0,0,0.2)',
-              border: '8px solid #fff' // White border like polaroid
+            '.swiper-slide': {
+              borderRadius: '24px',
+              overflow: 'hidden',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
+              backgroundColor: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }
           }}>
             <Swiper
-              effect={'cards'} grabCursor={true} modules={[EffectCards, Autoplay]}
+              effect={'creative'}
+              grabCursor={true}
+              modules={[EffectCreative, Autoplay, Pagination]}
+              pagination={{ clickable: true }}
               autoplay={{ delay: 3500, disableOnInteraction: false }}
-              loop={images.length > 1}
+              loop={images.length > 2}
+              creativeEffect={{
+                prev: {
+                    shadow: true,
+                    translate: ['-120%', 0, 500],
+                    rotate: [0, 0, -15],
+                    opacity: 1
+                },
+                next: {
+                    shadow: true,
+                    translate: ['8%', '8%', -1],
+                    scale: 0.93,
+                    opacity: 1
+                },
+              }}
+              speed={500}
             >
               {images.map((src, index) => (
-                <SwiperSlide key={index} onClick={() => setSelectedImg(src)} style={{ cursor: 'zoom-in' }}>
-                  <Box sx={{ width: '100%', height: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
-                    <Box component="img" src={src} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </Box>
+                <SwiperSlide key={index}>
+                    <Box 
+                      component={motion.div} 
+                      whileHover={{ scale: 1.02 }} 
+                      whileTap={{ scale: 0.98 }} 
+                      onClick={() => setSelectedImg(src)}
+                      sx={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        position: 'relative',
+                        cursor: 'zoom-in',
+                        border: '6px solid #fff', // Moved Border inside for 100% click area
+                        borderRadius: '24px',
+                        overflow: 'hidden',
+                        // Link clickability directly to the active slide
+                        '.swiper-slide:not(.swiper-slide-active) &': {
+                          pointerEvents: 'none'
+                        },
+                        '.swiper-slide-active &': {
+                          pointerEvents: 'auto'
+                        }
+                      }}
+                    >
+                        <Box component="img" src={src} sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    </Box>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -69,37 +114,35 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
 
       case 'slide':
         return (
-          <Box sx={{ 
+          <Box sx={{
             width: '100%', py: 4,
-            '.swiper': { width: '100%', paddingTop: '20px', paddingBottom: '60px' },
-            '.swiper-slide': { 
-              width: { xs: '75%', md: '45.0%' }, 
-              borderRadius: '24px', 
-              overflow: 'hidden', 
-              transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)', 
+            '.swiper': { width: '100%', paddingTop: '20px', paddingBottom: '80px' },
+            '.swiper-slide': {
+              width: { xs: '75%', md: '45.0%' },
+              borderRadius: '24px',
+              overflow: 'hidden',
+              transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
               transform: 'scale(0.85)',
               opacity: 0.5,
               filter: 'blur(1px)',
-              '&.swiper-slide-active': { 
-                transform: 'scale(1)', 
+              '&.swiper-slide-active': {
+                transform: 'scale(1)',
                 opacity: 1,
                 filter: 'blur(0px)',
-                boxShadow: '0 25px 60px rgba(142, 125, 93, 0.25)' 
+                boxShadow: '0 25px 60px rgba(142, 125, 93, 0.25)'
               }
-            },
-            '.swiper-pagination-bullet': { width: '8px', height: '8px', backgroundColor: '#8e7d5d', opacity: 0.2, transition: 'all 0.3s ease' },
-            '.swiper-pagination-bullet-active': { width: '30px', borderRadius: '4px', opacity: 1 }
+            }
           }}>
             <Swiper
-              slidesPerView={'auto'} centeredSlides={true} spaceBetween={0}
+              slidesPerView={'auto'} centeredSlides={true} spaceBetween={20}
               pagination={{ clickable: true }} autoplay={{ delay: 3500, disableOnInteraction: false }}
               modules={[Pagination, Autoplay]} loop={images.length > 2}
             >
               {images.map((src, index) => (
                 <SwiperSlide key={index} onClick={() => setSelectedImg(src)} style={{ cursor: 'zoom-in' }}>
-                  <Box sx={{ width: '100%', aspectRatio: '2/3', overflow: 'hidden' }}>
-                    <Box component="img" src={src} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </Box>
+                   <Box component={motion.div} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} sx={{ width: '100%', aspectRatio: '2/3', position: 'relative', overflow: 'hidden' }}>
+                        <Box component="img" src={src} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </Box>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -109,34 +152,34 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
       case 'coverflow':
       default:
         return (
-          <Box sx={{ 
+          <Box sx={{
             width: '100%', py: 4, position: 'relative', zIndex: 1,
-            '.swiper': { width: '100%', paddingTop: '50px', paddingBottom: '100px' },
+            '.swiper': { width: '100%', paddingTop: '50px', paddingBottom: '80px' },
             '.swiper-slide': {
               backgroundPosition: 'center', backgroundSize: 'cover',
               width: { xs: '320px', md: '550px' }, height: { xs: '450px', md: '750px' },
               borderRadius: '24px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.2)',
               transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)', opacity: 0.3, filter: 'blur(3px)',
               '&.swiper-slide-active': { opacity: 1, filter: 'blur(0px)', transform: 'scale(1.1)' }
-            },
-            '.swiper-pagination-bullet': { width: '12px', height: '2px', borderRadius: '2px', backgroundColor: '#8e7d5d', opacity: 0.3, transition: 'all 0.3s ease' },
-            '.swiper-pagination-bullet-active': { width: '40px', opacity: 1 }
+            }
           }}>
             <Swiper
               effect={'coverflow'} grabCursor={true} centeredSlides={true} slidesPerView={'auto'} loop={images.length > 3}
-              coverflowEffect={{ 
-                rotate: 50, // More tilted
-                stretch: -30, // Tighter overlap
-                depth: 200, // More perspective
-                modifier: 1, 
-                slideShadows: false 
+              coverflowEffect={{
+                rotate: 50,
+                stretch: -30,
+                depth: 200,
+                modifier: 1,
+                slideShadows: false
               }}
               pagination={{ clickable: true }} autoplay={{ delay: 3500, disableOnInteraction: false }}
               modules={[EffectCoverflow, Pagination, Autoplay]}
             >
               {images.map((src, index) => (
                 <SwiperSlide key={index} onClick={() => setSelectedImg(src)} style={{ cursor: 'zoom-in' }}>
-                  <Box component="img" src={src} alt={`Gallery ${index + 1}`} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                   <Box component={motion.div} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} sx={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+                        <Box component="img" src={src} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </Box>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -146,9 +189,43 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
   };
 
   return (
-    <Box component="section" sx={{ py: { xs: 6, md: 10 }, backgroundColor: '#fff', position: 'relative', overflow: 'hidden' }}>
+    <Box component="section" sx={{ 
+      py: { xs: 6, md: 10 }, 
+      backgroundColor: '#fff', 
+      position: 'relative', 
+      overflow: 'hidden',
+      // Global Modern Pagination Styles
+      '.swiper-pagination': {
+        bottom: '30px !important',
+      },
+      '.swiper-pagination-bullet': { 
+        width: '12px', 
+        height: '2px', 
+        borderRadius: '2px',
+        backgroundColor: 'var(--primary-color, #8e7d5d)', 
+        opacity: 0.12, 
+        transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+        margin: '0 4px !important'
+      },
+      '.swiper-pagination-bullet-active': { 
+        width: '40px', 
+        opacity: 1,
+        backgroundColor: 'var(--primary-color, #8e7d5d)'
+      }
+    }}>
       {/* Decorative Text */}
-      <Typography sx={{ position: 'absolute', top: '15%', right: '-5%', fontSize: { xs: '8rem', md: '16rem' }, fontFamily: '"Pinyon Script", cursive', color: 'rgba(142, 125, 93, 0.03)', whiteSpace: 'nowrap', zIndex: 0, userSelect: 'none', pointerEvents: 'none' }}>
+      <Typography sx={{ 
+        position: 'absolute', 
+        top: '15%', 
+        right: '-5%', 
+        fontSize: { xs: '8rem', md: '16rem' }, 
+        fontFamily: getFontFamily('Memories'), 
+        color: 'rgba(142, 125, 93, 0.03)', 
+        whiteSpace: 'nowrap', 
+        zIndex: 0, 
+        userSelect: 'none', 
+        pointerEvents: 'none' 
+      }}>
         Memories
       </Typography>
 
@@ -157,7 +234,13 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
           <Typography variant="overline" sx={{ color: '#8e7d5d', letterSpacing: '0.6em', fontSize: '0.75rem', mb: 2, display: 'block' }}>
             Our Love Story
           </Typography>
-          <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '2.5rem', md: '4rem' }, color: '#1a1a1a', fontStyle: 'italic', lineHeight: 1.1 }}>
+          <Typography sx={{ 
+            fontFamily: getFontFamily('Captured Moments'), 
+            fontSize: isThai('Captured Moments') ? { xs: '2rem', md: '3.2rem' } : { xs: '3.2rem', md: '5rem' }, 
+            color: '#1a1a1a', 
+            fontWeight: isThai('Captured Moments') ? 600 : 400,
+            lineHeight: 1.1 
+          }}>
             Captured Moments
           </Typography>
           <Box sx={{ height: '1px', width: '60px', backgroundColor: 'rgba(142, 125, 93, 0.3)', mx: 'auto', mt: 3 }} />
@@ -167,15 +250,15 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
       </Container>
 
       {/* Lightbox / Image Preview */}
-      <Dialog 
-        fullScreen open={!!selectedImg} onClose={() => setSelectedImg(null)} 
+      <Dialog
+        fullScreen open={!!selectedImg} onClose={() => setSelectedImg(null)}
         TransitionComponent={Fade} TransitionProps={{ timeout: 500 }}
         PaperProps={{ sx: { bgcolor: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0 } }}
       >
         <IconButton onClick={() => setSelectedImg(null)} sx={{ position: 'fixed', top: 20, right: 20, color: '#fff', zIndex: 10 }}>
           <CloseSquare variant="Bold" size={40} color="currentColor" />
         </IconButton>
-        
+
         <AnimatePresence>
           {selectedImg && (
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4 }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

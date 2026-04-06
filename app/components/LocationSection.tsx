@@ -4,6 +4,7 @@ import React from 'react';
 import { Box, Container, Typography, Button, Paper } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Map as MapIcon } from 'iconsax-react';
+import { getFontFamily, isThai } from '../utils/fontHelper';
 
 export interface LocationData {
   venueName?: string;
@@ -50,12 +51,12 @@ export default function LocationSection({ data }: { data?: LocationData }) {
           }}>
             THE VENUE
           </Typography>
-          <Typography sx={{
-            fontFamily: '"Bodoni Moda", serif',
-            fontSize: { xs: '2.8rem', md: '4rem' },
-            color: '#1a1a1a',
-            fontStyle: 'italic',
-            lineHeight: 1.2
+          <Typography sx={{ 
+            fontFamily: getFontFamily('Location & Map'), 
+            fontSize: isThai('Location & Map') ? { xs: '2.5rem', md: '3.5rem' } : { xs: '3.5rem', md: '5rem' }, 
+            color: '#1a1a1a', 
+            fontWeight: isThai('Location & Map') ? 600 : 400,
+            lineHeight: 1.2 
           }}>
             Location & Map
           </Typography>
@@ -85,16 +86,16 @@ export default function LocationSection({ data }: { data?: LocationData }) {
               viewport={{ once: true }}
             >
               <Typography sx={{
-                fontFamily: '"Bodoni Moda", serif',
-                fontSize: { xs: '2rem', md: '2.8rem' },
+                fontFamily: getFontFamily(data?.venueName || "Cape Dara Resort Pattaya"),
+                fontSize: isThai(data?.venueName || "Cape Dara Resort Pattaya") ? { xs: '2rem', md: '3.2rem' } : { xs: '2.5rem', md: '3.5rem' },
                 color: '#1a1a1a',
                 mb: 1,
-                fontWeight: 600,
+                fontWeight: isThai(data?.venueName || "Cape Dara Resort Pattaya") ? 600 : 400,
                 lineHeight: 1.2
               }}>
                 {data?.venueName || "Cape Dara Resort Pattaya"}
               </Typography>
-              
+
               <Box sx={{ width: '80px', height: '2px', bgcolor: '#8e7d5d', mb: 4, mx: { xs: 'auto', md: 0 } }} />
 
               <Typography sx={{
@@ -121,7 +122,7 @@ export default function LocationSection({ data }: { data?: LocationData }) {
                   py: 2,
                   bgcolor: '#1a1a1a', // Black button for premium feel
                   color: '#fff',
-                  fontFamily: '"Montserrat", sans-serif',
+                  fontFamily: '"Prompt", sans-serif',
                   textTransform: 'uppercase',
                   letterSpacing: '0.2em',
                   fontSize: '0.8rem',

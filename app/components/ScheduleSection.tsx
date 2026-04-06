@@ -50,7 +50,19 @@ export default function ScheduleSection({
   const getIcon = (iconName?: string) => {
     if (!iconName) return <Calendar variant="Outline" size={28} />;
 
-    // Check if iconName is a numeric icon (1-9)
+    // Ceremony Image Icons
+    const ceremonyIcons = ['monk', 'water', 'engagement', 'ceremonial', 'dinner', 'food'];
+    if (ceremonyIcons.includes(iconName)) {
+      return (
+        <Box
+          component="img"
+          src={`/images/icon/${iconName}.png`}
+          sx={{ width: 44, height: 44, objectFit: 'contain' }}
+        />
+      );
+    }
+
+    // Legacy Numeric check
     if (/^[1-9]$/.test(iconName)) {
       return (
         <Box
@@ -62,12 +74,12 @@ export default function ScheduleSection({
     }
 
     switch (iconName) {
-      case 'cup': return <Glass variant="Outline" size={28} />; // Coffee/Morning
-      case 'ring': return <Profile2User variant="Outline" size={28} />; // Engagement
-      case 'church': return <Record variant="Outline" size={28} />; // Buddhist
-      case 'heart': return <Heart variant="Outline" size={28} />; // Engagement
-      case 'shell': return <Sun1 variant="Outline" size={28} />; // Water pouring
-      case 'glass': return <Music variant="Outline" size={28} />; // Reception
+      case 'cup': return <Glass variant="Outline" size={28} />;
+      case 'ring': return <Profile2User variant="Outline" size={28} />;
+      case 'church': return <Record variant="Outline" size={28} />;
+      case 'heart': return <Heart variant="Outline" size={28} />;
+      case 'shell': return <Sun1 variant="Outline" size={28} />;
+      case 'glass': return <Music variant="Outline" size={28} />;
       default: return <Calendar variant="Outline" size={28} />;
     }
   };
@@ -76,7 +88,7 @@ export default function ScheduleSection({
   const hasGroomParents = groomParents?.father || groomParents?.mother;
 
   return (
-    <Box component="section" sx={{ py: { xs: 6, md: 10 }, backgroundColor: '#faf9f6', position: 'relative', overflow: 'hidden' }}>
+    <Box component="section" sx={{ py: { xs: 6, md: 10 }, backgroundColor: '#ffffff', position: 'relative', overflow: 'hidden' }}>
       <Container maxWidth="lg">
 
         {/* Invitation Header (The Parents & Formal Invite) */}
@@ -101,11 +113,11 @@ export default function ScheduleSection({
             {/* Decorative "และ" */}
             {hasBrideParents && hasGroomParents && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', maxWidth: '200px' }}>
-                <Box sx={{ flex: 1, height: '1px', bgcolor: 'rgba(142, 125, 93, 0.15)' }} />
-                <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1rem', color: '#8e7d5d', fontStyle: 'italic' }}>
+                <Box sx={{ flex: 1, height: '1px', bgcolor: 'var(--primary-color)', opacity: 0.15 }} />
+                <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1rem', color: 'var(--primary-color)', fontStyle: 'italic' }}>
                   และ
                 </Typography>
-                <Box sx={{ flex: 1, height: '1px', bgcolor: 'rgba(142, 125, 93, 0.15)' }} />
+                <Box sx={{ flex: 1, height: '1px', bgcolor: 'var(--primary-color)', opacity: 0.15 }} />
               </Box>
             )}
 
@@ -140,7 +152,7 @@ export default function ScheduleSection({
               <Typography sx={{
                 fontFamily: '"Prompt", sans-serif',
                 fontSize: { xs: '1.4rem', md: '2.2rem' },
-                color: '#8e7d5d',
+                color: 'var(--primary-color)',
                 fontWeight: 600,
                 lineHeight: 1.1
               }}>
@@ -149,7 +161,7 @@ export default function ScheduleSection({
               </Typography>
 
               <Typography sx={{
-                fontFamily: '"Bodoni Moda", serif',
+                fontFamily: 'var(--script-font, "Parisienne", cursive)',
                 fontSize: '1.6rem',
                 color: 'rgba(0,0,0,0.25)',
                 fontStyle: 'italic',
@@ -161,7 +173,7 @@ export default function ScheduleSection({
               <Typography sx={{
                 fontFamily: '"Prompt", sans-serif',
                 fontSize: { xs: '1.4rem', md: '2.2rem' },
-                color: '#8e7d5d',
+                color: 'var(--primary-color)',
                 fontWeight: 600,
                 lineHeight: 1.1
               }}>
@@ -172,7 +184,7 @@ export default function ScheduleSection({
 
           </Box>
           <Box sx={{ mt: 8, mb: 2 }}>
-            <Divider sx={{ maxWidth: '400px', mx: 'auto', borderColor: 'rgba(142, 125, 93, 0.15)' }} />
+            <Divider sx={{ maxWidth: '400px', mx: 'auto', borderColor: 'var(--primary-color)', opacity: 0.15 }} />
           </Box>
         </Box>
 
@@ -193,11 +205,11 @@ export default function ScheduleSection({
             pr: { md: 8 },
             textAlign: { xs: 'center', md: 'right' }
           }}>
-            <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1.2rem', color: '#8e7d5d', fontWeight: 500, letterSpacing: '0.1em', mb: 1 }}>
+            <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1.2rem', color: 'var(--primary-color)', fontWeight: 500, letterSpacing: '0.1em', mb: 1 }}>
               {formattedDate.format('วันddddที่')}
             </Typography>
 
-            <Typography sx={{ fontFamily: '"Playfair Display", serif', fontSize: { xs: '6rem', md: '9rem' }, lineHeight: 0.9, color: '#1a1a1a', fontWeight: 400, mb: 1 }}>
+            <Typography sx={{ fontFamily: 'var(--script-font, "Parisienne", cursive)', fontSize: { xs: '4rem', md: '5.5rem' }, lineHeight: 0.9, color: '#1a1a1a', fontWeight: 400, mb: 1 }}>
               {formattedDate.format('D')}
             </Typography>
 
@@ -213,13 +225,13 @@ export default function ScheduleSection({
                 <motion.div key={index} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }} viewport={{ once: true }}>
                   <Box sx={{ display: 'flex', gap: { xs: 3, md: 5 }, py: 4, position: 'relative' }}>
                     {/* Iconsax Icon */}
-                    <Box sx={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8e7d5d', opacity: 0.8, flexShrink: 0 }}>
+                    <Box sx={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-color)', opacity: 0.9, flexShrink: 0 }}>
                       {getIcon(item.icon)}
                     </Box>
 
                     {/* Content */}
                     <Box sx={{ flex: 1 }}>
-                      <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1.1rem', color: '#8e7d5d', fontWeight: 600, mb: 0.5 }}>
+                      <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1.1rem', color: 'var(--primary-color)', fontWeight: 600, mb: 0.5 }}>
                         {item.time} น.
                       </Typography>
 
@@ -227,7 +239,7 @@ export default function ScheduleSection({
                         {item.titleTh}
                       </Typography>
 
-                      <Typography sx={{ fontFamily: '"Playfair Display", serif', fontSize: '0.95rem', color: 'rgba(0,0,0,0.4)', fontStyle: 'italic', mt: 0.2 }}>
+                      <Typography sx={{ fontFamily: 'var(--script-font, "Parisienne", cursive)', fontSize: '0.95rem', color: 'rgba(0,0,0,0.4)', fontStyle: 'italic', mt: 0.2 }}>
                         {item.title}
                       </Typography>
                     </Box>

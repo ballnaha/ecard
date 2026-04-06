@@ -10,14 +10,36 @@ import GuestWishesForm from '@/app/components/GuestWishesForm';
 export default function GuestbookPage() {
   const router = useRouter();
   const params = useParams();
+  const slug = params.client as string;
+
+  const [clientData, setClientData] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (!slug) return;
+    setLoading(true);
+    fetch(`/api/client/${slug}`)
+      .then(res => res.json())
+      .then(data => {
+        setClientData(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [slug]);
+
+  const fontFamily = clientData?.fontFamily || 'Prompt';
+  const primaryColor = clientData?.primaryColor || '#8e7d5d';
+
+  if (loading) return null;
 
   return (
     <Box 
       sx={{ 
         minHeight: '100vh', 
-        backgroundColor: '#faf9f6', // matches typical wedding themes
+        backgroundColor: '#faf9f6',
         py: { xs: 4, md: 8 },
-        backgroundImage: 'radial-gradient(circle at center, rgba(142,125,93,0.03) 0%, transparent 70%)'
+        backgroundImage: 'radial-gradient(circle at center, rgba(142,125,93,0.03) 0%, transparent 70%)',
+        fontFamily: `"${fontFamily}", sans-serif`
       }}
     >
       <Container maxWidth="md">
@@ -37,7 +59,7 @@ export default function GuestbookPage() {
             transition={{ duration: 0.8 }}
           >
             <Typography variant="overline" sx={{
-              color: '#8e7d5d',
+              color: primaryColor,
               letterSpacing: '0.4em',
               fontSize: '0.85rem',
               mb: 2,
@@ -46,19 +68,19 @@ export default function GuestbookPage() {
               Digital Guestbook
             </Typography>
             <Typography sx={{
-              fontFamily: '"Bodoni Moda", "Playfair Display", serif',
-              fontSize: { xs: '2.5rem', md: '3.5rem' },
+              fontFamily: '"Parisienne", cursive',
+              fontSize: { xs: '3.5rem', md: '5.5rem' },
               color: '#1a1a1a',
-              fontStyle: 'italic',
-              lineHeight: 1.2,
-              mb: 2
+              lineHeight: 1,
+              mb: 2,
+              mt: -1 // Adjust for script font baseline
             }}>
               Wishes & Blessings
             </Typography>
             <Typography sx={{
-              fontFamily: '"Montserrat", sans-serif',
               fontSize: '1rem',
               color: 'rgba(0,0,0,0.6)',
+              fontFamily: `"${fontFamily}", sans-serif`
             }}>
               ร่วมเขียนคำอวยพรและแนบรูปภาพเป็นที่ระลึกให้คู่บ่าวสาว
             </Typography>
@@ -81,7 +103,7 @@ export default function GuestbookPage() {
               overflow: 'hidden'
             }}
           >
-            <GuestWishesForm />
+            <GuestWishesForm fontFamily={fontFamily} />
           </Paper>
         </motion.div>
       </Container>

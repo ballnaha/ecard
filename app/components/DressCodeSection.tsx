@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 interface DressCodeData {
   title?: string;
   subtitle?: string;
-  colors?: string[]; // Array of hex colors like ['#f472b6', '#8e7d5d']
+  colors?: string[]; // Array of hex colors like ['#f2a1a1', '#8e7d5d']
 }
 
 export default function DressCodeSection({ data }: { data?: DressCodeData }) {

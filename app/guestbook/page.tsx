@@ -45,7 +45,7 @@ export default function GuestbookPage() {
               Digital Guestbook
             </Typography>
             <Typography sx={{
-              fontFamily: '"Bodoni Moda", "Playfair Display", serif',
+              fontFamily: '"Bodoni Moda", "Playfair Display", "Prompt", serif',
               fontSize: { xs: '2.5rem', md: '3.5rem' },
               color: '#1a1a1a',
               fontStyle: 'italic',
@@ -55,7 +55,7 @@ export default function GuestbookPage() {
               Wishes & Blessings
             </Typography>
             <Typography sx={{
-              fontFamily: '"Montserrat", sans-serif',
+              fontFamily: '"Prompt", "Montserrat", sans-serif',
               fontSize: '1rem',
               color: 'rgba(0,0,0,0.6)',
             }}>

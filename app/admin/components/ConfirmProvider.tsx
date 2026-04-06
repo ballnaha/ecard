@@ -51,7 +51,7 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
     if (!loading) setOpen(false);
   };
 
-  const severityColor = options?.severity === 'error' ? '#ef4444' : options?.severity === 'warning' ? '#f59e0b' : '#f472b6';
+  const severityColor = options?.severity === 'error' ? '#ef4444' : options?.severity === 'warning' ? '#f59e0b' : '#f2a1a1';
 
   return (
     <ConfirmContext.Provider value={{ confirm }}>

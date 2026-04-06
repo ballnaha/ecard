@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import UserList from './UserList';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Container } from '@mui/material';
 
 export default async function UsersPage() {
   const session = await getServerSession(authOptions);
@@ -15,14 +15,22 @@ export default async function UsersPage() {
   });
 
   return (
-    <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" fontWeight="800" color="#1a1a1a" sx={{ mb: 0.5 }}>จัดการผู้ใช้งาน (Users)</Typography>
-        <Typography variant="body1" color="text.secondary">เพิ่ม แก้ไข หรือลบบัญชีแอดมินที่สามารถระบุสิทธิ์ภายในระบบได้</Typography>
+    <Box sx={{ minHeight: '100vh', backgroundColor: '#ffffff', pb: 10 }}>
+       {/* Header section consistent with Dashboard */}
+       <Box sx={{ backgroundColor: '#ffffff', borderBottom: '1px solid #f0f0f0', pt: 6, pb: 4 }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" sx={{ fontFamily: '"Parisienne", cursive', fontWeight: 400, color: '#1a1a1a', fontSize: '3rem' }}>
+            User Management
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#aaa', mt: 0.5, fontFamily: '"Montserrat", sans-serif' }}>
+            Manage administrative access and system roles
+          </Typography>
+        </Container>
       </Box>
-      
-      {/* Client Component เอาไว้จัดการ UI ค้นหาและปุ่ม Action ต่างๆ */}
-      <UserList initialUsers={users} />
+
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <UserList initialUsers={users} />
+      </Container>
     </Box>
   );
 }

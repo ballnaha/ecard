@@ -68,11 +68,16 @@ export default function CalendarButton({ eventDate, brideName, groomName, venueN
         Add to Calendar
       </Typography>
       
-      <Stack 
-        direction={{ xs: 'column', sm: 'row' }} 
-        spacing={2} 
-        justifyContent="center" 
-        alignItems="center"
+      <Box 
+        sx={{ 
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr 1fr', sm: 'auto auto' },
+          gap: 2,
+          justifyContent: 'center',
+          alignItems: 'center',
+          maxWidth: { xs: '100%', sm: 'max-content' },
+          mx: 'auto'
+        }}
       >
         <Button
           variant="outlined"
@@ -83,10 +88,11 @@ export default function CalendarButton({ eventDate, brideName, groomName, venueN
             borderColor: 'rgba(142, 125, 93, 0.3)',
             color: '#1a1a1a',
             fontFamily: '"Montserrat", sans-serif',
-            fontSize: '0.75rem',
-            letterSpacing: '0.15em',
-            px: 4,
+            fontSize: { xs: '0.65rem', sm: '0.75rem' },
+            letterSpacing: '0.1em',
+            px: { xs: 1, sm: 4 },
             py: 1.5,
+            width: '100%',
             borderRadius: '0',
             '&:hover': {
               borderColor: '#8e7d5d',
@@ -94,7 +100,7 @@ export default function CalendarButton({ eventDate, brideName, groomName, venueN
             }
           }}
         >
-          Google Calendar
+          Google
         </Button>
 
         <Button
@@ -105,10 +111,11 @@ export default function CalendarButton({ eventDate, brideName, groomName, venueN
             borderColor: 'rgba(142, 125, 93, 0.3)',
             color: '#1a1a1a',
             fontFamily: '"Montserrat", sans-serif',
-            fontSize: '0.75rem',
-            letterSpacing: '0.15em',
-            px: 4,
+            fontSize: { xs: '0.65rem', sm: '0.75rem' },
+            letterSpacing: '0.1em',
+            px: { xs: 1, sm: 4 },
             py: 1.5,
+            width: '100%',
             borderRadius: '0',
             '&:hover': {
               borderColor: '#8e7d5d',
@@ -116,9 +123,9 @@ export default function CalendarButton({ eventDate, brideName, groomName, venueN
             }
           }}
         >
-          Apple Calendar (iCal)
+          Apple / iCal
         </Button>
-      </Stack>
+      </Box>
     </Box>
   );
 }

@@ -28,7 +28,7 @@ export default function ColorThemeSection() {
           top: '5%',
           left: '-5%',
           fontSize: { xs: '6rem', md: '12rem' },
-          fontFamily: '"Pinyon Script", cursive',
+          fontFamily: '"Parisienne", "Prompt", cursive',
           color: 'rgba(142, 125, 93, 0.04)',
           whiteSpace: 'nowrap',
           zIndex: 0,
@@ -51,7 +51,7 @@ export default function ColorThemeSection() {
             Dress Code
           </Typography>
           <Typography sx={{
-            fontFamily: '"Bodoni Moda", serif',
+            fontFamily: '"Bodoni Moda", "Prompt", serif',
             fontSize: { xs: '2.5rem', md: '3.5rem' },
             color: '#1a1a1a',
             fontStyle: 'italic',
@@ -60,7 +60,7 @@ export default function ColorThemeSection() {
             Our Color Palette
           </Typography>
           <Typography sx={{
-            fontFamily: '"Montserrat", sans-serif',
+            fontFamily: '"Prompt", "Montserrat", sans-serif',
             fontSize: '0.8rem',
             letterSpacing: '0.2em',
             color: 'rgba(0,0,0,0.5)',
@@ -98,7 +98,7 @@ export default function ColorThemeSection() {
                   }}
                 />
                 <Typography sx={{
-                  fontFamily: '"Montserrat", sans-serif',
+                  fontFamily: '"Prompt", "Montserrat", sans-serif',
                   fontSize: '0.6rem',
                   letterSpacing: '0.1em',
                   color: 'rgba(0,0,0,0.4)',
@@ -117,7 +117,7 @@ export default function ColorThemeSection() {
             viewport={{ once: true }}
           >
             <Typography sx={{
-              fontFamily: '"Cormorant Garamond", serif',
+              fontFamily: '"Cormorant Garamond", "Prompt", serif',
               fontSize: { xs: '1.1rem', md: '1.4rem' },
               color: '#333',
               lineHeight: 1.5,
@@ -128,7 +128,7 @@ export default function ColorThemeSection() {
             </Typography>
 
             <Typography sx={{
-              fontFamily: '"Montserrat", sans-serif',
+              fontFamily: '"Prompt", "Montserrat", sans-serif',
               fontSize: '0.7rem',
               letterSpacing: '0.2em',
               color: 'rgba(0,0,0,0.4)',

@@ -15,7 +15,7 @@ import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 import BrushIcon from '@mui/icons-material/Brush';
 
-export default function GuestWishesForm() {
+export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?: string }) {
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const theme = useTheme();
 
@@ -107,12 +107,10 @@ export default function GuestWishesForm() {
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', p: { xs: 2, md: 4 } }}>
-      <Typography variant="h5" sx={{ mb: 1, textAlign: 'center', fontFamily: '"Bodoni Moda", serif', fontWeight: 600, color: '#1a1a1a' }}>
+      <Typography variant="h5" sx={{ mb: 1, textAlign: 'center', fontWeight: 600, color: '#1a1a1a', fontFamily: `"${fontFamily}", sans-serif` }}>
         เขียนคำอวยพร
       </Typography>
-      <Typography variant="body2" sx={{ mb: 4, textAlign: 'center', color: '#8e7d5d', fontFamily: '"Montserrat", sans-serif', fontStyle: 'italic' }}>
-        * ข้อความและรูปภาพของคุณจะถูกนำไปแสดงบนจอ LED ภายในงาน *
-      </Typography>
+
 
       <TextField
         fullWidth
@@ -126,8 +124,8 @@ export default function GuestWishesForm() {
 
       <Box sx={{ mb: 4 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
-          <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: '"Montserrat", sans-serif' }}>
-            <EditIcon fontSize="small" color="primary" /> พื้นที่วาดเขียน
+          <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: `"${fontFamily}", sans-serif` }}>
+            <EditIcon fontSize="small" color="primary" /> พื้นที่เขียนคำอวยพร
           </Typography>
 
           <Stack direction="row" spacing={0.5}>
@@ -235,8 +233,8 @@ export default function GuestWishesForm() {
       </Box>
 
       <Box sx={{ mb: 5 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: '"Montserrat", sans-serif' }}>
-          <ImageIcon fontSize="small" color="primary" /> แนบรูปถ่ายร่วมกับบ่าวสาว
+        <Typography variant="subtitle1" sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: `"${fontFamily}", sans-serif` }}>
+          <ImageIcon fontSize="small" color="primary" /> แนบรูปถ่าย
         </Typography>
 
         <input
@@ -309,35 +307,36 @@ export default function GuestWishesForm() {
         ส่งคำอวยพร (Send Wishes)
       </Button>
 
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={4000} 
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         sx={{ top: '50% !important', transform: 'translateY(-50%)' }}
       >
-        <Alert 
-          onClose={handleCloseSnackbar} 
+        <Alert
+          onClose={handleCloseSnackbar}
           severity={snackbar.severity}
           variant="filled"
-          sx={{ 
-            width: '100%', 
+          sx={{
+            width: '100%',
             minWidth: { xs: '300px', sm: '400px' },
-            borderRadius: '24px', 
-            backgroundColor: snackbar.severity === 'success' ? '#e8f5e9' : '#ffebee', 
+            borderRadius: '24px',
+            backgroundColor: snackbar.severity === 'success' ? '#e8f5e9' : '#ffebee',
             backdropFilter: 'blur(10px)',
             color: snackbar.severity === 'success' ? '#2e7d32' : '#c62828',
             border: '1px solid',
             borderColor: snackbar.severity === 'success' ? '#a5d6a7' : '#ef9a9a',
             boxShadow: '0 20px 60px rgba(0, 0, 0, 0.1)',
-            fontFamily: '"Montserrat", sans-serif',
+            fontFamily: `"${fontFamily}", sans-serif`,
             fontSize: '1rem',
             px: 4,
             py: 2,
             '& .MuiAlert-message': {
               textAlign: 'center',
               width: '100%',
-              fontWeight: 600
+              fontWeight: 600,
+              fontFamily: `"${fontFamily}", sans-serif`
             },
             '& .MuiAlert-icon': {
               color: snackbar.severity === 'success' ? '#2e7d32' : '#c62828',

@@ -77,10 +77,19 @@ export default function ClientWeddingECard() {
     "gift",
     "rsvp",
     "location",
+    "location",
     "poweredBy",
     "mobileNav"
   ];
-  const layoutOrder = clientData.layoutOrder || defaultLayoutOrder;
+
+  // Process the layout order to filter out inactive items and support both [string] and [{id, isActive}] formats
+  const rawLayoutOrder = clientData.layoutOrder || defaultLayoutOrder;
+  const layoutOrder = Array.isArray(rawLayoutOrder) 
+    ? rawLayoutOrder
+        .map((item: any) => (typeof item === 'string' ? { id: item, isActive: true } : item))
+        .filter((item: any) => item && item.isActive !== false)
+        .map((item: any) => item.id)
+    : defaultLayoutOrder;
 
   const renderSection = (section: string) => {
     switch (section) {
@@ -115,12 +124,13 @@ export default function ClientWeddingECard() {
       case 'gift':
       case 'giftMoney':
         return <GiftSection key="gift" data={clientData.giftSection} />;
-      case 'rsvp': return <Box id="rsvp" key="rsvp"><RSVPSection /></Box>;
+      case 'guestbook': return null; // Separate page, link in footer nav only
+      case 'rsvp': return <Box id="rsvp" key="rsvp"><RSVPSection clientId={clientData.id} primaryColor={clientData.primaryColor} /></Box>;
       case 'location':
       case 'venue':
         return <Box id="location" key="location"><LocationSection data={clientData.locationSection as any} /></Box>;
       case 'poweredBy': return <PoweredBy key="poweredBy" />;
-      case 'mobileNav': return <MobileNavigation key="mobileNav" />;
+      case 'mobileNav': return <MobileNavigation key="mobileNav" items={(clientData.mobileNavSection as any)?.items || []} primaryColor={clientData.primaryColor} />;
       default: return null;
     }
   };
@@ -131,7 +141,11 @@ export default function ClientWeddingECard() {
       width: '100%',
       mx: 'auto',
       overflowX: 'hidden',
-      backgroundColor: 'background.default',
+      bgcolor: clientData.secondaryColor || '#faf9f6',
+      color: 'text.primary',
+      // ล็อคภาษาไทยที่ Prompt เสมอ และใช้ฟอนต์อังกฤษที่คุณเลือกเป็นตัวนำ
+      fontFamily: clientData.fontFamily ? `'${clientData.fontFamily}', "Prompt", sans-serif` : '"Prompt", sans-serif',
+      '--script-font': clientData.fontFamily ? `'${clientData.fontFamily}', "Prompt", cursive` : '"Parisienne", cursive',
       pb: { xs: 15, md: 0 },
       boxShadow: { lg: '0 0 80px rgba(0,0,0,0.08)' },
       position: 'relative'

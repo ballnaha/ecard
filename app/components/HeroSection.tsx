@@ -3,6 +3,7 @@
 import React from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import { motion, Variants } from 'framer-motion';
+import { isThai, getFontFamily } from '../utils/fontHelper';
 
 export interface HeroData {
   groomName: string;
@@ -50,12 +51,6 @@ export default function HeroSection({ data }: { data?: HeroData }) {
     }
   }, []);
 
-  const isThai = (text?: string) => {
-    if (!text) return false;
-    const thaiRegex = /[ก-ฮ]/;
-    return thaiRegex.test(text);
-  };
-
   const renderContent = () => {
     switch (style) {
       case 'editorial':
@@ -74,32 +69,46 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               ) : (
                 <>
                   <motion.div variants={fadeInUp}>
-                    <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '4.2rem', md: '8.5rem' }, fontWeight: 800, lineHeight: 0.85, color: '#fff', mb: 1 }}>
+                    <Typography sx={{ 
+                      fontFamily: getFontFamily(data?.brideName), 
+                      fontSize: isThai(data?.brideName) ? { xs: '2.5rem', md: '4.5rem' } : { xs: '4.5rem', md: '9rem' }, 
+                      fontWeight: isThai(data?.brideName) ? 600 : 400,
+                      lineHeight: 0.85, 
+                      color: '#fff', 
+                      mb: 1 
+                    }}>
                       {data?.brideName || "Mook"}
                     </Typography>
                   </motion.div>
                   <motion.div variants={fadeInUp}>
-                    <Typography sx={{ fontFamily: '"Carattere", cursive', fontSize: '3rem', fontStyle: 'italic', color: 'rgba(255,255,255,0.7)', my: -1, ml: 4 }}>
+                    <Typography sx={{ fontFamily: 'var(--script-font, "Parisienne", cursive)', fontSize: '3rem', color: 'rgba(255,255,255,0.7)', my: -1, ml: 4 }}>
                       &
                     </Typography>
                   </motion.div>
                   <motion.div variants={fadeInUp}>
-                    <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '4.2rem', md: '8.5rem' }, fontWeight: 800, lineHeight: 0.85, color: '#fff', mb: 4 }}>
+                    <Typography sx={{ 
+                      fontFamily: getFontFamily(data?.groomName), 
+                      fontSize: isThai(data?.groomName) ? { xs: '2.5rem', md: '4.5rem' } : { xs: '4.5rem', md: '9rem' }, 
+                      fontWeight: isThai(data?.groomName) ? 600 : 400,
+                      lineHeight: 0.85, 
+                      color: '#fff', 
+                      mb: 4 
+                    }}>
                       {data?.groomName || "Top"}
                     </Typography>
                   </motion.div>
                 </>
               )}
               <motion.div variants={fadeInUp} style={{ marginTop: 'auto' }}>
-                <Typography sx={{ fontFamily: '"Montserrat", sans-serif', fontSize: '0.9rem', letterSpacing: '0.4em', color: '#fff', fontWeight: 600, mb: 1 }}>
+                <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '0.9rem', letterSpacing: '0.4em', color: '#fff', fontWeight: 600, mb: 1 }}>
                   {data?.eventDate || "14 . 05 . 26"}
                 </Typography>
-                <Typography sx={{ 
-                  fontFamily: isThai(data?.locationText) ? '"Prompt", sans-serif' : '"Montserrat", sans-serif', 
-                  fontSize: isThai(data?.locationText) ? '0.9rem' : '0.65rem', 
-                  letterSpacing: isThai(data?.locationText) ? '0.05em' : '0.3em', 
-                  color: 'rgba(255,255,255,0.8)', 
-                  textTransform: isThai(data?.locationText) ? 'none' : 'uppercase' 
+                <Typography sx={{
+                  fontFamily: '"Prompt", sans-serif',
+                  fontSize: isThai(data?.locationText) ? '0.9rem' : '0.75rem',
+                  letterSpacing: isThai(data?.locationText) ? '0.05em' : '0.3em',
+                  color: 'rgba(255,255,255,0.8)',
+                  textTransform: isThai(data?.locationText) ? 'none' : 'uppercase'
                 }}>
                   {data?.locationText || "PATTAYA • CHONBURI"}
                 </Typography>
@@ -113,7 +122,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
           <Box sx={{ position: 'absolute', bottom: { xs: 40, md: 80 }, right: { xs: 20, md: 40 }, textAlign: 'right', zIndex: 2, maxWidth: '80%' }}>
             <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
               <motion.div variants={fadeInUp}>
-                <Typography sx={{ fontFamily: '"Montserrat", sans-serif', fontSize: '0.6rem', letterSpacing: '0.5em', color: 'rgba(255,255,255,0.6)', mb: 3, textTransform: 'uppercase' }}>
+                <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '0.6rem', letterSpacing: '0.5em', color: 'rgba(255,255,255,0.6)', mb: 3, textTransform: 'uppercase' }}>
                   SAVE THE DATE • {data?.eventDate || "14.05.26"}
                 </Typography>
               </motion.div>
@@ -124,25 +133,35 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               ) : (
                 <Box sx={{ borderRight: '2px solid rgba(212, 175, 55, 0.6)', pr: 3, py: 1 }}>
                   <motion.div variants={fadeInUp}>
-                    <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '2.5rem', md: '5rem' }, fontWeight: 300, color: '#fff', letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1 }}>
+                    <Typography sx={{ 
+                      fontFamily: getFontFamily(data?.brideName), 
+                      fontSize: isThai(data?.brideName) ? { xs: '2rem', md: '3.5rem' } : { xs: '3.5rem', md: '6.5rem' }, 
+                      color: '#fff', 
+                      lineHeight: 1 
+                    }}>
                       {data?.brideName || "MOOK"}
                     </Typography>
                   </motion.div>
                   <motion.div variants={fadeInUp}>
-                    <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '2.5rem', md: '5rem' }, fontWeight: 300, color: '#fff', letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 1 }}>
+                    <Typography sx={{ 
+                      fontFamily: getFontFamily(data?.groomName), 
+                      fontSize: isThai(data?.groomName) ? { xs: '2rem', md: '3.5rem' } : { xs: '3.5rem', md: '6.5rem' }, 
+                      color: '#fff', 
+                      lineHeight: 1 
+                    }}>
                       & {data?.groomName || "TOP"}
                     </Typography>
                   </motion.div>
                 </Box>
               )}
               <motion.div variants={fadeInUp}>
-                <Typography sx={{ 
-                  fontFamily: isThai(data?.locationText) ? '"Prompt", sans-serif' : '"Montserrat", sans-serif', 
-                  fontSize: isThai(data?.locationText) ? '0.8rem' : '0.6rem', 
-                  letterSpacing: isThai(data?.locationText) ? '0.05em' : '0.3em', 
-                  color: 'rgba(255,255,255,0.5)', 
-                  mt: 3, 
-                  textTransform: isThai(data?.locationText) ? 'none' : 'uppercase' 
+                <Typography sx={{
+                  fontFamily: '"Prompt", sans-serif',
+                  fontSize: isThai(data?.locationText) ? '0.8rem' : '0.65rem',
+                  letterSpacing: isThai(data?.locationText) ? '0.05em' : '0.3em',
+                  color: 'rgba(255,255,255,0.5)',
+                  mt: 3,
+                  textTransform: isThai(data?.locationText) ? 'none' : 'uppercase'
                 }}>
                   {data?.locationText || "PATTAYA • CHONBURI"}
                 </Typography>
@@ -172,7 +191,15 @@ export default function HeroSection({ data }: { data?: HeroData }) {
                 </motion.div>
               ) : (
                 <motion.div variants={fadeInUp}>
-                  <Typography sx={{ fontFamily: '"Carattere", cursive', fontSize: { xs: '5rem', md: '11rem' }, lineHeight: 0.8, color: '#fff', textShadow: '0 10px 30px rgba(0,0,0,0.3)', position: 'relative', display: 'inline-block' }}>
+                  <Typography sx={{ 
+                    fontFamily: getFontFamily(data?.brideName), 
+                    fontSize: isThai(data?.brideName) ? { xs: '2.5rem', md: '5.5rem' } : { xs: '3.5rem', md: '11rem' },
+                    lineHeight: 0.8, 
+                    color: '#fff', 
+                    textShadow: '0 10px 30px rgba(0,0,0,0.3)', 
+                    position: 'relative', 
+                    display: 'inline-block' 
+                  }}>
                     {data ? data.brideName : "Mook"} <Box component="span" sx={{ fontSize: '0.4em', verticalAlign: 'middle', mx: -1, opacity: 0.6 }}>&</Box> {data ? data.groomName : "Top"}
                   </Typography>
                 </motion.div>
@@ -188,12 +215,12 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               </Stack>
             </motion.div>
             <motion.div variants={fadeInUp}>
-              <Typography sx={{ 
-                fontFamily: isThai(data?.locationText) ? '"Prompt", sans-serif' : '"Montserrat", sans-serif', 
-                fontSize: isThai(data?.locationText) ? '0.9rem' : '0.65rem', 
-                letterSpacing: isThai(data?.locationText) ? '0.1em' : '0.4em', 
-                color: 'rgba(255,255,255,0.9)', 
-                textTransform: isThai(data?.locationText) ? 'none' : 'uppercase' 
+              <Typography sx={{
+                fontFamily: '"Prompt", sans-serif',
+                fontSize: isThai(data?.locationText) ? '0.9rem' : '0.75rem',
+                letterSpacing: isThai(data?.locationText) ? '0.1em' : '0.4em',
+                color: 'rgba(255,255,255,0.9)',
+                textTransform: isThai(data?.locationText) ? 'none' : 'uppercase'
               }}>
                 {data ? data.locationText : "CAPE DARA RESORT PATTAYA • CHONBURI"}
               </Typography>
@@ -214,7 +241,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
-        backgroundColor: data?.mediaType === 'color' ? (data?.heroBackgroundColor || '#faf9f6') : '#000',
+        backgroundColor: data?.mediaType === 'color' ? (data?.heroBackgroundColor || '#ffffff') : '#000',
       }}
     >
       {/* Seamless Video or Image Background System */}

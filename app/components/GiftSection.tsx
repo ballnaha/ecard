@@ -5,6 +5,7 @@ import { Box, Container, Typography, Stack, Paper, Divider, Button } from '@mui/
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import DrawIcon from '@mui/icons-material/Draw';
+import { getFontFamily, isThai } from '../utils/fontHelper';
 
 export default function GiftSection({ data }: { data?: any }) {
   const bankDetails = {
@@ -32,7 +33,7 @@ export default function GiftSection({ data }: { data?: any }) {
           top: '10%',
           left: '-5%',
           fontSize: { xs: '6rem', md: '12rem' },
-          fontFamily: '"Pinyon Script", cursive',
+          fontFamily: getFontFamily('Gratitude'), 
           color: 'rgba(142, 125, 93, 0.04)',
           whiteSpace: 'nowrap',
           zIndex: 0,
@@ -54,12 +55,12 @@ export default function GiftSection({ data }: { data?: any }) {
           }}>
             Wedding Gift
           </Typography>
-          <Typography sx={{
-            fontFamily: '"Bodoni Moda", serif',
-            fontSize: { xs: '2rem', md: '3rem' },
-            color: '#1a1a1a',
-            fontStyle: 'italic',
-            lineHeight: 1.2
+          <Typography sx={{ 
+            fontFamily: getFontFamily(data?.title || 'Gifts & Blessings'), 
+            fontSize: isThai(data?.title || 'Gifts & Blessings') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '3rem', md: '4rem' }, 
+            color: '#1a1a1a', 
+            fontWeight: isThai(data?.title || 'Gifts & Blessings') ? 600 : 400,
+            lineHeight: 1.2 
           }}>
             {data?.title || 'Gifts & Blessings'}
           </Typography>
@@ -156,7 +157,7 @@ export default function GiftSection({ data }: { data?: any }) {
                     {bankDetails.accountName}
                   </Typography>
                   <Typography sx={{
-                    fontFamily: '"Montserrat", sans-serif',
+                    fontFamily: '"Prompt", sans-serif',
                     fontSize: '1.05rem',
                     color: '#1a1a1a',
                     letterSpacing: '0.15em',
@@ -168,7 +169,7 @@ export default function GiftSection({ data }: { data?: any }) {
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: data?.qrCode ? 'flex-start' : 'center' }, gap: 1.5 }}>
                     <Divider sx={{ width: '20px', borderColor: 'rgba(142, 125, 93, 0.3)' }} />
                     <Typography sx={{
-                      fontFamily: '"Montserrat", sans-serif',
+                      fontFamily: '"Prompt", sans-serif',
                       fontSize: '0.65rem',
                       color: 'rgba(0,0,0,0.4)',
                       textTransform: 'uppercase',

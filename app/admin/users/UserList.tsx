@@ -1,11 +1,36 @@
 'use client';
 import { useState } from 'react';
-import { Box, Button, Typography, Paper, Table, TableBody, TableCell, TableHead, TableRow, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Select, FormControl, InputLabel, Chip } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {
+  Box,
+  Button,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Chip,
+  Avatar,
+  Stack,
+  alpha
+} from '@mui/material';
+import { Magicpen, Trash, UserAdd, ProfileTick, ProfileCircle, ShieldTick, Edit } from 'iconsax-react';
 import { createUser, updateUser, deleteUser } from './actions';
 import { useSnackbar } from '../components/SnackbarProvider';
 import { useConfirm } from '../components/ConfirmProvider';
+
+const brandColor = '#f2a1a1';
 
 export default function UserList({ initialUsers }: { initialUsers: any[] }) {
   const [open, setOpen] = useState(false);
@@ -33,7 +58,7 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
     setIsEdit(true);
     setEditId(user.id);
     setUsername(user.username);
-    setPassword(''); // ไม่แสดงรหัสเก่า
+    setPassword('');
     setRole(user.role);
     setStatus(user.status);
     setOpen(true);
@@ -47,7 +72,7 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
     fd.append('username', username);
     fd.append('role', role);
     fd.append('status', status);
-    if (password) fd.append('password', password); // Submit string password if manually typed
+    if (password) fd.append('password', password);
 
     let res;
     if (isEdit) {
@@ -68,8 +93,8 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
 
   const handleDelete = (id: string, uName: string) => {
     confirm({
-      title: 'ต้องการลบผู้ใช้ใช่หรือไม่?',
-      message: `ข้อมูลของ ${uName} จะถูกลบออกจากระบบอย่างถาวรและไม่สามารถเรียกคืนได้`,
+      title: 'ลบผู้ใช้งาน?',
+      message: `คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลของ "${uName}"? การกระทำนี้ไม่สามารถย้อนกลับได้`,
       confirmLabel: 'ลบข้อมูล',
       severity: 'error',
       onConfirm: async () => {
@@ -85,70 +110,98 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
 
   return (
     <Box>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'flex-end' }}>
         <Button
           variant="contained"
+          startIcon={<UserAdd variant="Bulk" size="20" color="#ffffff" />}
           onClick={handleOpenNew}
-          sx={{ bgcolor: '#111216', color: '#ffffff', px: 3, py: 1.2, borderRadius: 1, fontWeight: 600, '&:hover': { bgcolor: '#2b2c33' } }}
+          sx={{
+            bgcolor: brandColor,
+            color: '#ffffff',
+            px: 3,
+            py: 1.2,
+            borderRadius: '50px',
+            fontWeight: 700,
+            textTransform: 'none',
+            boxShadow: '0 8px 25px rgba(242, 161, 161, 0.25)',
+            '&:hover': { bgcolor: '#e89191' }
+          }}
         >
-          + เพิ่มผู้ใช้ใหม่
+          Add New User
         </Button>
       </Box>
 
-      <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 1, boxShadow: '0 4px 20px rgba(0,0,0,0.02)', border: '1px solid rgba(0,0,0,0.04)' }}>
+      <Paper elevation={0} sx={{ width: '100%', overflow: 'hidden', borderRadius: '32px', border: '1px solid #f5f5f5' }}>
         <Table>
           <TableHead sx={{ bgcolor: '#fafafa' }}>
             <TableRow>
-              <TableCell sx={{ color: '#888', fontWeight: 600 }}>ชื่อผู้ใช้ (Username)</TableCell>
-              <TableCell sx={{ color: '#888', fontWeight: 600 }}>บทบาท (Role)</TableCell>
-              <TableCell sx={{ color: '#888', fontWeight: 600 }}>สถานะ</TableCell>
-              <TableCell sx={{ color: '#888', fontWeight: 600 }}>วันที่สร้าง</TableCell>
-              <TableCell align="right" sx={{ color: '#888', fontWeight: 600 }}>เครื่องมือจัดการ</TableCell>
+              <TableCell sx={{ color: '#aaa', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em' }}>USER IDENTITIY</TableCell>
+              <TableCell sx={{ color: '#aaa', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em' }}>ACCESS LEVEL</TableCell>
+              <TableCell sx={{ color: '#aaa', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em' }}>STATUS</TableCell>
+              <TableCell align="right" sx={{ color: '#aaa', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.1em' }}>ACTIONS</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {initialUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                  ไม่มีข้อมูลผู้ใช้ในระบบ
+                <TableCell colSpan={4} align="center" sx={{ py: 10 }}>
+                  <Typography sx={{ color: '#ccc' }}>No administrative accounts found.</Typography>
                 </TableCell>
               </TableRow>
             ) : (
               initialUsers.map((user) => (
-                <TableRow key={user.id} hover>
-                  <TableCell sx={{ fontWeight: 600, color: '#1a1a1a' }}>{user.username}</TableCell>
+                <TableRow key={user.id} hover sx={{ '&:hover': { bgcolor: '#fffcfc' } }}>
+                  <TableCell>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Avatar sx={{ width: 44, height: 44, bgcolor: '#f3f0ff', border: '1px solid #ede7f6' }}>
+                        <ProfileCircle size="24" color="#a18cd1" variant="Bulk" />
+                      </Avatar>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography noWrap sx={{ fontWeight: 800, color: '#1a1a1a', fontSize: '0.95rem' }}>{user.username}</Typography>
+                        <Typography variant="caption" sx={{ color: '#ccc', fontWeight: 600 }}>Created {new Date(user.createdAt).toLocaleDateString('th-TH')}</Typography>
+                      </Box>
+                    </Stack>
+                  </TableCell>
                   <TableCell>
                     <Chip
                       label={user.role}
                       size="small"
+                      icon={<ShieldTick size="14" variant="Bulk" color={user.role === 'admin' ? '#039be5' : '#a18cd1'} />}
                       sx={{
-                        borderRadius: 1,
-                        fontWeight: 600,
-                        bgcolor: user.role === 'admin' ? 'rgba(156, 39, 176, 0.1)' : 'rgba(25, 118, 210, 0.1)',
-                        color: user.role === 'admin' ? '#9c27b0' : '#1976d2',
-                        textTransform: 'capitalize'
+                        borderRadius: '50px',
+                        fontWeight: 800,
+                        fontSize: '0.65rem',
+                        textTransform: 'uppercase',
+                        bgcolor: user.role === 'admin' ? '#e1f5fe' : '#f3f0ff',
+                        color: user.role === 'admin' ? '#039be5' : '#a18cd1',
+                        border: 'none',
+                        px: 1
                       }}
                     />
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={user.status === 'active' ? 'เปิดใช้งาน' : 'ระงับการใช้งาน'}
+                      label={user.status === 'active' ? 'ACTIVE' : 'INACTIVE'}
                       size="small"
-                      color={user.status === 'active' ? 'success' : 'error'}
-                      variant="outlined"
-                      sx={{ borderRadius: 1, fontWeight: 600 }}
+                      icon={<ProfileTick size="14" variant="Bulk" color={user.status === 'active' ? '#2e7d32' : brandColor} />}
+                      sx={{
+                        borderRadius: '50px',
+                        fontWeight: 800,
+                        fontSize: '0.65rem',
+                        bgcolor: user.status === 'active' ? '#e8f5e9' : '#fff5f5',
+                        color: user.status === 'active' ? '#2e7d32' : brandColor
+                      }}
                     />
                   </TableCell>
-                  <TableCell sx={{ color: '#555' }}>
-                    {new Date(user.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' })}
-                  </TableCell>
                   <TableCell align="right">
-                    <IconButton size="small" color="primary" onClick={() => handleOpenEdit(user)} sx={{ mr: 0.5 }}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton size="small" color="error" onClick={() => handleDelete(user.id, user.username)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
+                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                      <IconButton size="small" onClick={() => handleOpenEdit(user)} sx={{ color: '#4facfe', bgcolor: '#e3f2fd', '&:hover': { bgcolor: '#bbdefb' } }}>
+                        <Edit size="18" variant="Bulk" color="#4facfe" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleDelete(user.id, user.username)} sx={{ color: '#ff8a8a', bgcolor: '#fff0f0', '&:hover': { bgcolor: '#ffebee' } }}>
+                        <Trash size="18" variant="Bulk" color="#ff8a8a" />
+                      </IconButton>
+                    </Stack>
                   </TableCell>
                 </TableRow>
               ))
@@ -158,52 +211,59 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
       </Paper>
 
       {/* Dialog สร้าง/แก้ไข User */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 1 } }}>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: '32px', p: 1, boxShadow: '0 25px 50px rgba(0,0,0,0.1)' }
+        }}
+      >
         <form onSubmit={handleSubmit}>
-          <DialogTitle sx={{ fontWeight: 600, borderBottom: '1px solid #eee', pb: 2 }}>
-            {isEdit ? 'แก้ไขข้อมูลผู้ใช้' : 'เพิ่มผู้ใช้งานใหม่'}
+          <DialogTitle sx={{ fontWeight: 800, fontSize: '1.25rem', color: '#1a1a1a', textAlign: 'center', pt: 3 }}>
+            {isEdit ? 'Edit User Identity' : 'New Administrator'}
           </DialogTitle>
-          <DialogContent sx={{ pt: 3 }}>
-            <TextField
-              fullWidth
-              label="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              sx={{ mb: 3, mt: 1 }}
-            />
-
-            <TextField
-              fullWidth
-              label={isEdit ? "ตั้งรหัสผ่านใหม่ (เว้นว่างไว้ถ้าไม่อยากเปลี่ยน)" : "รหัสผ่าน"}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required={!isEdit}
-              sx={{ mb: 3 }}
-            />
-
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>บทบาท (Role)</InputLabel>
-              <Select value={role} label="บทบาท (Role)" onChange={(e) => setRole(e.target.value)}>
-                <MenuItem value="admin">Administrator (แอดมินระบบ)</MenuItem>
-                <MenuItem value="staff">Staff (สตาฟจัดการอีการ์ด)</MenuItem>
-                <MenuItem value="viewer">Viewer (ดูได้อย่างเดียว)</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth sx={{ mb: 1 }}>
-              <InputLabel>สถานะการใช้งาน</InputLabel>
-              <Select value={status} label="สถานะการใช้งาน" onChange={(e) => setStatus(e.target.value)}>
-                <MenuItem value="active">เปิดใช้งาน (Active)</MenuItem>
-                <MenuItem value="inactive">ระงับการใช้งาน (Inactive)</MenuItem>
-              </Select>
-            </FormControl>
+          <DialogContent sx={{ pt: 3, pb: 1 }}>
+            <Stack spacing={3}>
+              <TextField
+                fullWidth label="Username" value={username} onChange={(e) => setUsername(e.target.value)} required
+                variant="standard"
+                sx={{ '& .MuiInput-underline:after': { borderBottomColor: brandColor }, '& label.Mui-focused': { color: brandColor } }}
+              />
+              <TextField
+                fullWidth label={isEdit ? "Set New Password (Leave empty if no change)" : "Password"}
+                type="password" value={password} onChange={(e) => setPassword(e.target.value)} required={!isEdit}
+                variant="standard"
+                sx={{ '& .MuiInput-underline:after': { borderBottomColor: brandColor }, '& label.Mui-focused': { color: brandColor } }}
+              />
+              <FormControl variant="standard">
+                <InputLabel sx={{ '&.Mui-focused': { color: '#a18cd1' } }}>Role Selection</InputLabel>
+                <Select value={role} label="Role Selection" onChange={(e) => setRole(e.target.value)} sx={{ '&:after': { borderBottomColor: '#a18cd1' } }}>
+                  <MenuItem value="admin">Administrator (Full Access)</MenuItem>
+                  <MenuItem value="staff">Staff (Card Management)</MenuItem>
+                  <MenuItem value="viewer">Viewer (Read Only)</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl variant="standard">
+                <InputLabel sx={{ '&.Mui-focused': { color: brandColor } }}>Account Status</InputLabel>
+                <Select value={status} label="Account Status" onChange={(e) => setStatus(e.target.value)} sx={{ '&:after': { borderBottomColor: brandColor } }}>
+                  <MenuItem value="active">Active Status</MenuItem>
+                  <MenuItem value="inactive">Suspended</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, pt: 0 }}>
-            <Button onClick={() => setOpen(false)} color="inherit" sx={{ fontWeight: 600 }}>ยกเลิก</Button>
-            <Button type="submit" variant="contained" disabled={loading} sx={{ bgcolor: '#111216', borderRadius: 1, color: 'white', fontWeight: 600, px: 3, '&:hover': { bgcolor: '#2b2c33' } }}>
-              {loading ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
+          <DialogActions sx={{ p: 3, gap: 1 }}>
+            <Button onClick={() => setOpen(false)} color="inherit" sx={{ fontWeight: 700, borderRadius: '50px', px: 3 }}>Cancel</Button>
+            <Button
+              type="submit" variant="contained" disabled={loading}
+              sx={{
+                bgcolor: brandColor, borderRadius: '50px', color: 'white', fontWeight: 800, px: 4, py: 1, boxShadow: '0 8px 20px rgba(242, 161, 161, 0.2)',
+                '&:hover': { bgcolor: '#e89191' }
+              }}
+            >
+              {loading ? 'Saving...' : 'Confirm'}
             </Button>
           </DialogActions>
         </form>

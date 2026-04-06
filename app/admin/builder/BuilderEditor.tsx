@@ -1,42 +1,57 @@
 'use client';
-
 import React, { useState } from 'react';
-import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack } from '@mui/material';
+import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack, alpha, Checkbox, List, ListItem, ListItemText, ListItemIcon, Paper } from '@mui/material';
 import { Reorder } from 'framer-motion';
-import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash } from 'iconsax-react';
+import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash, EyeSlash, Layer, Home, Calendar, Gallery, Location, PresentionChart, Heart, People, Gift, MessageText1, Link1 } from 'iconsax-react';
 import { useSnackbar } from '../components/SnackbarProvider';
-import { updateClientLayout, updateClientHero, updateClientTheme, updateClientCouple, updateClientGallery, updateClientCountdown, updateClientSchedule, updateClientDressCode, updateClientLocation, updateClientGift } from '../clients/actions';
+import { updateClientLayout, updateClientHero, updateClientTheme, updateClientCouple, updateClientGallery, updateClientCountdown, updateClientSchedule, updateClientDressCode, updateClientLocation, updateClientGift, updateClientMobileNav } from '../clients/actions';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 
-const initialLayout = [
-  { id: 'hero', title: 'หน้าปก (Hero Section)', icon: '🎞️' },
-  { id: 'couple', title: 'ข้อมูลบ่าวสาว (Couple Section)', icon: '👫' },
-  { id: 'schedule', title: 'ตารางพิธีการ (Schedule)', icon: '📅' },
-  { id: 'countdown', title: 'นับถอยหลัง (Countdown)', icon: '⏰' },
-  { id: 'gallery', title: 'แกลเลอรี่ (Gallery)', icon: '📸' },
-  { id: 'location', title: 'สถานที่จัดงาน (Venue)', icon: '📍' },
-  { id: 'rsvp', title: 'ตอบรับบัตรเชิญ (RSVP)', icon: '✉️' },
-  { id: 'giftMoney', title: 'ซองของขวัญ (Gift)', icon: '🎁' },
+const initialLayoutBase = [
+  { id: 'hero', title: 'หน้าปก (Hero Section)', icon: '🎞️', isActive: true },
+  { id: 'couple', title: 'ข้อมูลบ่าวสาว (Couple Section)', icon: '👫', isActive: true },
+  { id: 'schedule', title: 'ตารางพิธีการ (Schedule)', icon: '📅', isActive: true },
+  { id: 'countdown', title: 'นับถอยหลัง (Countdown)', icon: '⏰', isActive: true },
+  { id: 'gallery', title: 'แกลเลอรี่ (Gallery)', icon: '📸', isActive: true },
+  { id: 'location', title: 'สถานที่จัดงาน (Venue)', icon: '📍', isActive: true },
+  { id: 'rsvp', title: 'ตอบรับบัตรเชิญ (RSVP)', icon: '✉️', isActive: true },
+  { id: 'gift', title: 'ซองของขวัญ (Gift)', icon: '🎁', isActive: true },
+  { id: 'guestbook', title: 'สมุดอวยพร (Guestbook)', icon: '📖', isActive: true },
+  { id: 'poweredBy', title: 'เครดิตผู้พัฒนา (Powered By)', icon: '🛡️', isActive: true },
+  { id: 'mobileNav', title: 'เมนูนำทางมือถือ (Mobile Nav)', icon: '📱', isActive: true },
 ];
+
+const sectionIconMap: Record<string, any> = {
+  hero: <Home />,
+  couple: <Heart />,
+  schedule: <Calendar />,
+  countdown: <PresentionChart />,
+  gallery: <Gallery />,
+  location: <Location />,
+  rsvp: <People />,
+  gift: <Gift />,
+  guestbook: <MessageText1 />,
+};
 
 export default function BuilderEditor({ client }: { client: any }) {
   const [items, setItems] = useState(() => {
-    type LayoutItem = typeof initialLayout[number];
     if (client?.layoutOrder && Array.isArray(client.layoutOrder)) {
-      const savedItems = (client.layoutOrder as string[])
-        .map((id: string) => initialLayout.find(l => l.id === id))
-        .filter((x): x is LayoutItem => Boolean(x));
-
-      // Find items in initialLayout that are NOT in savedItems
-      const missingItems = initialLayout.filter(l => !savedItems.find(s => s.id === l.id));
-
-      return [...savedItems, ...missingItems];
+      const savedLayout = client.layoutOrder as any[];
+      const hydratedItems = savedLayout.map((item: any) => {
+        const id = typeof item === 'string' ? item : item.id;
+        const isActive = typeof item === 'string' ? true : (item.isActive ?? true);
+        const base = initialLayoutBase.find(l => l.id === id);
+        return base ? { ...base, isActive } : null;
+      }).filter(Boolean) as typeof initialLayoutBase;
+      const missingItems = initialLayoutBase.filter(l => !hydratedItems.find(h => h.id === l.id));
+      return [...hydratedItems, ...missingItems];
     }
-    return initialLayout;
+    return initialLayoutBase;
   });
+
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [mediaType, setMediaType] = useState<'video' | 'image' | 'color'>(() => client?.heroSection?.mediaType || 'image');
   const [previewImage, setPreviewImage] = useState<string | null>(client?.heroSection?.heroImage || null);
@@ -92,42 +107,57 @@ export default function BuilderEditor({ client }: { client: any }) {
     ]
   );
 
+  // Footer Nav Setup
+  const [mobileNavItems, setMobileNavItems] = useState<{ id: string, label: string, isActive: boolean }[]>(() => {
+    const saved = (client?.mobileNavSection?.items || []) as any[];
+
+    // Create a comprehensive list from initialLayoutBase to ensure new sections exist in the menu config
+    const merged = [...saved];
+    initialLayoutBase.forEach(base => {
+      if (!merged.find(m => m.id === base.id)) {
+        merged.push({
+          id: base.id,
+          label: base.title.split(' ')[0],
+          isActive: false
+        });
+      }
+    });
+
+    return merged;
+  });
+
   const [isSaving, setIsSaving] = useState(false);
   const [eventDate, setEventDate] = useState<Dayjs | null>(client?.eventDate ? dayjs(client.eventDate) : dayjs('2026-05-14'));
   const { showSnackbar } = useSnackbar();
 
-  const handleGiftSave = async (formData: FormData) => {
-    if (!client) { showSnackbar('ไม่พบข้อมูลลูกค้า', 'error'); return; }
-    setIsSaving(true);
-    try {
-      let finalQrCode = savedPaths.giftQrCode;
-
-      // 1. Upload new QR if pending
-      if (pendingFiles.giftQrCode) {
-        finalQrCode = await uploadOneFile(pendingFiles.giftQrCode, 'giftQrCode');
-      }
-
-      // 2. Set the qrCode URL into formData BEFORE saving
-      formData.set('qrCode', finalQrCode || '');
-      
-      const response = await updateClientGift(client.id, formData);
-      
-      if (response.success) {
-        showSnackbar('บันทึกข้อมูลของขวัญเรียบร้อย', 'success');
-        setSavedPaths(prev => ({ ...prev, giftQrCode: finalQrCode }));
-        setPendingFiles(prev => ({ ...prev, giftQrCode: null }));
-        setEditingItem(null);
-      } else {
-        showSnackbar(response.error || 'เกิดข้อผิดพลาดในการบันทึก', 'error');
-      }
-    } catch (e: any) {
-      showSnackbar('เกิดข้อผิดพลาด: ' + e.message, 'error');
-    } finally {
-      setIsSaving(false);
-    }
+  const handleToggleActive = (id: string) => {
+    setItems(prev => prev.map(item =>
+      item.id === id ? { ...item, isActive: !item.isActive } : item
+    ));
   };
 
-  // Select file → preview only, no upload yet
+  const handleSave = async () => {
+    if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
+    setIsSaving(true);
+    const layoutData = items.map(i => ({ id: i.id, isActive: i.isActive }));
+    const res = await updateClientLayout(client.id, layoutData, client.slug);
+    setIsSaving(false);
+    if (res?.error) showSnackbar(res.error, 'error');
+    else showSnackbar('บันทึกการจัดเรียงและสถานะการแสดงผลสำเร็จ!', 'success');
+  };
+
+  const uploadOneFile = async (file: File, fileType: string): Promise<string> => {
+    if (!client) return '';
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('clientId', client.id);
+    fd.append('fileType', fileType);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.success) return data.url;
+    throw new Error(data.error || 'Upload failed');
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode') => {
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
@@ -142,7 +172,6 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'giftQrCode') setPreviewGiftQrCode(url);
   };
 
-  // Remove file → clear preview & delete from server immediately
   const handleFileRemove = async (fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode') => {
     setPendingFiles(prev => ({ ...prev, [fileType]: null }));
     if (fileType === 'heroImage') setPreviewImage(null);
@@ -152,7 +181,6 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'bridePic') setPreviewBridePic(null);
     if (fileType === 'groomPic') setPreviewGroomPic(null);
     if (fileType === 'giftQrCode') setPreviewGiftQrCode(null);
-
     const pathToDelete = savedPaths[fileType];
     if (pathToDelete && client) {
       setSavedPaths(prev => ({ ...prev, [fileType]: '' }));
@@ -169,42 +197,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     }
   };
 
-  // Upload a single file to server
-  const uploadOneFile = async (file: File, fileType: string): Promise<string> => {
-    if (!client) return '';
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('clientId', client.id);
-    fd.append('fileType', fileType);
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
-    const data = await res.json();
-    if (data.success) return data.url;
-    throw new Error(data.error || 'Upload failed');
-  };
-
-  // Save layout order
-  const handleSave = async () => {
-    if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
-    const orderIds = items.map(i => i.id);
-    const res = await updateClientLayout(client.id, orderIds);
-    setIsSaving(false);
-    if (res?.error) showSnackbar(res.error, 'error');
-    else showSnackbar('บันทึกการจัดเรียงเข้าสู่ฐานข้อมูลสำเร็จ!', 'success');
-  };
-
-  // Save hero: delete old files → upload new files → save form data
   const handleHeroSave = async (formData: FormData) => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
     setIsSaving(true);
     try {
-      // 2. Upload pending new files
       const finalPaths = { ...savedPaths };
       for (const [key, file] of Object.entries(pendingFiles)) {
         if (file) finalPaths[key] = await uploadOneFile(file, key);
       }
-
-      // 3. Save form + file paths to DB
       formData.append('mediaType', mediaType);
       formData.append('heroStyle', heroStyle);
       formData.append('heroBackgroundColor', heroBackgroundColor);
@@ -213,11 +213,9 @@ export default function BuilderEditor({ client }: { client: any }) {
       if (finalPaths.heroPoster) formData.append('heroPoster', finalPaths.heroPoster);
       if (finalPaths.heroNameImage) formData.append('heroNameImage', finalPaths.heroNameImage);
       formData.append('showFallingPetals', String(showPetals));
-
       const res = await updateClientHero(client.id, formData);
-      if (res?.error) {
-        showSnackbar(res.error, 'error');
-      } else {
+      if (res?.error) showSnackbar(res.error, 'error');
+      else {
         showSnackbar('บันทึกข้อมูลหน้าปกเรียบร้อย!', 'success');
         setSavedPaths(finalPaths);
         setPendingFiles({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null });
@@ -237,11 +235,9 @@ export default function BuilderEditor({ client }: { client: any }) {
       const finalPaths = { ...savedPaths };
       if (pendingFiles.bridePic) finalPaths.bridePic = await uploadOneFile(pendingFiles.bridePic, 'bridePic');
       if (pendingFiles.groomPic) finalPaths.groomPic = await uploadOneFile(pendingFiles.groomPic, 'groomPic');
-
       if (finalPaths.bridePic) formData.append('bridePic', finalPaths.bridePic);
       if (finalPaths.groomPic) formData.append('groomPic', finalPaths.groomPic);
       formData.append('coupleStyle', coupleStyle);
-
       const res = await updateClientCouple(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
       else {
@@ -277,29 +273,25 @@ export default function BuilderEditor({ client }: { client: any }) {
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0 || !client) return;
     setIsSaving(true);
-
     try {
       const files = Array.from(e.target.files);
       const newUrls: string[] = [];
-
       for (const file of files) {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('clientId', client.id);
         formData.append('fileType', 'gallery');
-
         const res = await fetch('/api/upload', { method: 'POST', body: formData });
         const data = await res.json();
         if (data.url) newUrls.push(data.url);
       }
-
       setGalleryItems(prev => [...newUrls, ...prev]);
       showSnackbar(`อัปโหลดรูปภาพ ${newUrls.length} รูปเรียบร้อย!`, 'success');
     } catch (err: any) {
       showSnackbar('อัปโหลดล้มเหลว: ' + err.message, 'error');
     } finally {
       setIsSaving(false);
-      e.target.value = ''; // Clear for re-uploading same files
+      e.target.value = '';
     }
   };
 
@@ -388,37 +380,102 @@ export default function BuilderEditor({ client }: { client: any }) {
     }
   };
 
+  const handleGiftSave = async (formData: FormData) => {
+    if (!client) { showSnackbar('ไม่พบข้อมูลลูกค้า', 'error'); return; }
+    setIsSaving(true);
+    try {
+      let finalQrCode = savedPaths.giftQrCode;
+      if (pendingFiles.giftQrCode) finalQrCode = await uploadOneFile(pendingFiles.giftQrCode, 'giftQrCode');
+      formData.set('qrCode', finalQrCode || '');
+      const response = await updateClientGift(client.id, formData);
+      if (response.success) {
+        showSnackbar('บันทึกข้อมูลของขวัญเรียบร้อย', 'success');
+        setSavedPaths(prev => ({ ...prev, giftQrCode: finalQrCode }));
+        setPendingFiles(prev => ({ ...prev, giftQrCode: null }));
+        setEditingItem(null);
+      } else {
+        showSnackbar(response.error || 'เกิดข้อผิดพลาดในการบันทึก', 'error');
+      }
+    } catch (e: any) {
+      showSnackbar('เกิดข้อผิดพลาด: ' + e.message, 'error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleMobileNavSave = async () => {
+    if (!client) return;
+    setIsSaving(true);
+    const res = await updateClientMobileNav(client.id, mobileNavItems, client.slug);
+    setIsSaving(false);
+    if (res.success) {
+      showSnackbar('บันทึกเมนูนำทางเรียบร้อย!', 'success');
+      setEditingItem(null);
+    } else {
+      showSnackbar(res.error || 'ล้มเหลว', 'error');
+    }
+  };
+
+  const activeBuilderSections = items.filter(i => i.isActive && i.id !== 'mobileNav' && i.id !== 'poweredBy');
+
   return (
     <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
-
-      {/* Editor Main */}
       <Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, alignItems: 'center' }}>
           <Typography variant="h6" fontWeight="700">ลำดับการแสดงผล (Layout Sections)</Typography>
-          <Button variant="contained" disabled={isSaving} startIcon={<Save2 variant="Bold" size={20} color="currentColor" />} onClick={handleSave} sx={{ bgcolor: '#f472b6', color: '#ffffff', borderRadius: 1, fontWeight: 700, '&:hover': { bgcolor: '#db2777' } }}>
-            บันทึก Layout
-          </Button>
+          <Stack direction="row" spacing={1.5}>
+            <Button
+              variant="outlined"
+              startIcon={<ColorSwatch variant="Bold" size={20} color="#f2a1a1" />}
+              onClick={() => setEditingItem({ id: 'theme', title: 'ธีมและสีหลักของงาน' })}
+              sx={{ color: '#f2a1a1', borderColor: '#f2a1a1', borderRadius: '50px', fontWeight: 700, px: 3, '&:hover': { bgcolor: '#fff5f5', borderColor: '#e89191' } }}
+            >
+              ธีมและสีสัน
+            </Button>
+            <Button variant="contained" disabled={isSaving} startIcon={<Save2 variant="Bold" size={20} color="currentColor" />} onClick={handleSave} sx={{ bgcolor: alpha('#f2a1a1', 1), color: '#ffffff', borderRadius: '50px', fontWeight: 700, px: 3, '&:hover': { bgcolor: '#e89191', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease', boxShadow: '0 8px 25px rgba(242, 161, 161, 0.3)' }}>
+              บันทึกเลย์เอาต์
+            </Button>
+          </Stack>
         </Box>
 
         <Reorder.Group axis="y" values={items} onReorder={setItems} as="div">
           {items.map(item => (
             <Reorder.Item value={item} key={item.id} as="div" style={{ listStyle: 'none' }}>
-              <Card variant="outlined" sx={{ mb: 1.5, borderRadius: 1, p: 0, cursor: 'grab', border: '1px solid #e2e8f0', '&:hover': { borderColor: '#f472b6', boxShadow: '0 2px 8px rgba(244,114,182,0.15)' }, transition: 'all 0.15s' }}>
+              <Card variant="outlined" sx={{
+                mb: 1.5, borderRadius: 1, p: 0, cursor: 'grab', border: '1px solid #e2e8f0',
+                opacity: item.isActive ? 1 : 0.4,
+                backgroundColor: item.isActive ? '#ffffff' : '#f8fafc',
+                transition: 'all 0.3s ease',
+                '&:hover': { borderColor: item.isActive ? '#f2a1a1' : '#cbd5e1', boxShadow: item.isActive ? '0 2px 8px rgba(242,161,161,0.15)' : 'none' }
+              }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', px: 2, py: 1.5, gap: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', color: '#94a3b8', cursor: 'grab' }}>
                     <Menu variant="Outline" size={20} color="currentColor" />
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1 }}>
                     <Typography fontSize="1.2rem">{item.icon}</Typography>
-                    <Typography variant="body2" fontWeight="700" color="#0f172a">{item.title}</Typography>
+                    <Typography variant="body2" fontWeight="700" color={item.isActive ? "#0f172a" : "#94a3b8"}>
+                      {item.title} {!item.isActive && '(ซ่อนไว้)'}
+                    </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <IconButton size="small" sx={{ color: '#94a3b8', '&:hover': { color: '#f472b6', bgcolor: '#fdf2f8' } }} onClick={() => setEditingItem(item)}>
-                      <ColorSwatch variant="Outline" size={18} color="currentColor" />
+                    <IconButton
+                      size="small"
+                      onClick={() => handleToggleActive(item.id)}
+                      sx={{ color: item.isActive ? successGreen : '#94a3b8', '&:hover': { bgcolor: item.isActive ? alpha(successGreen, 0.1) : '#f1f5f9' } }}
+                    >
+                      {item.isActive ? <Eye variant="Bold" size={18} color={successGreen} /> : <EyeSlash variant="Bold" size={18} color="#94a3b8" />}
                     </IconButton>
-                    <IconButton size="small" sx={{ color: '#94a3b8', '&:hover': { color: '#0ea5e9', bgcolor: '#f0f9ff' } }}>
-                      <Eye variant="Outline" size={18} color="currentColor" />
-                    </IconButton>
+
+                    {item.isActive && (
+                      <IconButton
+                        size="small"
+                        onClick={() => setEditingItem(item)}
+                        sx={{ color: '#f2a1a1', '&:hover': { bgcolor: alpha('#f2a1a1', 0.1) } }}
+                      >
+                        <ColorSwatch variant="Bold" size={18} color="#f2a1a1" />
+                      </IconButton>
+                    )}
                   </Box>
                 </Box>
               </Card>
@@ -429,46 +486,97 @@ export default function BuilderEditor({ client }: { client: any }) {
 
       {/* Settings Drawer */}
       <Drawer
-        anchor="right"
-        open={!!editingItem}
-        onClose={() => setEditingItem(null)}
-        sx={{ zIndex: 1250 }}
-        PaperProps={{
-          sx: {
-            width: { xs: '100%', sm: 500, md: 550, lg: 600 },
-            p: { xs: 3, md: 5 },
-            bgcolor: '#f8fafc',
-            boxShadow: '-10px 0 30px rgba(0,0,0,0.05)'
-          }
-        }}
+        anchor="right" open={!!editingItem} onClose={() => setEditingItem(null)} sx={{ zIndex: 1250 }}
+        PaperProps={{ sx: { width: { xs: '100%', sm: 500, md: 550, lg: 600 }, p: { xs: 3, md: 5 }, bgcolor: '#f8fafc', boxShadow: '-10px 0 30px rgba(0,0,0,0.05)' } }}
       >
         {editingItem && (
           <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h6" fontWeight="800" color="#0f172a">ปรับแต่ง: {editingItem.title}</Typography>
-              <IconButton onClick={() => setEditingItem(null)}>
-                <CloseSquare variant="Outline" size={24} color="#64748b" />
-              </IconButton>
+              <IconButton onClick={() => setEditingItem(null)}><CloseSquare variant="Outline" size={24} color="#64748b" /></IconButton>
             </Box>
             <Divider sx={{ mb: 4 }} />
 
-            {/* ===== Hero Section Form ===== */}
+            {/* Mobile Nav Configuration */}
+            {editingItem.id === 'mobileNav' && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Typography variant="subtitle2" fontWeight={700} color="#475569">
+                  เลือกเมนูที่แสดงบน Footer Bar (Sync จาก Section ที่เปิดอยู่)
+                </Typography>
+                <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                  <Reorder.Group axis="y" values={mobileNavItems} onReorder={setMobileNavItems} as="div">
+                    <List dense sx={{ p: 0 }}>
+                      {mobileNavItems.filter(nav => activeBuilderSections.find(s => s.id === nav.id)).map((nav) => {
+                        const sec = activeBuilderSections.find(s => s.id === nav.id);
+                        if (!sec) return null;
+                        return (
+                          <Reorder.Item key={nav.id} value={nav} as="div">
+                            <ListItem
+                              sx={{
+                                py: 1.5,
+                                bgcolor: 'white',
+                                borderBottom: '1px solid #f1f5f9',
+                                cursor: 'grab',
+                                '&:hover': { bgcolor: '#f8fafc' }
+                              }}
+                            >
+                              <ListItemIcon sx={{ minWidth: 36, color: '#94a3b8' }}>
+                                <Menu variant="Outline" size={18} color="currentColor" />
+                              </ListItemIcon>
+                              <ListItemIcon sx={{ minWidth: 36 }}>
+                                {sectionIconMap[sec.id] || <Layer size={18} variant="Outline" />}
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={<Typography variant="body2" fontWeight={700}>{sec.title}</Typography>}
+                              />
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <TextField
+                                  size="small"
+                                  placeholder="Label"
+                                  value={nav.label || ''}
+                                  onClick={(e) => e.stopPropagation()}
+                                  onChange={(e) => {
+                                    const newVal = e.target.value;
+                                    setMobileNavItems(prev => prev.map(p => p.id === nav.id ? { ...p, label: newVal } : p));
+                                  }}
+                                  sx={{ width: 100, '& .MuiInputBase-input': { p: '6px 10px', fontSize: '0.8rem' } }}
+                                />
+                                <Checkbox
+                                  checked={nav.isActive}
+                                  onClick={(e) => e.stopPropagation()}
+                                  onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    setMobileNavItems(prev => prev.map(p => p.id === nav.id ? { ...p, isActive: checked } : p));
+                                  }}
+                                  sx={{ color: '#f2a1a1', '&.Mui-checked': { color: '#f2a1a1' } }}
+                                />
+                              </Stack>
+                            </ListItem>
+                          </Reorder.Item>
+                        );
+                      })}
+                    </List>
+                  </Reorder.Group>
+                </Paper>
+                <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                  * รายการเมนูจะแสดงเมื่อคุณเลือก "เปิด (Check)" และ Section นั้นๆ เปิดใช้งานอยู่ในหน้าเลย์เอาต์หลักครับ
+                </Typography>
+                <Button onClick={handleMobileNavSave} fullWidth variant="contained" sx={{ bgcolor: '#f2a1a1', py: 1.5, fontWeight: 700 }}>
+                  บันทึกเมนู Footer Bar
+                </Button>
+              </Box>
+            )}
+
             {editingItem.id === 'hero' && (
               <Box component="form" action={handleHeroSave} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-
-                {/* --- ข้อมูลพื้นฐาน --- */}
                 <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>ข้อมูลคู่บ่าวสาว</Typography>
                 <TextField name="groomName" label="ชื่อเจ้าบ่าว" defaultValue={client?.groomName || "Pu"} size="small" fullWidth sx={{ bgcolor: 'white' }} />
                 <TextField name="brideName" label="ชื่อเจ้าสาว" defaultValue={client?.brideName || "Pim"} size="small" fullWidth sx={{ bgcolor: 'white' }} />
-
                 <input type="hidden" name="eventDate" value={eventDate ? eventDate.toISOString() : ''} />
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker label="วันที่จัดงาน" value={eventDate} onChange={(val) => setEventDate(val)} format="DD/MM/YYYY" slotProps={{ textField: { size: 'small', fullWidth: true, sx: { bgcolor: 'white' } } }} />
                 </LocalizationProvider>
-
                 <TextField name="locationText" label="สถานที่จัดงาน" defaultValue={client?.heroSection?.locationText || "PATTAYA • CHONBURI"} size="small" fullWidth sx={{ bgcolor: 'white' }} />
-
-                {/* --- เลือกสไตล์ Hero --- */}
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>สไตล์การจัดวาง (Hero Style)</Typography>
                 <TextField select value={heroStyle} onChange={(e) => setHeroStyle(e.target.value as any)} size="small" fullWidth sx={{ bgcolor: 'white' }}>
@@ -476,719 +584,304 @@ export default function BuilderEditor({ client }: { client: any }) {
                   <MenuItem value="editorial">Editorial Left (นิตยสาร - ชิดซ้าย)</MenuItem>
                   <MenuItem value="minimal">Minimal Vertical (มินิมอล - แนวตั้ง)</MenuItem>
                 </TextField>
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={showPetals}
-                      onChange={(e) => setShowPetals(e.target.checked)}
-                      sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: '#22c55e',
-                          '&:hover': {
-                            backgroundColor: 'rgba(34, 197, 94, 0.08)',
-                          },
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#22c55e',
-                        },
-                      }}
-                    />
-                  }
-                  label={<Typography variant="body2" fontWeight={600} color={showPetals ? "#166534" : "#475569"}>แสดงกลีบดอกไม้ร่วง ✨</Typography>}
-                  sx={{ mt: 1 }}
-                />
-
+                <FormControlLabel control={<Switch checked={showPetals} onChange={(e) => setShowPetals(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#22c55e' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#22c55e' } }} />} label={<Typography variant="body2" fontWeight={600}>แสดงกลีบดอกไม้ร่วง ✨</Typography>} />
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>รูปภาพชื่อบ่าวสาว (Calligraphy/Logo)</Typography>
-                <Typography variant="caption" color="text.secondary">ถ้าแนบรูปจะแสดงรูปแทนที่ชื่อแบบตัวอักษร</Typography>
+                <Typography variant="subtitle2" fontWeight={700} color="#475569">รูปภาพชื่อบ่าวสาว (Calligraphy/Logo)</Typography>
                 {previewNameImage && (
                   <Box sx={{ position: 'relative' }}>
                     <Box component="img" src={previewNameImage} sx={{ width: '100%', height: 120, objectFit: 'contain', borderRadius: 1, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }} />
-                    <IconButton onClick={() => handleFileRemove('heroNameImage')} size="small" sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff', '&:hover': { bgcolor: '#ef4444' } }}>
-                      <Trash size={14} color="currentColor" variant="Bold" />
-                    </IconButton>
+                    <IconButton onClick={() => handleFileRemove('heroNameImage')} size="small" sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}><Trash size={14} variant="Bold" /></IconButton>
                   </Box>
                 )}
-                <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', borderRadius: 1, py: 1.2, borderStyle: 'dashed', borderWidth: 2, color: '#64748b', borderColor: '#cbd5e1', '&:hover': { bgcolor: '#fdf2f8', borderColor: '#db2777' } }}>
+                <Button variant="outlined" component="label" fullWidth sx={{ borderRadius: 1, borderStyle: 'dashed' }}>
                   {previewNameImage ? 'เปลี่ยนรูปภาพชื่อ' : '+ เลือกรูปชื่อบ่าวสาว'}
                   <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'heroNameImage')} />
                 </Button>
-
-                {/* --- เลือกสื่อหน้าปก --- */}
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>สื่อหน้าปก</Typography>
-
-                <FormControl component="fieldset">
-                  <RadioGroup row value={mediaType} onChange={(e) => setMediaType(e.target.value as 'video' | 'image' | 'color')}>
-                    <FormControlLabel value="image" control={<Radio size="small" sx={{ color: '#cbd5e1', '&.Mui-checked': { color: '#f472b6' } }} />} label={<Typography variant="body2" fontWeight={600}>รูปภาพ</Typography>} />
-                    <FormControlLabel value="video" control={<Radio size="small" sx={{ color: '#cbd5e1', '&.Mui-checked': { color: '#f472b6' } }} />} label={<Typography variant="body2" fontWeight={600}>วิดีโอ</Typography>} />
-                    <FormControlLabel value="color" control={<Radio size="small" sx={{ color: '#cbd5e1', '&.Mui-checked': { color: '#f472b6' } }} />} label={<Typography variant="body2" fontWeight={600}>สีพื้น</Typography>} />
-                  </RadioGroup>
-                </FormControl>
-
+                <Typography variant="subtitle2" fontWeight={700} color="#475569">สื่อหน้าปก</Typography>
+                <RadioGroup row value={mediaType} onChange={(e) => setMediaType(e.target.value as any)}><FormControlLabel value="image" control={<Radio size="small" />} label="รูปภาพ" /><FormControlLabel value="video" control={<Radio size="small" />} label="วิดีโอ" /><FormControlLabel value="color" control={<Radio size="small" />} label="สีพื้น" /></RadioGroup>
                 {mediaType === 'image' ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {previewImage && (
-                      <Box sx={{ position: 'relative' }}>
-                        <Box component="img" src={previewImage} sx={{ width: '100%', height: 260, objectFit: 'cover', borderRadius: 1, border: '1px solid #e2e8f0' }} />
-                        <IconButton onClick={() => handleFileRemove('heroImage')} size="small" sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff', '&:hover': { bgcolor: '#ef4444' } }}>
-                          <Trash size={16} color="currentColor" variant="Bold" />
-                        </IconButton>
-                      </Box>
-                    )}
-                    <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', borderRadius: 1, py: 1.5, borderStyle: 'dashed', borderWidth: 2, color: '#64748b', borderColor: '#cbd5e1', '&:hover': { bgcolor: '#fdf2f8', borderColor: '#db2777' } }}>
-                      + เลือกรูปภาพหน้าปก
-                      <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'heroImage')} />
-                    </Button>
+                    {previewImage && <Box sx={{ position: 'relative' }}><Box component="img" src={previewImage} sx={{ width: '100%', height: 260, objectFit: 'cover', borderRadius: 1 }} /><IconButton onClick={() => handleFileRemove('heroImage')} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}><Trash size={16} variant="Bold" /></IconButton></Box>}
+                    <Button variant="outlined" component="label" fullWidth sx={{ borderStyle: 'dashed' }}>+ เลือกรูปภาพหน้าปก<input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'heroImage')} /></Button>
                   </Box>
                 ) : mediaType === 'video' ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {previewVideo && (
-                      <Box sx={{ position: 'relative' }}>
-                        <Box component="video" src={previewVideo} controls sx={{ width: '100%', height: 220, objectFit: 'cover', borderRadius: 1, border: '1px solid #e2e8f0', bgcolor: '#000' }} />
-                        <IconButton onClick={() => handleFileRemove('heroVideo')} size="small" sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff', '&:hover': { bgcolor: '#ef4444' } }}>
-                          <Trash size={16} color="currentColor" variant="Bold" />
-                        </IconButton>
-                      </Box>
-                    )}
-                    <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', borderRadius: 1, py: 1.5, borderStyle: 'dashed', borderWidth: 2, color: '#64748b', borderColor: '#cbd5e1', '&:hover': { bgcolor: '#fdf2f8', borderColor: '#db2777' } }}>
-                      + เลือกวิดีโอ (MP4)
-                      <input hidden accept="video/mp4" type="file" onChange={(e) => handleFileSelect(e, 'heroVideo')} />
-                    </Button>
-
-                    {previewPoster && (
-                      <Box sx={{ position: 'relative' }}>
-                        <Box component="img" src={previewPoster} sx={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 1, border: '1px solid #e2e8f0' }} />
-                        <IconButton onClick={() => handleFileRemove('heroPoster')} size="small" sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff', '&:hover': { bgcolor: '#ef4444' } }}>
-                          <Trash size={16} color="currentColor" variant="Bold" />
-                        </IconButton>
-                      </Box>
-                    )}
-                    <Button variant="outlined" component="label" fullWidth sx={{ textTransform: 'none', borderRadius: 1, py: 1.5, borderStyle: 'dashed', borderWidth: 2, color: '#64748b', borderColor: '#cbd5e1', '&:hover': { bgcolor: '#fdf2f8', borderColor: '#db2777' } }}>
-                      + เลือกรูปปกวิดีโอ (Poster)
-                      <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'heroPoster')} />
-                    </Button>
+                    {previewVideo && <Box sx={{ position: 'relative' }}><Box component="video" src={previewVideo} controls sx={{ width: '100%', height: 220, objectFit: 'cover' }} /><IconButton onClick={() => handleFileRemove('heroVideo')} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}><Trash size={16} variant="Bold" /></IconButton></Box>}
+                    <Button variant="outlined" component="label" fullWidth sx={{ borderStyle: 'dashed' }}>+ เลือกวิดีโอ (MP4)<input hidden accept="video/mp4" type="file" onChange={(e) => handleFileSelect(e, 'heroVideo')} /></Button>
                   </Box>
                 ) : (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Box sx={{ bgcolor: '#fff', p: 2, borderRadius: 1, border: '1px solid #e2e8f0' }}>
-                      <Typography variant="body2" fontWeight={600} mb={1}>พื้นหลัง (Background Color)</Typography>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <input
-                          type="color"
-                          value={heroBackgroundColor}
-                          onChange={(e) => setHeroBackgroundColor(e.target.value)}
-                          style={{ width: 60, height: 40, padding: 0, border: 'none', borderRadius: 8, cursor: 'pointer' }}
-                        />
-                        <TextField
-                          value={heroBackgroundColor}
-                          onChange={(e) => setHeroBackgroundColor(e.target.value)}
-                          size="small"
-                          fullWidth
-                          sx={{ bgcolor: 'white' }}
-                        />
-                      </Box>
-                    </Box>
-                  </Box>
+                  <Box sx={{ display: 'flex', gap: 1 }}><input type="color" value={heroBackgroundColor} onChange={(e) => setHeroBackgroundColor(e.target.value)} style={{ width: 60, height: 40 }} /><TextField value={heroBackgroundColor} onChange={(e) => setHeroBackgroundColor(e.target.value)} size="small" fullWidth /></Box>
                 )}
-
-                {/* --- ปุ่ม Submit --- */}
-                <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <Button type="submit" disabled={isSaving} variant="contained" fullWidth startIcon={isSaving ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : null} sx={{ bgcolor: '#f472b6', color: '#ffffff', borderRadius: 1, py: 1.5, fontWeight: 700, fontSize: '1rem', '&:hover': { bgcolor: '#db2777' }, '&.Mui-disabled': { bgcolor: '#f9a8d4', color: '#fff' } }}>
-                    {isSaving ? 'กำลังบันทึกและอัปโหลด...' : 'บันทึกทั้งหมด'}
-                  </Button>
-                  <Button variant="outlined" fullWidth onClick={() => setEditingItem(null)} sx={{ borderRadius: 1, py: 1.2, fontWeight: 600, color: '#64748b', borderColor: '#e2e8f0', '&:hover': { bgcolor: '#f1f5f9', borderColor: '#cbd5e1' } }}>
-                    ยกเลิก
-                  </Button>
-                </Box>
+                <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1', py: 1.5, fontWeight: 700 }}>{isSaving ? 'กำลังบันทึก...' : 'บันทึกทั้งหมด'}</Button>
               </Box>
             )}
 
-            {/* ===== Couple Section Form ===== */}
             {editingItem.id === 'couple' && (
               <Box component="form" action={handleCoupleSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>ชื่อที่แสดง (Display Names)</Typography>
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}><TextField name="brideName" label="ชื่อเจ้าสาว" defaultValue={client?.coupleSection?.brideName || client?.brideName} size="small" /><TextField name="groomName" label="ชื่อเจ้าบ่าว" defaultValue={client?.coupleSection?.groomName || client?.groomName} size="small" /></Box>
+                <TextField name="introText" label="คำขวัญ / บทนำ" multiline rows={3} defaultValue={client?.coupleSection?.introText || "Two paths that led to one beautiful journey..."} size="small" />
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}><TextField name="brideFather" label="คุณพ่อ (เจ้าสาว)" defaultValue={client?.coupleSection?.brideFather || ''} size="small" /><TextField name="brideMother" label="คุณแม่ (เจ้าสาว)" defaultValue={client?.coupleSection?.brideMother || ''} size="small" /></Box>
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}><TextField name="groomFather" label="คุณพ่อ (เจ้าบ่าว)" defaultValue={client?.coupleSection?.groomFather || ''} size="small" /><TextField name="groomMother" label="คุณแม่ (เจ้าบ่าว)" defaultValue={client?.coupleSection?.groomMother || ''} size="small" /></Box>
+                <TextField select value={coupleStyle} onChange={(e) => setCoupleStyle(e.target.value)} size="small" fullWidth><MenuItem value="arch-duo">Arch Duo</MenuItem><MenuItem value="rounded-portrait">Rounded Portrait</MenuItem></TextField>
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                  <TextField
-                    name="brideName"
-                    label="ชื่อเจ้าสาว"
-                    defaultValue={client?.coupleSection?.brideName || client?.brideName}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-                  <TextField
-                    name="groomName"
-                    label="ชื่อเจ้าบ่าว"
-                    defaultValue={client?.coupleSection?.groomName || client?.groomName}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-                </Box>
-
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>ข้อความแนะนำ (Intro Text)</Typography>
-                <TextField
-                  name="introText"
-                  label="คำขวัญ / บทนำ"
-                  multiline
-                  rows={3}
-                  defaultValue={client?.coupleSection?.introText || "Two paths that led to one beautiful journey..."}
-                  size="small"
-                  fullWidth
-                  sx={{ bgcolor: 'white' }}
-                />
-
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>ผู้ใหญ่ฝั่งเจ้าสาว (Bride Parents)</Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                  <TextField
-                    name="brideFather"
-                    label="ชื่อคุณพ่อ (เจ้าสาว)"
-                    defaultValue={client?.coupleSection?.brideFather || ''}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-                  <TextField
-                    name="brideMother"
-                    label="ชื่อคุณแม่ (เจ้าสาว)"
-                    defaultValue={client?.coupleSection?.brideMother || ''}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-                </Box>
-
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>ผู้ใหญ่ฝั่งเจ้าบ่าว (Groom Parents)</Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                  <TextField
-                    name="groomFather"
-                    label="ชื่อคุณพ่อ (เจ้าบ่าว)"
-                    defaultValue={client?.coupleSection?.groomFather || ''}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-                  <TextField
-                    name="groomMother"
-                    label="ชื่อคุณแม่ (เจ้าบ่าว)"
-                    defaultValue={client?.coupleSection?.groomMother || ''}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-                </Box>
-
-                <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>สไตล์การจัดวาง (Couple Style)</Typography>
-                <TextField select value={coupleStyle} onChange={(e) => setCoupleStyle(e.target.value)} size="small" fullWidth sx={{ bgcolor: 'white' }}>
-                  <MenuItem value="arch-duo">Arch Duo (ซุ้มโค้งสุดคลาสสิก)</MenuItem>
-                  <MenuItem value="rounded-portrait">Rounded Portrait (รูปวงกลมเน้นใบหน้า)</MenuItem>
-                </TextField>
-
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-                  {/* Bride Pic */}
                   <Box>
-                    <Typography variant="caption" fontWeight={700} color="#64748b" display="block" mb={1}>รูปเจ้าสาว</Typography>
-                    <Box sx={{ position: 'relative', width: '100%', pt: '140%', bgcolor: '#f1f5f9', borderRadius: 1, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                      {previewBridePic ? (
-                        <Box component="img" src={previewBridePic} sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>ไม่มีรูป</Box>
-                      )}
-                      {previewBridePic && (
-                        <IconButton onClick={() => handleFileRemove('bridePic')} size="small" sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff', '&:hover': { bgcolor: '#ef4444' } }}>
-                          <Trash size={12} color="currentColor" variant="Bold" />
-                        </IconButton>
-                      )}
-                    </Box>
-                    <Button variant="outlined" component="label" size="small" fullWidth sx={{ mt: 1, fontSize: '0.7rem', textTransform: 'none' }}>
-                      เลือกรูปเจ้าสาว
-                      <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'bridePic')} />
-                    </Button>
+                    <Box sx={{ position: 'relative', pt: '140%', bgcolor: '#f1f5f9' }}>{previewBridePic && <img src={previewBridePic} style={{ position: 'absolute', top: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}</Box>
+                    <Button variant="outlined" component="label" fullWidth sx={{ mt: 1 }}>รูปเจ้าสาว<input hidden type="file" onChange={(e) => handleFileSelect(e, 'bridePic')} /></Button>
                   </Box>
-
-                  {/* Groom Pic */}
                   <Box>
-                    <Typography variant="caption" fontWeight={700} color="#64748b" display="block" mb={1}>รูปเจ้าบ่าว</Typography>
-                    <Box sx={{ position: 'relative', width: '100%', pt: '140%', bgcolor: '#f1f5f9', borderRadius: 1, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                      {previewGroomPic ? (
-                        <Box component="img" src={previewGroomPic} sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                      ) : (
-                        <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8' }}>ไม่มีรูป</Box>
-                      )}
-                      {previewGroomPic && (
-                        <IconButton onClick={() => handleFileRemove('groomPic')} size="small" sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff', '&:hover': { bgcolor: '#ef4444' } }}>
-                          <Trash size={12} color="currentColor" variant="Bold" />
-                        </IconButton>
-                      )}
-                    </Box>
-                    <Button variant="outlined" component="label" size="small" fullWidth sx={{ mt: 1, fontSize: '0.7rem', textTransform: 'none' }}>
-                      เลือกรูปเจ้าบ่าว
-                      <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'groomPic')} />
-                    </Button>
+                    <Box sx={{ position: 'relative', pt: '140%', bgcolor: '#f1f5f9' }}>{previewGroomPic && <img src={previewGroomPic} style={{ position: 'absolute', top: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}</Box>
+                    <Button variant="outlined" component="label" fullWidth sx={{ mt: 1 }}>รูปเจ้าบ่าว<input hidden type="file" onChange={(e) => handleFileSelect(e, 'groomPic')} /></Button>
                   </Box>
                 </Box>
-
-                <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <Button type="submit" disabled={isSaving} variant="contained" fullWidth startIcon={isSaving ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : null} sx={{ bgcolor: '#f472b6', color: '#ffffff', borderRadius: 1, py: 1.5, fontWeight: 700, '&:hover': { bgcolor: '#db2777' } }}>
-                    {isSaving ? 'กำลังบันทึก...' : 'บันทึกส่วนบ่าวสาว'}
-                  </Button>
-                  <Button variant="outlined" fullWidth onClick={() => setEditingItem(null)} sx={{ borderRadius: 1, py: 1.2, fontWeight: 600, color: '#64748b', borderColor: '#e2e8f0' }}>ยกเลิก</Button>
-                </Box>
+                <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกบ่าวสาว</Button>
               </Box>
             )}
 
-            {/* ===== Gallery Section Form ===== */}
             {editingItem.id === 'gallery' && (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>สไตล์การจัดวาง (Gallery Layout)</Typography>
-                <TextField select value={galleryLayout} onChange={(e) => setGalleryLayout(e.target.value as any)} size="small" fullWidth sx={{ bgcolor: 'white' }}>
-                  <MenuItem value="coverflow">3D Coverflow (รูปเด้งตรงกลาง แบบเดิม)</MenuItem>
-                  <MenuItem value="cards">Stacked Cards (ซ้อนกันเป็นกองการ์ด)</MenuItem>
-                  <MenuItem value="slide">Modern Slide (เน้นความเรียบหรู ปัดลื่นๆ)</MenuItem>
-                </TextField>
-
-                <Divider sx={{ my: 1 }} />
-
-                <Box>
-                  <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: 1 }}>รูปภาพในแกลเลอรี ({galleryItems.length})</Typography>
-                  <Button component="label" fullWidth variant="outlined" disabled={isSaving} sx={{ height: 60, borderStyle: 'dashed', borderRadius: 2, color: '#f472b6', borderColor: '#f472b6', mb: 2 }}>
-                    {isSaving ? 'กำลังอัปโหลด...' : '+ เพิ่มรูปภาพ (เลือกได้หลายรูป)'}
-                    <input type="file" hidden multiple accept="image/*" onChange={handleGalleryUpload} />
-                  </Button>
-
-                  <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, maxHeight: 400, overflowY: 'auto', p: 1, border: '1px solid #f1f5f9', borderRadius: 2, bgcolor: '#fff' }}>
-                    {galleryItems.map((img, idx) => (
-                      <Box key={img + idx} sx={{ position: 'relative', pt: '100%', borderRadius: 1, overflow: 'hidden', border: '1px solid #e2e8f0', bgcolor: '#f1f5f9' }}>
-                        <Box component="img" src={img} sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <IconButton onClick={() => setGalleryItems(prev => prev.filter(item => item !== img))} size="small" sx={{ position: 'absolute', top: 2, right: 2, bgcolor: 'rgba(255,255,255,0.8)', color: '#ef4444', p: 0.5, '&:hover': { bgcolor: '#fff' } }}>
-                          <Trash size={12} color="currentColor" variant="Bold" />
-                        </IconButton>
-                      </Box>
-                    ))}
-                    {galleryItems.length === 0 && (
-                      <Box sx={{ gridColumn: 'span 3', py: 8, textAlign: 'center', color: '#94a3b8' }}>ยังไม่มีรูปภาพ</Box>
-                    )}
-                  </Box>
-                </Box>
-
-                <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <Button disabled={isSaving} onClick={handleGallerySave} variant="contained" fullWidth startIcon={isSaving ? <CircularProgress size={20} sx={{ color: '#fff' }} /> : null} sx={{ bgcolor: '#f472b6', color: '#ffffff', borderRadius: 1, py: 1.5, fontWeight: 700, '&:hover': { bgcolor: '#db2777' } }}>
-                    {isSaving ? 'กำลังบันทึก...' : 'บันทึกแกลเลอรี'}
-                  </Button>
-                  <Button variant="outlined" fullWidth onClick={() => setEditingItem(null)} sx={{ borderRadius: 1, py: 1.2, fontWeight: 600, color: '#64748b', borderColor: '#e2e8f0' }}>ยกเลิก</Button>
-                </Box>
-              </Box>
-            )}
-
-            {/* ===== Countdown Section Form ===== */}
-            {editingItem.id === 'countdown' && (
-              <Box component="form" action={handleCountdownSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>ข้อความแสดงผล (Display Messages)</Typography>
-                <TextField
-                  name="title"
-                  label="หัวข้อหลัก"
-                  defaultValue={client?.countdownSection?.title || 'นับถอยหลังสู่ช่วงเวลาแสนหวาน'}
-                  size="small"
-                  fullWidth
-                  sx={{ bgcolor: 'white' }}
-                />
-                <TextField
-                  name="subtitle"
-                  label="หัวข้อรอง"
-                  defaultValue={client?.countdownSection?.subtitle || 'See You Soon'}
-                  size="small"
-                  fullWidth
-                  sx={{ bgcolor: 'white' }}
-                />
-
-                <Button fullWidth variant="contained" type="submit" disabled={isSaving} startIcon={isSaving ? null : <Save2 variant="Bold" size={20} color="currentColor" />} sx={{ mt: 2, height: 48, borderRadius: 1.5, bgcolor: '#f472b6', color: 'white', fontWeight: 700, '&:hover': { bgcolor: '#db2777' } }}>
-                  {isSaving ? 'กำลังบันทึก...' : 'บันทึกส่วนนับถอยหลัง'}
-                </Button>
-              </Box>
-            )}
-
-            {/* ===== Schedule Section Form ===== */}
-            {editingItem.id === 'schedule' && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>ตารางพิธีการ (Wedding Itinerary)</Typography>
-
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {scheduleItems.map((item, index) => (
-                    <Box key={index} sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 1, bgcolor: '#f8fafc' }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                        <Typography variant="caption" fontWeight={800} color="#94a3b8">
-                          ลำดับที่ {index + 1}
-                        </Typography>
-                        <IconButton size="small" onClick={() => setScheduleItems(prev => prev.filter((_, i) => i !== index))} sx={{ color: '#ef4444' }}>
-                          <Trash variant="Bold" size={16} color="currentColor" />
-                        </IconButton>
-                      </Box>
-                      <Stack spacing={2}>
-                        <Box>
-                          <Typography variant="caption" fontWeight={800} color="#64748b" display="block" mb={1}>เลือกไอคอนพิธีการ (1-9)</Typography>
-                          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 1, p: 1, border: '1px solid #e2e8f0', borderRadius: 1, bgcolor: '#fff' }}>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
-                              <Box
-                                key={num}
-                                onClick={() => {
-                                  const newItems = [...scheduleItems];
-                                  newItems[index].icon = num.toString();
-                                  setScheduleItems(newItems);
-                                }}
-                                sx={{
-                                  p: 0.5,
-                                  border: '2px solid',
-                                  borderColor: item.icon === num.toString() ? '#f472b6' : 'transparent',
-                                  borderRadius: 1.5,
-                                  cursor: 'pointer',
-                                  bgcolor: item.icon === num.toString() ? 'rgba(244, 114, 182, 0.05)' : 'white',
-                                  '&:hover': { bgcolor: '#f8fafc' },
-                                  transition: 'all 0.1s ease'
-                                }}
-                              >
-                                <Box component="img" src={`/images/icon/${num}.png`} sx={{ width: '100%', height: 'auto', display: 'block' }} />
-                              </Box>
-                            ))}
-                          </Box>
-                        </Box>
-
-                        <TextField
-                          label="เวลา" placeholder="เช่น 09:09" size="small" fullWidth sx={{ bgcolor: 'white' }}
-                          value={item.time} onChange={(e) => {
-                            const newItems = [...scheduleItems];
-                            newItems[index].time = e.target.value;
-                            setScheduleItems(newItems);
-                          }}
-                        />
-                        <TextField
-                          label="ชื่อพิธี (EN)" placeholder="เช่น Engagement Ceremony" size="small" fullWidth sx={{ bgcolor: 'white' }}
-                          value={item.title} onChange={(e) => {
-                            const newItems = [...scheduleItems];
-                            newItems[index].title = e.target.value;
-                            setScheduleItems(newItems);
-                          }}
-                        />
-                        <TextField
-                          label="ชื่อพิธี (TH)" placeholder="เช่น พิธีหมั้นและขบวนขันหมาก" size="small" fullWidth sx={{ bgcolor: 'white' }}
-                          value={item.titleTh} onChange={(e) => {
-                            const newItems = [...scheduleItems];
-                            newItems[index].titleTh = e.target.value;
-                            setScheduleItems(newItems);
-                          }}
-                        />
-                      </Stack>
+                <TextField select value={galleryLayout} onChange={(e) => setGalleryLayout(e.target.value as any)} size="small" fullWidth><MenuItem value="coverflow">Coverflow</MenuItem><MenuItem value="cards">Stacked Cards</MenuItem><MenuItem value="slide">Slide</MenuItem></TextField>
+                <Button component="label" fullWidth variant="outlined" sx={{ borderStyle: 'dashed' }}>+ เพิ่มรูปภาพ<input type="file" hidden multiple onChange={handleGalleryUpload} /></Button>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2.5, maxHeight: 400, overflowY: 'auto', p: 1 }}>
+                  {galleryItems.map((img, idx) => (
+                    <Box key={idx} sx={{ position: 'relative', pt: '100%', mb: 1 }}>
+                      <Box 
+                        component="img"
+                        src={img} 
+                        sx={{ 
+                          position: 'absolute', 
+                          top: 0, 
+                          left: 0, 
+                          width: '100%', 
+                          height: '100%', 
+                          objectFit: 'cover',
+                          borderRadius: '12px',
+                          border: '1px solid #e2e8f0'
+                        }} 
+                      />
+                      <IconButton 
+                        onClick={() => setGalleryItems(prev => prev.filter(i => i !== img))} 
+                        size="small" 
+                        sx={{ 
+                          position: 'absolute', 
+                          top: -8, 
+                          right: -8, 
+                          width: 28,
+                          height: 28,
+                          p: 0,
+                          bgcolor: '#ef4444', 
+                          color: '#fff',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                          zIndex: 20,
+                          '&:hover': { bgcolor: '#b91c1c', color: '#fff' },
+                        }}
+                      >
+                        <Trash variant="Bold" size={16} color="#fff" />
+                      </IconButton>
                     </Box>
                   ))}
                 </Box>
-
-                <Button
-                  fullWidth variant="outlined"
-                  onClick={() => setScheduleItems(prev => [...prev, { time: '', title: '', titleTh: '', description: '' }])}
-                  sx={{ py: 1, borderRadius: 1.5, fontWeight: 600, borderStyle: 'dashed' }}
-                >
-                  + เพิ่มรายการพิธีการ
-                </Button>
-
-                <Button
-                  fullWidth variant="contained" disabled={isSaving} onClick={() => handleScheduleSave()}
-                  startIcon={isSaving ? null : <Save2 variant="Bold" size={20} color="currentColor" />}
-                  sx={{ mt: 2, height: 48, borderRadius: 1.5, bgcolor: '#f472b6', color: 'white', fontWeight: 700, '&:hover': { bgcolor: '#db2777' }, mb: 4 }}
-                >
-                  {isSaving ? 'กำลังบันทึก...' : 'บันทึกตารางพิธีการ'}
-                </Button>
-
-                {/* ===== Dress Code Sub-Section inside Schedule ===== */}
-                <Divider sx={{ my: 3 }} />
-                <Typography variant="h6" fontWeight={700} color="#1e293b" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <span>👗</span> ธีมการแต่งกาย (Dress Code)
-                </Typography>
-
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: 2, bgcolor: '#f8fafc', borderRadius: 2, border: '1px solid #e2e8f0' }}>
-                  <TextField
-                    label="หัวข้อ"
-                    value={dressCodeTitle}
-                    onChange={(e) => setDressCodeTitle(e.target.value)}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-                  <TextField
-                    label="คำอธิบาย"
-                    multiline
-                    rows={2}
-                    value={dressCodeSubtitle}
-                    onChange={(e) => setDressCodeSubtitle(e.target.value)}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: -1 }}>
-                    <Typography variant="subtitle2" fontWeight={700} color="#475569">พาเลทสี (Color Palette)</Typography>
-                    <Button size="small" onClick={() => setDressCodeColors([...dressCodeColors, '#ffffff'])}>+ เพิ่มสี</Button>
-                  </Box>
-
-                  <Stack spacing={1.5}>
-                    {dressCodeColors.map((color, index) => (
-                      <Box key={index} sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                        <input
-                          type="color"
-                          value={color}
-                          onChange={(e) => {
-                            const newColors = [...dressCodeColors];
-                            newColors[index] = e.target.value;
-                            setDressCodeColors(newColors);
-                          }}
-                          style={{ width: 40, height: 40, padding: 0, border: '1px solid #e2e8f0', borderRadius: 8, cursor: 'pointer' }}
-                        />
-                        <TextField
-                          value={color}
-                          onChange={(e) => {
-                            const newColors = [...dressCodeColors];
-                            newColors[index] = e.target.value;
-                            setDressCodeColors(newColors);
-                          }}
-                          size="small"
-                          fullWidth
-                          sx={{ bgcolor: 'white' }}
-                        />
-                        <IconButton size="small" color="error" onClick={() => setDressCodeColors(dressCodeColors.filter((_, i) => i !== index))}>
-                          <Trash variant="Outline" size={18} color="currentColor" />
-                        </IconButton>
-                      </Box>
-                    ))}
-                  </Stack>
-
-                  <Button fullWidth variant="contained" disabled={isSaving} onClick={() => handleDressCodeSave()} startIcon={isSaving ? null : <Save2 variant="Bold" size={20} color="currentColor" />} sx={{ mt: 1, height: 44, borderRadius: 1.5, bgcolor: '#8e7d5d', color: 'white', fontWeight: 700, '&:hover': { bgcolor: '#7a6a4d' } }}>
-                    {isSaving ? 'กำลังบันทึก...' : 'บันทึกธีมการแต่งกาย'}
-                  </Button>
-                </Box>
+                <Button onClick={handleGallerySave} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกแกลเลอรี</Button>
               </Box>
             )}
-            {/* ===== Location Section Form ===== */}
+
+            {editingItem.id === 'countdown' && (
+              <Box component="form" action={handleCountdownSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <TextField name="title" label="หัวข้อหลัก" defaultValue={client?.countdownSection?.title || 'Countdown'} size="small" />
+                <TextField name="subtitle" label="หัวข้อรอง" defaultValue={client?.countdownSection?.subtitle || 'See You Soon'} size="small" />
+                <Button fullWidth variant="contained" type="submit" sx={{ bgcolor: '#f2a1a1' }}>บันทึก</Button>
+              </Box>
+            )}
+
+            {editingItem.id === 'schedule' && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {scheduleItems.map((item, idx) => (
+                  <Box key={idx} sx={{ p: 2, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }}>
+                    <Stack spacing={2}>
+                      <TextField label="เวลา" value={item.time} onChange={(e) => { const n = [...scheduleItems]; n[idx].time = e.target.value; setScheduleItems(n); }} size="small" />
+                      <Box>
+                        <Typography variant="caption" sx={{ mb: 1, display: 'block', fontWeight: 600 }}>เลือกไอคอนพิธีการ (1-9)</Typography>
+                        <Stack direction="row" spacing={1} sx={{ overflowX: 'auto', pb: 1 }}>
+                          {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((icon) => (
+                            <Box
+                              key={icon}
+                              onClick={() => { const n = [...scheduleItems]; n[idx].icon = icon; setScheduleItems(n); }}
+                              sx={{
+                                width: 40,
+                                height: 40,
+                                p: 0.5,
+                                borderRadius: 1,
+                                border: '2px solid',
+                                borderColor: item.icon === icon ? '#f2a1a1' : 'transparent',
+                                bgcolor: 'white',
+                                cursor: 'pointer',
+                                '&:hover': { bgcolor: '#f1f5f9' }
+                              }}
+                            >
+                              <img src={`/images/icon/${icon}.png`} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            </Box>
+                          ))}
+                        </Stack>
+                      </Box>
+                      <TextField label="EN" value={item.title} onChange={(e) => { const n = [...scheduleItems]; n[idx].title = e.target.value; setScheduleItems(n); }} size="small" />
+                      <TextField label="TH" value={item.titleTh} onChange={(e) => { const n = [...scheduleItems]; n[idx].titleTh = e.target.value; setScheduleItems(n); }} size="small" />
+                      <Button size="small" color="error" onClick={() => setScheduleItems(prev => prev.filter((_, i) => i !== idx))}>ลบ</Button>
+                    </Stack>
+                  </Box>
+                ))}
+                <Button variant="outlined" sx={{ borderStyle: 'dashed' }} onClick={() => setScheduleItems([...scheduleItems, { time: '', title: '', titleTh: '', icon: 'ceremonial' }])}>+ เพิ่มขบวนพิธี</Button>
+                <Button onClick={handleScheduleSave} variant="contained" sx={{ bgcolor: '#f2a1a1' }}>บันทึก</Button>
+              </Box>
+            )}
+
             {editingItem.id === 'location' && (
-              <Box component="form" action={handleLocationSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>รายละเอียดสถานที่จัดงาน (Venue Details)</Typography>
-                <TextField
-                  name="venueName"
-                  label="ชื่อสถานที่จัดงาน"
-                  defaultValue={client?.locationSection?.venueName || 'Cape Dara Resort Pattaya'}
-                  size="small"
-                  fullWidth
-                  sx={{ bgcolor: 'white' }}
-                />
-                <TextField
-                  name="venueAddress"
-                  label="ที่อยู่สถานที่จัดงาน"
-                  multiline
-                  rows={3}
-                  defaultValue={client?.locationSection?.venueAddress || '256 Dara Beach, Soi 20, Pattaya-Naklua Road, Pattaya City, Bang Lamung District, Chonburi 20150'}
-                  size="small"
-                  fullWidth
-                  sx={{ bgcolor: 'white' }}
-                />
-
-                <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" fontWeight={700} color="#475569" sx={{ mb: -1 }}>แผนที่ (Google Maps Integration)</Typography>
-
-                <Box sx={{ p: 2, border: '1px solid #e2e8f0', borderRadius: 1, bgcolor: '#f1f5f9' }}>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
-                    วิธีการนำลิ้งค์ Embed: เปิด Google Maps → Share → Embed a map → คัดลอกค่าใน src ของ iframe
-                  </Typography>
-                  <TextField
-                    name="googleMapEmbed"
-                    label="Google Maps Embed URL (src)"
-                    placeholder="https://www.google.com/maps/embed?pb=..."
-                    defaultValue={client?.locationSection?.googleMapEmbed || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2435422830887!2d100.8809428!3d12.95627!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3102beab977fc641%3A0x67ee1c742cf6b5e0!2sCape%20Dara%20Resort%20Pattaya!5e0!3m2!1sen!2sth!4v1711000000000!5m2!1sen!2sth'}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white', mb: 2 }}
-                  />
-                  <TextField
-                    name="googleMapExternal"
-                    label="ลิ้งค์เปิดในแอปแผนที่ (External Link)"
-                    placeholder="https://www.google.com/maps/search/..."
-                    defaultValue={client?.locationSection?.googleMapExternal || 'https://www.google.com/maps/search/?api=1&query=Cape+Dara+Resort+Pattaya'}
-                    size="small"
-                    fullWidth
-                    sx={{ bgcolor: 'white' }}
-                  />
-                </Box>
-
-                <Button fullWidth variant="contained" type="submit" disabled={isSaving} startIcon={isSaving ? null : <Save2 variant="Bold" size={20} color="currentColor" />} sx={{ mt: 2, height: 48, borderRadius: 1.5, bgcolor: '#f472b6', color: 'white', fontWeight: 700, '&:hover': { bgcolor: '#db2777' } }}>
-                  {isSaving ? 'กำลังบันทึก...' : 'บันทึกสถานที่จัดงาน'}
-                </Button>
+              <Box component="form" action={handleLocationSave} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                <TextField name="venueName" label="ชื่อสถานที่" defaultValue={venueName} onChange={e => setVenueName(e.target.value)} size="small" fullWidth />
+                <TextField name="venueAddress" label="ที่อยู่" multiline rows={2} defaultValue={venueAddress} onChange={e => setVenueAddress(e.target.value)} size="small" fullWidth />
+                <TextField name="googleMapExternal" label="ลิงก์ Google Maps (ภายนอก)" defaultValue={googleMapExternal} onChange={e => setGoogleMapExternal(e.target.value)} size="small" fullWidth />
+                <TextField name="googleMapEmbed" label="ลิงก์ Embed Map (iframe src)" defaultValue={googleMapEmbed} onChange={e => setGoogleMapEmbed(e.target.value)} size="small" fullWidth />
+                <Button type="submit" variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกสถานที่</Button>
               </Box>
             )}
 
-            {/* ===== Color Theme ===== */}
-            {editingItem.id === 'colorTheme' && (
-              <Box component="form" action={handleThemeSave} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                <Box sx={{ bgcolor: '#fff', p: 2, borderRadius: 1, border: '1px solid #e2e8f0' }}>
-                  <Typography variant="body2" fontWeight={600} mb={1}>สีหลัก (Primary Color)</Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <input type="color" name="primaryColor" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} style={{ width: 40, height: 40, padding: 0, border: 'none', borderRadius: 8, cursor: 'pointer' }} />
-                    <TextField value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} size="small" fullWidth sx={{ bgcolor: 'white' }} />
-                  </Box>
-                </Box>
-
-                <Box sx={{ bgcolor: '#fff', p: 2, borderRadius: 1, border: '1px solid #e2e8f0' }}>
-                  <Typography variant="body2" fontWeight={600} mb={1}>สีรอง (Secondary Color)</Typography>
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <input type="color" name="secondaryColor" value={secondaryColor} onChange={(e) => setSecondaryColor(e.target.value)} style={{ width: 40, height: 40, padding: 0, border: 'none', borderRadius: 8, cursor: 'pointer' }} />
-                    <TextField value={secondaryColor} onChange={(e) => setSecondaryColor(e.target.value)} size="small" fullWidth sx={{ bgcolor: 'white' }} />
-                  </Box>
-                </Box>
-
-                <TextField name="fontFamily" label="รูปแบบฟอนต์ (Font Family)" select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)} size="small" fullWidth sx={{ bgcolor: 'white' }}>
-                  <MenuItem value="Prompt">Prompt (Modern)</MenuItem>
-                  <MenuItem value="Sarabun">Sarabun (Formal)</MenuItem>
-                  <MenuItem value="Kanit">Kanit (Clean)</MenuItem>
-                  <MenuItem value="Mitr">Mitr (Friendly)</MenuItem>
-                  <MenuItem value="Niramit">Niramit (Elegant)</MenuItem>
-                </TextField>
-
-                <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                  <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f472b6', color: '#ffffff', borderRadius: 1, py: 1.5, fontWeight: 700, '&:hover': { bgcolor: '#db2777' } }}>
-                    {isSaving ? 'กำลังบันทึก...' : 'บันทึกธีมสี'}
-                  </Button>
-                </Box>
-              </Box>
-            )}
-
-            {/* ===== Gift & Bank Accounts ===== */}
-            {editingItem.id === 'giftMoney' && (
-              <Box component="form" action={handleGiftSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <Typography variant="subtitle2" fontWeight={700} color="#475569">ข้อความส่วนคำอวยพร (Blessings Message)</Typography>
-
-                <TextField
-                  name="giftTitle"
-                  label="หัวข้อ"
-                  defaultValue={client?.giftSection?.title || 'Gifts & Blessings'}
-                  size="small" fullWidth sx={{ bgcolor: 'white' }}
-                />
-                <TextField
-                  name="giftSubtitle"
-                  label="คำอธิบาย (บน)"
-                  defaultValue={client?.giftSection?.subtitle || 'ของขวัญและคำอวยพร'}
-                  size="small" fullWidth sx={{ bgcolor: 'white' }}
-                />
-                <TextField
-                  name="giftMessage"
-                  label="ข้อความแสดงความขอบคุณ"
-                  multiline rows={4}
-                  defaultValue={client?.giftSection?.message || '"The presence of our family and friends is the greatest gift of all. However, if you wish to honor our new beginning with a gift, a contribution would be sincerely appreciated."'}
-                  size="small" fullWidth sx={{ bgcolor: 'white' }}
-                />
-
-                <Divider sx={{ my: 1 }} />
-                <Typography variant="subtitle2" fontWeight={700} color="#475569">ข้อมูลบัญชีธนาคาร (Bank Details)</Typography>
-
-                <TextField
-                  name="bankName"
-                  label="ชื่อธนาคาร"
-                  defaultValue={client?.giftSection?.bankName || 'KASIKORNBANK (KBank)'}
-                  size="small" fullWidth sx={{ bgcolor: 'white' }}
-                />
-                <TextField
-                  name="accountNumber"
-                  label="เลขบัญชี"
-                  defaultValue={client?.giftSection?.accountNumber || 'xxx-x-x-5678-x'}
-                  size="small" fullWidth sx={{ bgcolor: 'white' }}
-                />
-                <TextField
-                  name="accountName"
-                  label="ชื่อบัญชี"
-                  defaultValue={client?.giftSection?.accountName || 'Kamonluk'}
-                  size="small" fullWidth sx={{ bgcolor: 'white' }}
-                />
-
+            {editingItem.id === 'gift' && (
+              <Box component="form" action={handleGiftSave} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                <TextField name="bankName" label="ธนาคาร" defaultValue={client?.giftSection?.bankName || ''} size="small" fullWidth />
+                <TextField name="accountName" label="ชื่อบัญชี" defaultValue={client?.giftSection?.accountName || ''} size="small" fullWidth />
+                <TextField name="accountNumber" label="เลขบัญชี" defaultValue={client?.giftSection?.accountNumber || ''} size="small" fullWidth />
                 <Box>
-                  <Typography variant="caption" fontWeight={700} color="#64748b" display="block" mb={1}>รูปภาพ QR Code</Typography>
-
-                  {!previewGiftQrCode ? (
-                    <Button
-                      variant="outlined"
-                      component="label"
-                      fullWidth
-                      sx={{
-                        height: 120,
-                        borderRadius: 2,
-                        borderStyle: 'dashed',
-                        borderColor: '#e2e8f0',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 1,
-                        textTransform: 'none',
-                        color: 'text.secondary'
-                      }}
-                    >
-                      <Typography variant="body2">คลิกเพื่อเลือกไฟล์ QR Code</Typography>
-                      <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={(e) => handleFileSelect(e, 'giftQrCode')}
-                      />
-                    </Button>
-                  ) : (
-                    <Box sx={{ position: 'relative', width: 'fit-content', mx: 'auto' }}>
-                      <Box
-                        sx={{
-                          width: 140,
-                          height: 140,
-                          border: '2px solid #f1f5f9',
-                          borderRadius: 2,
-                          overflow: 'hidden',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          bgcolor: 'white'
-                        }}
-                      >
-                        <img
-                          src={previewGiftQrCode}
-                          alt="QR Code Preview"
-                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                        />
-                      </Box>
-                      <IconButton
-                        onClick={() => handleFileRemove('giftQrCode')}
-                        sx={{
-                          position: 'absolute',
-                          top: -8,
-                          right: -8,
-                          bgcolor: '#ef4444',
-                          color: 'white',
-                          size: 'small',
-                          padding: 0.5,
-                          '&:hover': { bgcolor: '#dc2626' }
-                        }}
-                      >
-                        <Trash size={16} variant="Bold" color="white" />
-                      </IconButton>
-                    </Box>
-                  )}
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1, textAlign: 'center' }}>
-                    รองรับไฟล์รูปภาพ PNG, JPG (ขนาดแนะนำ 500x500px)
-                  </Typography>
+                  <Typography variant="caption" fontWeight={700}>รูป QR Code</Typography>
+                  {previewGiftQrCode && <Box sx={{ position: 'relative', my: 1 }}><img src={previewGiftQrCode} style={{ width: '100%', height: 200, objectFit: 'contain', border: '1px solid #ddd' }} /><IconButton onClick={() => handleFileRemove('giftQrCode')} sx={{ position: 'absolute', top: 4, right: 4 }}><Trash size={16} variant="Bold" /></IconButton></Box>}
+                  <Button variant="outlined" component="label" fullWidth sx={{ borderStyle: 'dashed' }}>เลือกไฟล์ QR Code<input hidden type="file" accept="image/*" onChange={e => handleFileSelect(e, 'giftQrCode')} /></Button>
                 </Box>
-
-                <Button fullWidth variant="contained" type="submit" disabled={isSaving} startIcon={isSaving ? null : <Save2 variant="Bold" size={20} color="currentColor" />} sx={{ mt: 2, height: 48, borderRadius: 1.5, bgcolor: '#f472b6', color: 'white', fontWeight: 700, '&:hover': { bgcolor: '#db2777' } }}>
-                  {isSaving ? 'กำลังบันทึก...' : 'บันทึกข้อมูลของขวัญ'}
-                </Button>
+                <Button type="submit" variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกข้อมูลของขวัญ</Button>
               </Box>
             )}
 
+            {editingItem.id === 'rsvp' && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Typography variant="subtitle2" fontWeight={700} color="#475569">ลิงก์ดูข้อมูล RSVP สำหรับคู่บ่าวสาว</Typography>
 
+                <Paper variant="outlined" sx={{ p: 3, borderRadius: '24px', bgcolor: '#fff', border: '1px solid #f1f5f9' }}>
+                  <Stack spacing={2.5}>
+                    <Box sx={{ p: 2, bgcolor: '#fff9f0', borderRadius: '16px', border: '1px solid #ffecb3', display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+                      <Link1 size="24" color="#f59e0b" variant="Bulk" style={{ flexShrink: 0, marginTop: '2px' }} />
+                      <Box>
+                        <Typography variant="body2" fontWeight={800} color="#92400e" sx={{ mb: 0.5 }}>RSVP Dashboard Link</Typography>
+                        <Typography variant="caption" sx={{ color: '#b45309', display: 'block', mb: 1, wordBreak: 'break-all' }}>
+                          {window.location.origin}/dashboard/{client?.slug}
+                        </Typography>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          startIcon={<Link1 size="16" variant="Bold" />}
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${window.location.origin}/dashboard/${client?.slug}`);
+                            showSnackbar('คัดลอกลิงก์ Dashboard เรียบร้อย!', 'success');
+                          }}
+                          sx={{ bgcolor: '#f59e0b', borderRadius: '50px', fontWeight: 700, textTransform: 'none', px: 3, '&:hover': { bgcolor: '#d97706' } }}
+                        >
+                          Copy Link
+                        </Button>
+                      </Box>
+                    </Box>
+
+                    <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+                      <Typography variant="body2" fontWeight={800} color="#475569" sx={{ mb: 1 }}>🔑 ข้อมูลการเข้าสู่ระบบสำหรับลูกค้า:</Typography>
+                      <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mb: 0.5 }}>• <b>Passcode:</b> เลขวันที่แต่งงาน (ววดดปปปป)</Typography>
+                      <Typography variant="caption" sx={{ color: '#64748b', display: 'block' }}>• <b>ตัวอย่าง:</b> {client?.eventDate ? dayjs(client.eventDate).format('DDMMYYYY') : '14052026'}</Typography>
+                    </Box>
+                  </Stack>
+                </Paper>
+
+                <Typography variant="caption" sx={{ color: '#94a3b8', fontStyle: 'italic', textAlign: 'center', px: 2 }}>
+                  * คุณสามารถส่งลิงก์และรหัสผ่านนี้ให้ลูกค้า เพื่อความสะดวกในการจัดการรายชื่อแขกและ Export ไฟล์ Excel ครับ
+                </Typography>
+              </Box>
+            )}
+
+            {editingItem.id === 'theme' && (
+              <Box component="form" action={handleThemeSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3.5 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#fdf4f4', borderRadius: '24px', border: '1px solid #fce7e7', mb: 1 }}>
+                  <Typography variant="subtitle2" fontWeight={800} color="#991b1b" sx={{ mb: 1 }}>✨ สีหลัก (Primary Color)</Typography>
+                  <Typography variant="caption" sx={{ color: '#b91c1c', display: 'block', mb: 2, lineHeight: 1.5 }}>
+                    สีนี้จะถูกนำไปใช้ในปุ่มต่างๆ, เมนูนำทางด้านล่าง, เส้นคั่น และส่วนประกอบหลักของเว็บทั้งหมดครับ
+                  </Typography>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Box sx={{ width: 60, height: 60, borderRadius: '16px', bgcolor: primaryColor, border: '4px solid #fff', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                    <TextField
+                      name="primaryColor"
+                      label="รหัสสี (Hex Code)"
+                      value={primaryColor}
+                      onChange={(e) => setPrimaryColor(e.target.value)}
+                      size="small"
+                      fullWidth
+                      sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                      placeholder="#f2a1a1"
+                    />
+                  </Stack>
+                </Box>
+
+                <Box sx={{ px: 1 }}>
+                  <Typography variant="subtitle2" fontWeight={700} color="#334155" sx={{ mb: 2 }}>โทนสีรอง และ ฟอนต์หลัก</Typography>
+                  <Stack spacing={2.5}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Box sx={{ width: 45, height: 45, borderRadius: '12px', bgcolor: secondaryColor, border: '2px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }} />
+                      <TextField
+                        name="secondaryColor"
+                        label="สีพื้นหลัง (Secondary Color)"
+                        value={secondaryColor}
+                        onChange={(e) => setSecondaryColor(e.target.value)}
+                        size="small"
+                        fullWidth
+                        sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                      />
+                    </Stack>
+                    <TextField
+                      name="fontFamily"
+                      select
+                      label="ฟอนต์ภาษาอังกฤษ (หัวข้อ/ชื่อ)"
+                      value={fontFamily}
+                      onChange={(e) => setFontFamily(e.target.value)}
+                      size="small"
+                      fullWidth
+                      sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                    >
+                      <MenuItem value="Parisienne">Parisienne (ตัวเขียนพริ้วไหว - ยอดนิยม)</MenuItem>
+                      <MenuItem value="Great Vibes">Great Vibes (หรูหรา คลาสสิก)</MenuItem>
+                      <MenuItem value="Playball">Playball (ทันสมัย อ่อนช้อย)</MenuItem>
+                      <MenuItem value="Montserrat">Montserrat (ตัวพิมพ์เรียบหรู)</MenuItem>
+                    </TextField>
+                    <Box sx={{ p: 1.5, bgcolor: '#f0f9ff', borderRadius: '12px', border: '1px solid #e0f2fe' }}>
+                      <Typography variant="caption" sx={{ color: '#0369a1', fontWeight: 600, display: 'block' }}>
+                        💡 ภาษาไทยถูกตั้งค่าให้ใช้ฟอนต์ <b>Prompt</b> โดยอัตโนมัติเพื่อความสวยงามและอ่านง่ายที่สุดครับ
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+
+                <Divider sx={{ my: 1 }} />
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  fullWidth
+                  disabled={isSaving}
+                  sx={{ py: 2, bgcolor: primaryColor, borderRadius: '50px', fontWeight: 800, fontSize: '1rem', color: 'white', boxShadow: `0 8px 25px ${alpha(primaryColor, 0.3)}`, '&:hover': { bgcolor: primaryColor, opacity: 0.9, transform: 'translateY(-2px)' }, transition: 'all 0.3s ease' }}
+                >
+                  {isSaving ? <CircularProgress size={24} color="inherit" /> : 'บันทึกการตั้งค่าธีม'}
+                </Button>
+
+                <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'center', mt: 1 }}>
+                  * การบันทึกสีจะส่งผลต่อทุก Section ที่มีสถานะ Active ครับ
+                </Typography>
+              </Box>
+            )}
           </Box>
         )}
       </Drawer>
-
     </Box>
   );
 }
+
+const successGreen = '#10b981';

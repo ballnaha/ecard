@@ -15,7 +15,7 @@ const theme = createTheme({
       contrastText: '#4a4542',
     },
     background: {
-      default: '#efece5', // Linen scrapbook outer background
+      default: '#ffffff', // Set to white to resolve extra gold color on mobile
       paper: '#f9f8f6', // Clean warm white card
     },
     text: {
@@ -26,26 +26,42 @@ const theme = createTheme({
   typography: {
     fontFamily: '"Montserrat", "Prompt", sans-serif',
     h1: {
-      fontFamily: '"Playfair Display", serif',
-      fontWeight: 500,
+      fontFamily: '"Parisienne", "Prompt", serif',
+      fontWeight: 400,
+      fontSize: '3.5rem',
       color: '#4a4542',
     },
     h2: {
-      fontFamily: '"Playfair Display", serif',
+      fontFamily: '"Parisienne", "Prompt", serif',
       fontWeight: 400,
+      fontSize: '3rem',
       color: '#4a4542',
     },
     h3: {
-      fontFamily: '"Italianno", cursive',
+      fontFamily: '"Parisienne", "Prompt", cursive',
       fontWeight: 400,
       color: '#615b56',
       fontSize: '4rem',
     },
     h4: {
-      fontFamily: '"Cormorant Garamond", serif',
+      fontFamily: '"Cormorant Garamond", "Prompt", serif',
       fontWeight: 400,
       fontStyle: 'italic',
       color: '#615b56',
+    },
+    h5: {
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
+      fontWeight: 600,
+    },
+    h6: {
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
+      fontWeight: 600,
+    },
+    subtitle1: {
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
+    },
+    subtitle2: {
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
     },
     body1: {
       fontFamily: '"Montserrat", "Prompt", sans-serif',
@@ -53,6 +69,17 @@ const theme = createTheme({
       lineHeight: 1.8,
       fontWeight: 300,
       color: '#615b56',
+    },
+    body2: {
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
+      fontSize: '0.85rem',
+    },
+    button: {
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
+      textTransform: 'none',
+    },
+    caption: {
+      fontFamily: '"Montserrat", "Prompt", sans-serif',
     },
     overline: {
       fontFamily: '"Montserrat", "Prompt", sans-serif',

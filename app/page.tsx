@@ -27,7 +27,7 @@ export default function WeddingECard() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', width: '100%', overflowX: 'hidden', backgroundColor: 'background.default', pb: { xs: 15, md: 0 } }}>
+    <Box sx={{ minHeight: '100vh', width: '100%', overflowX: 'hidden', backgroundColor: '#ffffff', pb: 0 }}>
       
       {/* 0. Falling Petals Overlay (Performance Optimized) */}
       <FallingPetals />

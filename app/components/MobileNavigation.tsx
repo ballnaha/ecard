@@ -1,89 +1,151 @@
 'use client';
 
 import React from 'react';
-import { Box, Paper, BottomNavigation, BottomNavigationAction } from '@mui/material';
+import { Box, Paper, BottomNavigation, BottomNavigationAction, alpha } from '@mui/material';
+import { useRouter, useParams } from 'next/navigation';
 import {
-  Home as HomeIcon,
-  CalendarMonth as CalendarIcon,
-  Map as LocationIcon,
-  HowToReg as RsvpIcon,
-  Draw as DrawIcon
-} from '@mui/icons-material';
-import { useRouter } from 'next/navigation';
+  Home,
+  Calendar,
+  Gallery,
+  Location,
+  People,
+  Gift,
+  Heart,
+  PresentionChart,
+  Category,
+  HambergerMenu,
+  MessageText1
+} from 'iconsax-react';
 
-export default function MobileNavigation() {
+interface NavItem {
+  id: string;
+  label: string;
+  isActive: boolean;
+}
+
+const iconMap: Record<string, any> = {
+  home: <Home />,
+  hero: <Home />,
+  couple: <Heart />,
+  schedule: <Calendar />,
+  countdown: <PresentionChart />,
+  gallery: <Gallery />,
+  location: <Location />,
+  rsvp: <People />,
+  gift: <Gift />,
+  guestbook: <MessageText1 />,
+  mobileNav: <HambergerMenu />,
+  poweredBy: <Category />,
+};
+
+export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' }: { items?: NavItem[], primaryColor?: string }) {
   const router = useRouter();
+  const params = useParams();
   const [value, setValue] = React.useState(0);
+
+  const activeItems = items.filter(i => i.isActive);
+
+  // If there's an explicit config, use it. Otherwise fallback to defaults.
+  const displayItems = activeItems.length > 0 
+    ? activeItems 
+    : (items.length > 0 ? [] : [
+        { id: 'hero', label: 'Home', isActive: true },
+        { id: 'schedule', label: 'Schedule', isActive: true },
+        { id: 'rsvp', label: 'RSVP', isActive: true },
+        { id: 'location', label: 'Location', isActive: true }
+      ]);
 
   const scrollToSection = (id: string, index: number) => {
     setValue(index);
-    const element = document.getElementById(id);
+    if (id === 'guestbook') {
+      router.push(`/${params.client}/guestbook`);
+      return;
+    }
+    // Handle both 'home' and 'hero' IDs for the top section
+    const targetId = (id === 'home' || id === 'hero') ? 'home' : id;
+    const element = document.getElementById(targetId);
     if (element) {
       const topOffset = element.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
-        top: topOffset,
+        top: topOffset - 20,
         behavior: 'smooth'
       });
     }
   };
 
   return (
-    <Box sx={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', width: { xs: '90%', md: 'auto' }, minWidth: { md: 500 }, zIndex: 1000 }}>
+    <Box sx={{ 
+      position: 'fixed', 
+      bottom: { xs: 15, md: 25 }, 
+      left: '50%', 
+      transform: 'translateX(-50%)', 
+      width: { xs: '92%', sm: 'auto' }, 
+      minWidth: { sm: 460 },
+      zIndex: 2000 // Higher z-index to stay on top
+    }}>
       <Paper
         elevation={0}
         sx={{
-          borderRadius: '24px',
+          borderRadius: '35px',
           overflow: 'hidden',
-          background: 'rgba(255, 255, 255, 0.75)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.5)',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
+          backgroundColor: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(15px)',
+          border: '1px solid rgba(255, 255, 255, 0.6)',
+          boxShadow: '0 15px 45px rgba(0,0,0,0.1)',
         }}
       >
         <BottomNavigation
           showLabels
           value={value}
           onChange={(event, newValue) => {
-            const sectionIds = ['home', 'schedule', 'guestbook', 'rsvp', 'location'];
-            if (sectionIds[newValue] === 'guestbook') {
-              router.push('/guestbook');
-            } else {
-              scrollToSection(sectionIds[newValue], newValue);
-            }
+            const selected = displayItems[newValue];
+            scrollToSection(selected.id, newValue);
           }}
           sx={{
-            height: 70,
-            background: 'transparent',
+            height: 75,
+            backgroundColor: 'transparent',
             '& .MuiBottomNavigationAction-root': {
-              color: 'rgba(0,0,0,0.4)',
-              transition: 'all 0.3s ease',
+              color: 'rgba(0,0,0,0.35)',
+              transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
               minWidth: 'auto',
               padding: '12px 0',
               '&.Mui-selected': {
-                color: '#8e7d5d', // Gold color from CoupleSection
-                '& .MuiSvgIcon-root': {
-                  transform: 'translateY(-2px)',
+                color: primaryColor,
+                '& .MuiSvgIcon-root, & .iconsax': {
+                  transform: 'translateY(-4px) scale(1.15)',
+                  color: primaryColor
                 }
               }
             },
             '& .MuiBottomNavigationAction-label': {
-              fontFamily: '"Montserrat", sans-serif',
+              fontFamily: '"Prompt", sans-serif',
               fontSize: '0.65rem',
-              fontWeight: 600,
-              letterSpacing: '0.05em',
-              marginTop: '4px',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              marginTop: '5px',
               textTransform: 'uppercase',
+              opacity: 0.8,
+              transition: 'all 0.3s ease',
               '&.Mui-selected': {
                 fontSize: '0.65rem',
+                opacity: 1,
+                color: primaryColor
               }
             }
           }}
         >
-          <BottomNavigationAction label="Home" icon={<HomeIcon sx={{ fontSize: '1.4rem' }} />} />
-          <BottomNavigationAction label="Program" icon={<CalendarIcon sx={{ fontSize: '1.4rem' }} />} />
-          <BottomNavigationAction label="Guestbook" icon={<DrawIcon sx={{ fontSize: '1.4rem' }} />} />
-          <BottomNavigationAction label="RSVP" icon={<RsvpIcon sx={{ fontSize: '1.4rem' }} />} />
-          <BottomNavigationAction label="Location" icon={<LocationIcon sx={{ fontSize: '1.4rem' }} />} />
+          {displayItems.map((item, idx) => (
+            <BottomNavigationAction 
+              key={item.id}
+              label={item.label} 
+              icon={React.cloneElement(iconMap[item.id] || <Category />, { 
+                size: 24, 
+                variant: value === idx ? "Bold" : "Outline",
+                color: 'currentColor',
+                className: 'iconsax'
+              })} 
+            />
+          ))}
         </BottomNavigation>
       </Paper>
     </Box>

@@ -40,6 +40,7 @@ model Client {
   countdownSection Json?    // { title: "", subtitle: "", style: "classic" }
   dressCodeSection Json?    // { title: "DRESS CODE", colors: ["#ff0000", "#00ff00"] }
   giftSection      Json?    // { title: "", subtitle: "", message: "", bankName: "", accountNumber: "", accountName: "", qrCode: "" }
+  mobileNavSection Json?    // { items: [{ id: "hero", label: "หน้าแรก", isActive: true }] }
   
   // Relations
   wishes           Wish[]

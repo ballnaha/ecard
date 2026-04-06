@@ -56,6 +56,7 @@ export async function GET(
       countdownSection: client.countdownSection || null,
       dressCodeSection: client.dressCodeSection || null,
       giftSection: client.giftSection || null,
+      mobileNavSection: client.mobileNavSection || null,
     };
 
     return NextResponse.json(data);

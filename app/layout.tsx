@@ -43,6 +43,9 @@ export default function RootLayout({
     <html lang="th" translate="no" suppressHydrationWarning>
       <head>
         <meta name="google" content="notranslate" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700&family=Montserrat:wght@100;200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Bebas+Neue&family=Italianno&family=Pinyon+Script&family=Carattere&family=Great+Vibes&family=Parisienne&display=swap" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning>
         <MuiProvider>

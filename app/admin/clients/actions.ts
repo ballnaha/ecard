@@ -53,15 +53,23 @@ export async function deleteClient(id: string) {
   }
 }
 
-export async function updateClientLayout(id: string, layoutOrder: string[]) {
+export async function updateClientLayout(id: string, layoutOrder: any[], slug?: string) {
   try {
     await prisma.client.update({
       where: { id },
       data: { layoutOrder }
     });
+    
+    if (slug) {
+      // Revalidate specifically for this client
+      revalidatePath(`/${slug}`);
+      revalidatePath(`/${slug}`, 'page');
+    }
+
     revalidatePath(`/admin/builder`);
     revalidatePath(`/admin/clients`);
-    revalidatePath(`/[client]`, 'page');
+    revalidatePath(`/dashboard/${slug}`);
+    
     return { success: true };
   } catch(e: any) {
     return { error: 'อัปเดตไม่สำเร็จ: ' + e.message };
@@ -400,5 +408,36 @@ export async function updateClientGift(id: string, formData: FormData) {
     return { success: true };
   } catch (e: any) {
     return { error: 'บันทึกข้อมูลของขวัญล้มเหลว: ' + e.message };
+  }
+}
+export async function deleteRSVP(id: string, slug: string) {
+  try {
+    await prisma.rSVP.delete({ where: { id } });
+    revalidatePath(`/[client]`, 'page');
+    revalidatePath(`/dashboard/[client]`, 'page');
+    return { success: true };
+  } catch (e: any) {
+    return { error: 'ลบไม่สำเร็จ: ' + e.message };
+  }
+}
+
+export async function updateClientMobileNav(id: string, items: any[], slug?: string) {
+  try {
+    const data = { items };
+    await (prisma.client as any).update({
+      where: { id },
+      data: { mobileNavSection: data }
+    });
+    
+    if (slug) {
+      revalidatePath(`/${slug}`);
+      revalidatePath(`/${slug}`, 'page');
+      revalidatePath(`/dashboard/${slug}`);
+    }
+    revalidatePath(`/admin/builder`);
+    
+    return { success: true };
+  } catch(e: any) {
+    return { error: 'อัปเดตเมนูไม่สำเร็จ: ' + e.message };
   }
 }
