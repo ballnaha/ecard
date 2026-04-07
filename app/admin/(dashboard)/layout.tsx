@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation';
 
 export const metadata = {
   title: 'SetEvent Admin Panel',
+  robots: 'noindex, nofollow',
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
