@@ -50,8 +50,8 @@ function SealParticle({ index, primaryColor }: { index: number; primaryColor: st
 }
 
 export default function InvitationCover({
-  brideName = 'Victoria',
-  groomName = 'Klayton',
+  brideName = 'Kamonluk',
+  groomName = 'Nattaphon',
   eventDate = '07 . 12 . 2026',
   googleMapsUrl,
   onOpen,

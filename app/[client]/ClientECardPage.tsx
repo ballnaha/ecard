@@ -104,11 +104,10 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
       width: '100%',
       mx: 'auto',
       overflowX: 'hidden',
-      bgcolor: clientData.secondaryColor || '#faf9f6',
+      bgcolor: '#ffffff', // Use white for the root to avoid unexpected color leaks
       color: 'text.primary',
       fontFamily: clientData.fontFamily ? `'${clientData.fontFamily}', "Prompt", sans-serif` : '"Prompt", sans-serif',
       '--script-font': clientData.fontFamily ? `'${clientData.fontFamily}', "Prompt", cursive` : '"Parisienne", cursive',
-      pb: { xs: 15, md: 0 },
       boxShadow: { lg: '0 0 80px rgba(0,0,0,0.08)' },
       position: 'relative'
     }}>
@@ -130,7 +129,8 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         opacity: isCoverOpen ? 1 : 0,
         visibility: isCoverOpen ? 'visible' : 'hidden',
         transition: 'opacity 0.8s ease-in-out',
-        display: mounted ? 'block' : 'none'
+        display: mounted ? 'block' : 'none',
+        bgcolor: clientData.secondaryColor || '#faf9f6',
       }}>
         {clientData.hero?.showFallingPetals && <FallingPetals />}
         {isCoverOpen && <AudioPlayer primaryColor={clientData.primaryColor} audioUrl={clientData.musicUrl} />}

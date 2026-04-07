@@ -11,7 +11,7 @@ export default function GiftSection({ data }: { data?: any }) {
   const bankDetails = {
     bankName: data?.bankName || 'KASIKORNBANK (KBank)',
     accountNumber: data?.accountNumber || 'xxx-x-x-5678-x',
-    accountName: data?.accountName || 'Kamonluk'
+    accountName: data?.accountName || 'Kamonluk (Bride)'
   };
 
   const qrPlaceholder = data?.qrCode || "/simple_qr_mockup_wedding_1774067706323.png";
@@ -137,7 +137,7 @@ export default function GiftSection({ data }: { data?: any }) {
                   >
                     <Box
                       component="img"
-                      src={data.qrCode}
+                      src={qrPlaceholder}
                       alt="Wedding Gift QR Code"
                       sx={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />

@@ -121,7 +121,7 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
                     }}>
                       <img src={bridePic} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </Box>
-                    <NameDisplay name={data?.brideName || "Mook"} role="The Bride" />
+                    <NameDisplay name={data?.brideName || "Kamonluk"} role="The Bride" />
                   </Box>
                 </motion.div>
 
@@ -139,7 +139,7 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
                     }}>
                       <img src={groomPic} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </Box>
-                    <NameDisplay name={data?.groomName || "Top"} role="The Groom" />
+                    <NameDisplay name={data?.groomName || "Nattaphon"} role="The Groom" />
                   </Box>
                 </motion.div>
               </Stack>
@@ -170,7 +170,7 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
                     border: '1px solid rgba(142, 125, 93, 0.15)', borderRadius: '200px 200px 0 0', zIndex: 1
                   }} />
                   <Box sx={{ position: 'absolute', bottom: { xs: -80, md: -100 }, right: { xs: 0, md: -60 }, zIndex: 3, maxWidth: { xs: '250px', md: '450px' } }}>
-                    <NameDisplay name={data?.brideName || "Mook"} role="The Bride" align="right" />
+                    <NameDisplay name={data?.brideName || "Kamonluk"} role="The Bride" align="right" />
                   </Box>
                 </Box>
               </motion.div>
@@ -195,7 +195,7 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
                     border: '1px solid rgba(142, 125, 93, 0.15)', borderRadius: '200px 200px 0 0', zIndex: 1
                   }} />
                   <Box sx={{ position: 'absolute', top: { xs: -80, md: -120 }, left: { xs: 0, md: -60 }, zIndex: 3, maxWidth: { xs: '250px', md: '450px' } }}>
-                    <NameDisplay name={data?.groomName || "Top"} role="The Groom" align="left" />
+                    <NameDisplay name={data?.groomName || "Nattaphon"} role="The Groom" align="left" />
                   </Box>
                 </Box>
               </motion.div>
@@ -228,7 +228,7 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
             </Stack>
 
             <Typography sx={{
-              fontFamily: 'var(--script-font, "Parisienne", cursive)', fontSize: { xs: '1.6rem', md: '2.4rem' },
+              fontFamily: 'Prompt', fontSize: { xs: '1.6rem', md: '2.4rem' },
               fontStyle: 'italic', lineHeight: 1.6, color: '#333', maxWidth: '900px', mx: 'auto', px: 2, fontWeight: 300
             }}>
               "{intro}"

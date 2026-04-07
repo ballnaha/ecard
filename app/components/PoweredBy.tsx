@@ -9,7 +9,7 @@ export default function PoweredBy() {
   return (
     <Box
       sx={{
-        pb: { xs: 10, md: 8 }, // Brought closer to the bottom nav (80px)
+        pb: { xs: 18, md: 8 }, 
         pt: 6,
         textAlign: 'center',
         backgroundColor: '#fff',

@@ -43,7 +43,14 @@ export default function ScheduleSection({
   brideName?: string;
   groomName?: string;
 }) {
-  const scheduleItems = (data && data.length > 0) ? data : [];
+  const defaultSchedule: ScheduleItem[] = [
+    { time: '07.29', title: 'Monk Ceremony', titleTh: 'พิธีสงฆ์', icon: '2' },
+    { time: '08.29', title: 'Engagement Ceremony', titleTh: 'พิธีหมั้นและแห่ขันหมาก', icon: '3' },
+    { time: '09.09', title: 'Water Pouring Ceremony', titleTh: 'พิธีหลั่งน้ำพระพุทธมนต์', icon: '1' },
+    { time: '11.30', title: 'Wedding Reception', titleTh: 'งานเลี้ยงฉลองมงคลสมรส', icon: '4' },
+  ];
+
+  const scheduleItems = (data && data.length > 0) ? data : defaultSchedule;
   const dressCodeColors = dressCode?.colors || [];
   const formattedDate = eventDate ? dayjs(eventDate).locale('th') : dayjs('2026-10-10').locale('th');
 
@@ -162,8 +169,8 @@ export default function ScheduleSection({
 
               <Typography sx={{
                 fontFamily: 'var(--script-font, "Parisienne", cursive)',
-                fontSize: '1.6rem',
-                color: 'rgba(0,0,0,0.25)',
+                fontSize: '1.7rem',
+                color: 'rgba(0,0,0,0.8)',
                 fontStyle: 'italic',
                 my: 0.5
               }}>
