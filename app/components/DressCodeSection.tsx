@@ -20,13 +20,28 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
     <Box component="section" sx={{ py: { xs: 8, md: 10 }, backgroundColor: '#fff', textAlign: 'center' }}>
       <Container maxWidth="md">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }}>
-          <Typography variant="overline" sx={{ color: 'var(--primary-color, #8e7d5d)', letterSpacing: '0.6em', fontSize: '0.75rem', mb: 1, display: 'block', fontFamily: getFontFamily(title) }}>
+          <Typography variant="overline" sx={{
+            color: 'var(--primary-color, #8e7d5d)',
+            letterSpacing: '0.6em',
+            fontSize: '0.75rem',
+            mb: 1,
+            display: 'block',
+            fontFamily: '"Prompt", sans-serif',
+            fontWeight: 400
+          }}>
             {title}
           </Typography>
           <Typography sx={{ fontFamily: 'var(--script-font, "Parisienne", cursive)', fontSize: { xs: '2.2rem', md: '3.2rem' }, color: '#1a1a1a', fontStyle: 'italic', mb: 2 }}>
             Wedding Theme & Colors
           </Typography>
-          <Typography sx={{ fontFamily: getFontFamily(subtitle), fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(0,0,0,0.5)', mb: 6, textTransform: 'uppercase' }}>
+          <Typography sx={{
+            fontFamily: '"Prompt", sans-serif',
+            fontSize: '0.7rem',
+            letterSpacing: '0.2em',
+            color: 'rgba(0,0,0,0.5)',
+            mb: 6,
+            textTransform: 'uppercase'
+          }}>
             {subtitle}
           </Typography>
 
@@ -38,13 +53,9 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
                   whileInView={{ scale: 1 }}
                   transition={{ delay: index * 0.1, type: 'spring', stiffness: 100 }}
                 >
-                  <Box sx={{ width: { xs: 60, md: 80 }, height: { xs: 60, md: 80 }, borderRadius: '50%', backgroundColor: color, border: '4px solid #fff', boxShadow: '0 10px 25px rgba(0,0,0,0.1)', mb: 1.5 }} />
+                  <Box sx={{ width: { xs: 60, md: 80 }, height: { xs: 60, md: 80 }, borderRadius: '50%', backgroundColor: color, border: '4px solid #fff', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }} />
                 </motion.div>
-                <Typography sx={{ fontSize: '0.65rem', color: '#94a3b8', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase' }}>
-                  {color}
-                </Typography>
-              </Box>
-            ))}
+              </Box>            ))}
           </Stack>
         </motion.div>
       </Container>

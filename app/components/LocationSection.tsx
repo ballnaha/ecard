@@ -51,12 +51,12 @@ export default function LocationSection({ data }: { data?: LocationData }) {
           }}>
             THE VENUE
           </Typography>
-          <Typography sx={{ 
-            fontFamily: getFontFamily('Location & Map'), 
-            fontSize: isThai('Location & Map') ? { xs: '2.5rem', md: '3.5rem' } : { xs: '3.5rem', md: '5rem' }, 
-            color: '#1a1a1a', 
+          <Typography sx={{
+            fontFamily: getFontFamily('Location & Map'),
+            fontSize: isThai('Location & Map') ? { xs: '2.5rem', md: '3.5rem' } : { xs: '3.5rem', md: '5rem' },
+            color: '#1a1a1a',
             fontWeight: isThai('Location & Map') ? 600 : 400,
-            lineHeight: 1.2 
+            lineHeight: 1.2
           }}>
             Location & Map
           </Typography>
@@ -86,7 +86,7 @@ export default function LocationSection({ data }: { data?: LocationData }) {
               viewport={{ once: true }}
             >
               <Typography sx={{
-                fontFamily: getFontFamily(data?.venueName || "Cape Dara Resort Pattaya"),
+                fontFamily: 'Prompt',
                 fontSize: isThai(data?.venueName || "Cape Dara Resort Pattaya") ? { xs: '2rem', md: '3.2rem' } : { xs: '2.5rem', md: '3.5rem' },
                 color: '#1a1a1a',
                 mb: 1,

@@ -48,7 +48,7 @@ export default function ScheduleSection({
   const formattedDate = eventDate ? dayjs(eventDate).locale('th') : dayjs('2026-10-10').locale('th');
 
   const getIcon = (iconName?: string) => {
-    if (!iconName) return <Calendar variant="Outline" size={28} />;
+    if (!iconName) return <Calendar variant="Outline" size={36} />;
 
     // Ceremony Image Icons
     const ceremonyIcons = ['monk', 'water', 'engagement', 'ceremonial', 'dinner', 'food'];
@@ -57,7 +57,7 @@ export default function ScheduleSection({
         <Box
           component="img"
           src={`/images/icon/${iconName}.png`}
-          sx={{ width: 44, height: 44, objectFit: 'contain' }}
+          sx={{ width: 56, height: 56, objectFit: 'contain' }}
         />
       );
     }
@@ -68,19 +68,19 @@ export default function ScheduleSection({
         <Box
           component="img"
           src={`/images/icon/${iconName}.png`}
-          sx={{ width: 44, height: 44, objectFit: 'contain' }}
+          sx={{ width: 56, height: 56, objectFit: 'contain' }}
         />
       );
     }
 
     switch (iconName) {
-      case 'cup': return <Glass variant="Outline" size={28} />;
-      case 'ring': return <Profile2User variant="Outline" size={28} />;
-      case 'church': return <Record variant="Outline" size={28} />;
-      case 'heart': return <Heart variant="Outline" size={28} />;
-      case 'shell': return <Sun1 variant="Outline" size={28} />;
-      case 'glass': return <Music variant="Outline" size={28} />;
-      default: return <Calendar variant="Outline" size={28} />;
+      case 'cup': return <Glass variant="Outline" size={36} />;
+      case 'ring': return <Profile2User variant="Outline" size={36} />;
+      case 'church': return <Record variant="Outline" size={36} />;
+      case 'heart': return <Heart variant="Outline" size={36} />;
+      case 'shell': return <Sun1 variant="Outline" size={36} />;
+      case 'glass': return <Music variant="Outline" size={36} />;
+      default: return <Calendar variant="Outline" size={36} />;
     }
   };
 
@@ -225,7 +225,7 @@ export default function ScheduleSection({
                 <motion.div key={index} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }} viewport={{ once: true }}>
                   <Box sx={{ display: 'flex', gap: { xs: 3, md: 5 }, py: 4, position: 'relative' }}>
                     {/* Iconsax Icon */}
-                    <Box sx={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-color)', opacity: 0.9, flexShrink: 0 }}>
+                    <Box sx={{ width: 60, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-color)', opacity: 0.9, flexShrink: 0 }}>
                       {getIcon(item.icon)}
                     </Box>
 
