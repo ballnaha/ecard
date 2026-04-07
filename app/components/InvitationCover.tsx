@@ -71,6 +71,18 @@ export default function InvitationCover({
     setMounted(true);
   }, []);
 
+  // Manage body scroll based on cover visibility
+  React.useEffect(() => {
+    if (mounted && !isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [mounted, isOpen]);
+
   const handleOpen = useCallback(async () => {
     if (phase !== 'idle') return;
 
@@ -236,32 +248,56 @@ export default function InvitationCover({
               </Typography>
             </motion.div>
 
-            {/* Envelope 3D Container */}
-            <div style={{
-              position: 'relative',
-              width: `${envelopeWidth}px`,
-              aspectRatio: '4/3',
-              zIndex: 5,
-              perspective: '1800px',
-            }}>
-              {/* Floating inner wrapper */}
-              <motion.div
-                animate={phase === 'idle'
-                  ? { y: [0, -12, 0] }
-                  : { y: 0 }
-                }
-                transition={phase === 'idle'
-                  ? { duration: 3.5, repeat: Infinity, ease: 'easeInOut' }
-                  : { duration: 0.3 }
-                }
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  position: 'absolute',
-                  inset: 0,
-                  transformStyle: 'preserve-3d'
-                }}
-              >
+            {/* Envelope 3D Container — Simplified for Stability */}
+            <motion.div
+              initial={{ rotateX: isMobile ? 2 : 4, rotateY: isMobile ? -2 : -4, z: 0 }}
+              whileHover={!isMobile ? { 
+                rotateX: 0, 
+                rotateY: 0, 
+                scale: 1.05,
+                transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } 
+              } : { scale: 1.02 }}
+              animate={phase === 'idle'
+                ? { y: [0, -12, 0] }
+                : { y: 0, rotateX: 0, rotateY: 0 }
+              }
+              transition={phase === 'idle'
+                ? { 
+                    y: { duration: isMobile ? 3 : 4, repeat: Infinity, ease: 'easeInOut' },
+                  }
+                : { duration: 0.8, ease: 'easeOut' }
+              }
+              style={{
+                position: 'relative',
+                width: `${envelopeWidth}px`,
+                aspectRatio: '4/3',
+                zIndex: 5,
+                perspective: isMobile ? '1200px' : '2000px',
+                transformStyle: 'preserve-3d',
+              }}
+            >
+              {/* Main Physical Shadow — Optimized for Mobile (less blur) */}
+              <div style={{
+                position: 'absolute',
+                bottom: -20,
+                left: '5%',
+                width: '90%',
+                height: '20px',
+                background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.25) 0%, transparent 80%)',
+                filter: isMobile ? 'blur(8px)' : 'blur(15px)',
+                zIndex: 0,
+                opacity: phase === 'idle' ? 0.8 : 0.3,
+                transition: 'opacity 0.8s',
+              }} />
+
+              {/* Internal Floating wrapper */}
+              <div style={{
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                inset: 0,
+                transformStyle: 'preserve-3d'
+              }}>
                 {/* White Flowers — fade out first when opening */}
                 <motion.div
                   initial={{ opacity: 1 }}
@@ -450,9 +486,18 @@ export default function InvitationCover({
                     backgroundImage: 'url("images/fancy-deboss.png"), url("/images/natural-paper.png")',
                     backgroundSize: 'cover',
                     backgroundBlendMode: 'soft-light',
+                    boxShadow: 'inset 0 10px 30px rgba(0,0,0,0.1)',
                   }}
                   onClick={handleOpen}
-                />
+                >
+                  {/* Flap lighting highlight */}
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%)',
+                    pointerEvents: 'none',
+                  }} />
+                </motion.div>
 
                 {/* ENVELOPE FRONT BODY (The Pocket) */}
                 <div
@@ -469,10 +514,20 @@ export default function InvitationCover({
                     backgroundImage: 'url("images/fancy-deboss.png"), url("/images/natural-paper.png")',
                     backgroundSize: 'cover',
                     backgroundBlendMode: 'soft-light',
-                    filter: 'contrast(1.1) brightness(0.95)',
-                    boxShadow: 'inset 0 0 40px rgba(0,0,0,0.2)',
+                    filter: isMobile ? 'brightness(0.92)' : 'contrast(1.15) brightness(0.92)',
+                    boxShadow: isMobile ? 'inset 0 0 30px rgba(0,0,0,0.2)' : 'inset 0 0 50px rgba(0,0,0,0.3)',
+                    border: isMobile ? 'none' : '1px solid rgba(0,0,0,0.1)',
                   }}
                 >
+                  {/* Silk sheen highlight for the pocket surface */}
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(160deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.05) 100%)',
+                    pointerEvents: 'none',
+                    borderRadius: '4px',
+                  }} />
+
                   {/* Subtle pocket shadow highlight on top of the cut */}
                   <div style={{
                     position: 'absolute',
@@ -480,11 +535,11 @@ export default function InvitationCover({
                     left: 0,
                     width: '100%',
                     height: '48%',
-                    background: `linear-gradient(to bottom, ${alpha('#000', 0.2)}, transparent)`,
+                    background: `linear-gradient(to bottom, ${alpha('#000', 0.25)}, transparent)`,
                     clipPath: 'polygon(0 0, 100% 0, 50% 100%)',
                     pointerEvents: 'none',
-                    opacity: phase !== 'idle' ? 0.6 : 0,
-                    transition: 'opacity 0.5s',
+                    opacity: phase !== 'idle' ? 0.7 : 0,
+                    transition: 'opacity 0.6s',
                   }} />
                   <motion.div
                     animate={phase !== 'idle' ? { opacity: 0, y: -10 } : { opacity: 1, y: 0 }}
@@ -535,7 +590,6 @@ export default function InvitationCover({
                       )}
 
                       <motion.div
-                        whileHover={phase === 'idle' ? { scale: 1.08, rotate: 3 } : {}}
                         whileTap={phase === 'idle' ? { scale: 0.92 } : {}}
                         animate={phase === 'seal-break'
                           ? {
@@ -599,8 +653,8 @@ export default function InvitationCover({
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
-            </div>
+              </div>
+            </motion.div>
 
             {/* Bottom CTA */}
             <motion.div

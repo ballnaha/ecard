@@ -24,6 +24,12 @@ interface ClientECardPageProps {
 
 export default function ClientECardPage({ clientData }: ClientECardPageProps) {
   const [isCoverOpen, setIsCoverOpen] = useState(false);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const defaultLayoutOrder = [
     "hero",
     "couple",
@@ -114,9 +120,22 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         onOpen={() => setIsCoverOpen(true)}
         primaryColor={clientData.primaryColor}
       />
-      {clientData.hero?.showFallingPetals && <FallingPetals />}
-      {isCoverOpen && <AudioPlayer primaryColor={clientData.primaryColor} audioUrl={clientData.musicUrl} />}
-      {layoutOrder.map((section: string) => renderSection(section))}
+      
+      {/* 
+          Content Container: 
+          - Hidden until mounted to prevent hydration flash
+          - Hidden while cover is active to prevent 'peeking' through transparent parts if any
+      */}
+      <Box sx={{
+        opacity: isCoverOpen ? 1 : 0,
+        visibility: isCoverOpen ? 'visible' : 'hidden',
+        transition: 'opacity 0.8s ease-in-out',
+        display: mounted ? 'block' : 'none'
+      }}>
+        {clientData.hero?.showFallingPetals && <FallingPetals />}
+        {isCoverOpen && <AudioPlayer primaryColor={clientData.primaryColor} audioUrl={clientData.musicUrl} />}
+        {layoutOrder.map((section: string) => renderSection(section))}
+      </Box>
     </Box>
   );
 }
