@@ -80,7 +80,7 @@ export default function GuestbookPage() {
             <Typography sx={{
               fontSize: '1rem',
               color: 'rgba(0,0,0,0.6)',
-              fontFamily: `"${fontFamily}", sans-serif`
+              fontFamily: `Prompt, sans-serif`
             }}>
               ร่วมเขียนคำอวยพรและแนบรูปภาพเป็นที่ระลึกให้คู่บ่าวสาว
             </Typography>

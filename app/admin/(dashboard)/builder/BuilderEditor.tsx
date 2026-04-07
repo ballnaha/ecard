@@ -1,9 +1,9 @@
 'use client';
 import React, { useState } from 'react';
-import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack, alpha, Checkbox, List, ListItem, ListItemText, ListItemIcon, Paper } from '@mui/material';
+import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack, alpha, Checkbox, List, ListItem, ListItemText, ListItemIcon, Paper, Tooltip } from '@mui/material';
 import { Reorder } from 'framer-motion';
 import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash, EyeSlash, Layer, Home, Calendar, Gallery, Location, PresentionChart, Heart, People, Gift, MessageText1, Link1 } from 'iconsax-react';
-import { useSnackbar } from '../components/SnackbarProvider';
+import { useSnackbar } from '../../components/SnackbarProvider';
 import { updateClientLayout, updateClientHero, updateClientTheme, updateClientCouple, updateClientGallery, updateClientCountdown, updateClientSchedule, updateClientDressCode, updateClientLocation, updateClientGift, updateClientMobileNav } from '../clients/actions';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -459,22 +459,26 @@ export default function BuilderEditor({ client }: { client: any }) {
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleToggleActive(item.id)}
-                      sx={{ color: item.isActive ? successGreen : '#94a3b8', '&:hover': { bgcolor: item.isActive ? alpha(successGreen, 0.1) : '#f1f5f9' } }}
-                    >
-                      {item.isActive ? <Eye variant="Bold" size={18} color={successGreen} /> : <EyeSlash variant="Bold" size={18} color="#94a3b8" />}
-                    </IconButton>
-
-                    {item.isActive && (
+                    <Tooltip title={item.isActive ? "ซ่อนส่วนนี้" : "แสดงส่วนนี้"} arrow>
                       <IconButton
                         size="small"
-                        onClick={() => setEditingItem(item)}
-                        sx={{ color: '#f2a1a1', '&:hover': { bgcolor: alpha('#f2a1a1', 0.1) } }}
+                        onClick={() => handleToggleActive(item.id)}
+                        sx={{ color: item.isActive ? '#22c55e' : '#94a3b8', '&:hover': { bgcolor: item.isActive ? alpha('#22c55e', 0.1) : '#f1f5f9' } }}
                       >
-                        <ColorSwatch variant="Bold" size={18} color="#f2a1a1" />
+                        {item.isActive ? <Eye variant="Bold" size={18} color="#22c55e" /> : <EyeSlash variant="Bold" size={18} color="#94a3b8" />}
                       </IconButton>
+                    </Tooltip>
+
+                    {item.isActive && (
+                      <Tooltip title="ตั้งค่าส่วนนี้" arrow>
+                        <IconButton
+                          size="small"
+                          onClick={() => setEditingItem(item)}
+                          sx={{ color: '#f2a1a1', '&:hover': { bgcolor: alpha('#f2a1a1', 0.1) } }}
+                        >
+                          <ColorSwatch variant="Bold" size={18} color="#f2a1a1" />
+                        </IconButton>
+                      </Tooltip>
                     )}
                   </Box>
                 </Box>
@@ -590,7 +594,11 @@ export default function BuilderEditor({ client }: { client: any }) {
                 {previewNameImage && (
                   <Box sx={{ position: 'relative' }}>
                     <Box component="img" src={previewNameImage} sx={{ width: '100%', height: 120, objectFit: 'contain', borderRadius: 1, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }} />
-                    <IconButton onClick={() => handleFileRemove('heroNameImage')} size="small" sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}><Trash size={14} variant="Bold" /></IconButton>
+                    <Tooltip title="ลบรูปภาพชื่อ" arrow>
+                      <IconButton onClick={() => handleFileRemove('heroNameImage')} size="small" sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}>
+                        <Trash size={14} variant="Bold" />
+                      </IconButton>
+                    </Tooltip>
                   </Box>
                 )}
                 <Button variant="outlined" component="label" fullWidth sx={{ borderRadius: 1, borderStyle: 'dashed' }}>
@@ -602,12 +610,12 @@ export default function BuilderEditor({ client }: { client: any }) {
                 <RadioGroup row value={mediaType} onChange={(e) => setMediaType(e.target.value as any)}><FormControlLabel value="image" control={<Radio size="small" />} label="รูปภาพ" /><FormControlLabel value="video" control={<Radio size="small" />} label="วิดีโอ" /><FormControlLabel value="color" control={<Radio size="small" />} label="สีพื้น" /></RadioGroup>
                 {mediaType === 'image' ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {previewImage && <Box sx={{ position: 'relative' }}><Box component="img" src={previewImage} sx={{ width: '100%', height: 260, objectFit: 'cover', borderRadius: 1 }} /><IconButton onClick={() => handleFileRemove('heroImage')} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}><Trash size={16} variant="Bold" /></IconButton></Box>}
+                    {previewImage && <Box sx={{ position: 'relative' }}><Box component="img" src={previewImage} sx={{ width: '100%', height: 260, objectFit: 'cover', borderRadius: 1 }} /><Tooltip title="ลบรูปภาพหน้าปก" arrow><IconButton onClick={() => handleFileRemove('heroImage')} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}><Trash size={16} variant="Bold" /></IconButton></Tooltip></Box>}
                     <Button variant="outlined" component="label" fullWidth sx={{ borderStyle: 'dashed' }}>+ เลือกรูปภาพหน้าปก<input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'heroImage')} /></Button>
                   </Box>
                 ) : mediaType === 'video' ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {previewVideo && <Box sx={{ position: 'relative' }}><Box component="video" src={previewVideo} controls sx={{ width: '100%', height: 220, objectFit: 'cover' }} /><IconButton onClick={() => handleFileRemove('heroVideo')} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}><Trash size={16} variant="Bold" /></IconButton></Box>}
+                    {previewVideo && <Box sx={{ position: 'relative' }}><Box component="video" src={previewVideo} controls sx={{ width: '100%', height: 220, objectFit: 'cover' }} /><Tooltip title="ลบวิดีโอ" arrow><IconButton onClick={() => handleFileRemove('heroVideo')} sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}><Trash size={16} variant="Bold" color="#fff" /></IconButton></Tooltip></Box>}
                     <Button variant="outlined" component="label" fullWidth sx={{ borderStyle: 'dashed' }}>+ เลือกวิดีโอ (MP4)<input hidden accept="video/mp4" type="file" onChange={(e) => handleFileSelect(e, 'heroVideo')} /></Button>
                   </Box>
                 ) : (
@@ -645,39 +653,41 @@ export default function BuilderEditor({ client }: { client: any }) {
                 <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2.5, maxHeight: 400, overflowY: 'auto', p: 1 }}>
                   {galleryItems.map((img, idx) => (
                     <Box key={idx} sx={{ position: 'relative', pt: '100%', mb: 1 }}>
-                      <Box 
+                      <Box
                         component="img"
-                        src={img} 
-                        sx={{ 
-                          position: 'absolute', 
-                          top: 0, 
-                          left: 0, 
-                          width: '100%', 
-                          height: '100%', 
+                        src={img}
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
                           objectFit: 'cover',
                           borderRadius: '12px',
                           border: '1px solid #e2e8f0'
-                        }} 
-                      />
-                      <IconButton 
-                        onClick={() => setGalleryItems(prev => prev.filter(i => i !== img))} 
-                        size="small" 
-                        sx={{ 
-                          position: 'absolute', 
-                          top: -8, 
-                          right: -8, 
-                          width: 28,
-                          height: 28,
-                          p: 0,
-                          bgcolor: '#ef4444', 
-                          color: '#fff',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                          zIndex: 20,
-                          '&:hover': { bgcolor: '#b91c1c', color: '#fff' },
                         }}
-                      >
-                        <Trash variant="Bold" size={16} color="#fff" />
-                      </IconButton>
+                      />
+                      <Tooltip title="ลบรูปนี้" arrow>
+                        <IconButton
+                          onClick={() => setGalleryItems(prev => prev.filter(i => i !== img))}
+                          size="small"
+                          sx={{
+                            position: 'absolute',
+                            top: -8,
+                            right: -8,
+                            width: 28,
+                            height: 28,
+                            p: 0,
+                            bgcolor: '#ef4444',
+                            color: '#fff',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                            zIndex: 20,
+                            '&:hover': { bgcolor: '#b91c1c', color: '#fff' },
+                          }}
+                        >
+                          <Trash variant="Bold" size={16} color="#fff" />
+                        </IconButton>
+                      </Tooltip>
                     </Box>
                   ))}
                 </Box>
@@ -746,12 +756,16 @@ export default function BuilderEditor({ client }: { client: any }) {
 
             {editingItem.id === 'gift' && (
               <Box component="form" action={handleGiftSave} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                <TextField name="giftTitle" label="หัวข้อ (Title)" defaultValue={client?.giftSection?.title || 'Gifts & Blessings'} size="small" fullWidth />
+                <TextField name="giftSubtitle" label="หัวข้อรอง (Subtitle)" defaultValue={client?.giftSection?.subtitle || 'ของขวัญและคำอวยพร'} size="small" fullWidth />
+                <TextField name="giftMessage" label="ข้อความแสดงความขอบคุณ" multiline rows={3} defaultValue={client?.giftSection?.message || ''} size="small" fullWidth />
+                <Divider sx={{ my: 1 }} />
                 <TextField name="bankName" label="ธนาคาร" defaultValue={client?.giftSection?.bankName || ''} size="small" fullWidth />
                 <TextField name="accountName" label="ชื่อบัญชี" defaultValue={client?.giftSection?.accountName || ''} size="small" fullWidth />
                 <TextField name="accountNumber" label="เลขบัญชี" defaultValue={client?.giftSection?.accountNumber || ''} size="small" fullWidth />
                 <Box>
                   <Typography variant="caption" fontWeight={700}>รูป QR Code</Typography>
-                  {previewGiftQrCode && <Box sx={{ position: 'relative', my: 1 }}><img src={previewGiftQrCode} style={{ width: '100%', height: 200, objectFit: 'contain', border: '1px solid #ddd' }} /><IconButton onClick={() => handleFileRemove('giftQrCode')} sx={{ position: 'absolute', top: 4, right: 4 }}><Trash size={16} variant="Bold" /></IconButton></Box>}
+                  {previewGiftQrCode && <Box sx={{ position: 'relative', my: 1 }}><img src={previewGiftQrCode} style={{ width: '100%', height: 200, objectFit: 'contain', border: '1px solid #ddd' }} /><Tooltip title="ลบ QR Code" arrow><IconButton onClick={() => handleFileRemove('giftQrCode')} sx={{ position: 'absolute', top: 4, right: 4 }}><Trash size={16} variant="Bold" /></IconButton></Tooltip></Box>}
                   <Button variant="outlined" component="label" fullWidth sx={{ borderStyle: 'dashed' }}>เลือกไฟล์ QR Code<input hidden type="file" accept="image/*" onChange={e => handleFileSelect(e, 'giftQrCode')} /></Button>
                 </Box>
                 <Button type="submit" variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกข้อมูลของขวัญ</Button>
@@ -774,7 +788,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                         <Button
                           size="small"
                           variant="contained"
-                          startIcon={<Link1 size="16" variant="Bold" />}
+                          startIcon={<Link1 size="16" variant="Bold" color="#fff" />}
                           onClick={() => {
                             navigator.clipboard.writeText(`${window.location.origin}/dashboard/${client?.slug}`);
                             showSnackbar('คัดลอกลิงก์ Dashboard เรียบร้อย!', 'success');
@@ -789,7 +803,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                     <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
                       <Typography variant="body2" fontWeight={800} color="#475569" sx={{ mb: 1 }}>🔑 ข้อมูลการเข้าสู่ระบบสำหรับลูกค้า:</Typography>
                       <Typography variant="caption" sx={{ color: '#64748b', display: 'block', mb: 0.5 }}>• <b>Passcode:</b> เลขวันที่แต่งงาน (ววดดปปปป)</Typography>
-                      <Typography variant="caption" sx={{ color: '#64748b', display: 'block' }}>• <b>ตัวอย่าง:</b> {client?.eventDate ? dayjs(client.eventDate).format('DDMMYYYY') : '14052026'}</Typography>
+                      <Typography variant="caption" sx={{ color: '#64748b', display: 'block' }}>• <b>ของลูกค้า:</b> {client?.eventDate ? dayjs(client.eventDate).format('DDMMYYYY') : '14052026'}</Typography>
                     </Box>
                   </Stack>
                 </Paper>

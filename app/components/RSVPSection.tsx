@@ -26,6 +26,8 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -52,13 +54,22 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to submit RSVP');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 409) {
+          setErrorMsg(errorData.error || 'เบอร์โทรศัพท์นี้ได้ลงทะเบียนไว้แล้วครับ');
+          setErrorOpen(true);
+          return;
+        }
+        throw new Error('Failed to submit RSVP');
+      }
 
       setSubmitted(true);
       setFormData({ name: '', phone: '', attending: 'yes', guestCount: '1', note: '' });
     } catch (error) {
       console.error('RSVP Error:', error);
-      alert('เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองใหม่อีกครั้ง');
+      setErrorMsg('เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองใหม่อีกครั้ง');
+      setErrorOpen(true);
     } finally {
       setLoading(false);
     }
@@ -151,6 +162,7 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
           }}>
             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3.5 }}>
               <TextField
+                id="rsvp-name"
                 fullWidth
                 label="Full Name / ชื่อ-นามสกุล"
                 name="name"
@@ -162,6 +174,7 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
               />
 
               <TextField
+                id="rsvp-phone"
                 fullWidth
                 label="Phone Number / เบอร์โทรศัพท์"
                 name="phone"
@@ -284,6 +297,7 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
               </AnimatePresence>
 
               <TextField
+                id="rsvp-note"
                 fullWidth
                 label="Special Note / ข้อความถึงคู่บ่าวสาว"
                 name="note"
@@ -372,6 +386,34 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
           }}
         >
           ลงทะเบียนสำเร็จ! ขอบคุณที่ร่วมเป็นส่วนหนึ่งของเราครับ
+        </Alert>
+      </Snackbar>
+
+      {/* Error Snackbar */}
+      <Snackbar
+        open={errorOpen}
+        autoHideDuration={4000}
+        onClose={() => setErrorOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ mt: 2 }}
+      >
+        <Alert
+          onClose={() => setErrorOpen(false)}
+          severity="error"
+          variant="filled"
+          sx={{
+            width: '100%',
+            borderRadius: '50px',
+            backgroundColor: '#ef4444',
+            px: 4,
+            py: 1,
+            boxShadow: '0 20px 40px rgba(239, 68, 68, 0.25)',
+            fontFamily: '"Prompt", sans-serif',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+          }}
+        >
+          {errorMsg}
         </Alert>
       </Snackbar>
     </Box>

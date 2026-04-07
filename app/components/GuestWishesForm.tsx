@@ -7,13 +7,16 @@ import {
 } from '@mui/material';
 import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas';
 
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import EditIcon from '@mui/icons-material/Edit';
-import ImageIcon from '@mui/icons-material/Image';
+import {
+  Edit2,
+  Trash,
+  Magicpen,
+  Eraser,
+  Gallery,
+  DocumentUpload
+} from 'iconsax-react';
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
-import BrushIcon from '@mui/icons-material/Brush';
 
 export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?: string }) {
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
@@ -28,6 +31,17 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
   const [strokeWidth, setStrokeWidth] = useState(4);
   const [eraserWidth, setEraserWidth] = useState(15);
   const [isEraser, setIsEraser] = useState(false);
+
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
 
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -107,7 +121,7 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', p: { xs: 2, md: 4 } }}>
-      <Typography variant="h5" sx={{ mb: 1, textAlign: 'center', fontWeight: 600, color: '#1a1a1a', fontFamily: `"${fontFamily}", sans-serif` }}>
+      <Typography variant="h5" sx={{ mb: 1, textAlign: 'center', fontWeight: 600, color: '#1a1a1a', fontFamily: `Prompt, sans-serif` }}>
         เขียนคำอวยพร
       </Typography>
 
@@ -124,8 +138,8 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
 
       <Box sx={{ mb: 4 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
-          <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: `"${fontFamily}", sans-serif` }}>
-            <EditIcon fontSize="small" color="primary" /> พื้นที่เขียนคำอวยพร
+          <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: `Prompt, sans-serif` }}>
+            <Edit2 size="20" color={theme.palette.primary.main} variant="Bulk" /> พื้นที่เขียนคำอวยพร
           </Typography>
 
           <Stack direction="row" spacing={0.5}>
@@ -140,8 +154,8 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
               </IconButton>
             </Tooltip>
             <Tooltip title="ล้างทั้งหมด (Clear)">
-              <IconButton size="small" onClick={clearCanvas} color="error">
-                <DeleteOutlineIcon fontSize="small" />
+              <IconButton size="small" onClick={clearCanvas} sx={{ color: theme.palette.error.main }}>
+                <Trash size="18" variant="Linear" />
               </IconButton>
             </Tooltip>
           </Stack>
@@ -177,11 +191,11 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
               exclusive
               onChange={(e, val) => { if (val) setEraserMode(val === 'eraser'); }}
             >
-              <ToggleButton value="brush" sx={{ px: { xs: 1, sm: 2 } }}>
-                <BrushIcon fontSize="small" sx={{ mr: 0.5 }} /> สี
+              <ToggleButton value="brush" sx={{ px: { xs: 1, sm: 2 }, gap: 0.5 }}>
+                <Magicpen size="18" variant="Bulk" color="#8e7d5d" /> สี
               </ToggleButton>
-              <ToggleButton value="eraser" sx={{ px: { xs: 1, sm: 2 } }}>
-                ยางลบ
+              <ToggleButton value="eraser" sx={{ px: { xs: 1, sm: 2 }, gap: 0.5 }}>
+                <Eraser size="18" variant="Linear" color="#8e7d5d" /> ยางลบ
               </ToggleButton>
             </ToggleButtonGroup>
 
@@ -206,6 +220,9 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
 
         <Paper
           elevation={0}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
           sx={{
             width: '100%',
             height: 300,
@@ -216,11 +233,29 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
             overflow: 'hidden',
             backgroundColor: '#ffffff',
             transition: 'border-color 0.3s',
+            cursor: isHovering ? 'none' : 'default',
             '&:hover': {
               borderColor: '#8e7d5d',
             }
           }}
         >
+          {isHovering && (
+            <Box
+              sx={{
+                position: 'absolute',
+                left: mousePos.x,
+                top: mousePos.y,
+                width: isEraser ? eraserWidth : strokeWidth,
+                height: isEraser ? eraserWidth : strokeWidth,
+                borderRadius: '50%',
+                border: '1px solid rgba(0,0,0,0.3)',
+                backgroundColor: isEraser ? 'rgba(0,0,0,0.05)' : alpha(strokeColor, 0.2),
+                transform: 'translate(-50%, -50%)',
+                pointerEvents: 'none',
+                zIndex: 10,
+              }}
+            />
+          )}
           <ReactSketchCanvas
             ref={canvasRef}
             strokeWidth={strokeWidth}
@@ -233,8 +268,8 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
       </Box>
 
       <Box sx={{ mb: 5 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: `"${fontFamily}", sans-serif` }}>
-          <ImageIcon fontSize="small" color="primary" /> แนบรูปถ่าย
+        <Typography variant="subtitle1" sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: `Prompt, sans-serif` }}>
+          <Gallery size="20" color={theme.palette.primary.main} variant="Bulk" /> แนบรูปถ่าย
         </Typography>
 
         <input
@@ -248,9 +283,19 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
 
         <Button
           variant="outlined"
-          startIcon={<CloudUploadIcon />}
+          startIcon={<DocumentUpload size="20" variant="Linear" color="#8e7d5d" />}
           onClick={() => fileInputRef.current?.click()}
-          sx={{ mb: 2, borderRadius: 2, textTransform: 'none', color: '#8e7d5d', borderColor: 'rgba(142, 125, 93, 0.5)' }}
+          sx={{
+            mb: 2,
+            borderRadius: 2,
+            textTransform: 'none',
+            color: '#8e7d5d',
+            borderColor: 'rgba(142, 125, 93, 0.5)',
+            '&:hover': {
+              borderColor: '#8e7d5d',
+              bgcolor: alpha('#8e7d5d', 0.04)
+            }
+          }}
         >
           เลือกรูปภาพ (Select Images)
         </Button>
@@ -278,7 +323,7 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
                     '&:hover': { bgcolor: '#b71c1c' }
                   }}
                 >
-                  <DeleteOutlineIcon sx={{ fontSize: 16 }} />
+                  <Trash size="16" variant="Linear" color="#fff" />
                 </IconButton>
               </Box>
             ))}
@@ -295,9 +340,10 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
           py: 1.5,
           borderRadius: 8,
           fontSize: '1.1rem',
-          fontWeight: 'bold',
+          fontWeight: 500,
           textTransform: 'none',
           boxShadow: '0 4px 15px rgba(142, 125, 93, 0.3)',
+          color: '#fff',
           bgcolor: '#8e7d5d',
           '&:hover': {
             bgcolor: '#7a6a4e'

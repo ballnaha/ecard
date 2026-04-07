@@ -1,59 +1,27 @@
-'use client';
+import React from 'react';
+import { Box, Typography } from '@mui/material';
+import prisma from '@/lib/prisma';
+import dayjs from 'dayjs';
+import ClientECardPage from './ClientECardPage';
+import { notFound } from 'next/navigation';
 
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, CircularProgress } from '@mui/material';
-import HeroSection from '@/app/components/HeroSection';
-import CoupleSection from '@/app/components/CoupleSection';
-import GallerySection from '@/app/components/GallerySection';
-import CountdownSection from '@/app/components/CountdownSection';
-import ScheduleSection from '@/app/components/ScheduleSection';
-import DressCodeSection from '@/app/components/DressCodeSection';
-import GiftSection from '@/app/components/GiftSection';
-import LocationSection from '@/app/components/LocationSection';
-import RSVPSection from '@/app/components/RSVPSection';
-import PoweredBy from '@/app/components/PoweredBy';
-import FallingPetals from '@/app/components/FallingPetals';
-import MobileNavigation from '@/app/components/MobileNavigation';
-import { useParams } from 'next/navigation';
+export default async function ClientWeddingECard({
+  params,
+}: {
+  params: Promise<{ client: string }>;
+}) {
+  const { client: slug } = await params;
 
-export default function ClientWeddingECard() {
-  const params = useParams();
-  const slug = params.client as string;
-
-  const [clientData, setClientData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!slug) return;
-    setLoading(true);
-    fetch(`/api/client/${slug}`)
-      .then(res => {
-        if (!res.ok) throw new Error('ไม่พบข้อมูลลูกค้า');
-        return res.json();
-      })
-      .then(data => {
-        setClientData(data);
-        setError(null);
-      })
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [slug]);
-
-  // Loading state
-  if (loading) {
-    return (
-      <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', bgcolor: '#faf9f6', gap: 3 }}>
-        <CircularProgress sx={{ color: '#8e7d5d' }} size={48} />
-        <Typography sx={{ fontFamily: '"Prompt", sans-serif', color: '#8e7d5d', fontSize: '0.9rem', letterSpacing: '0.1em' }}>
-          กำลังโหลด E-Card...
-        </Typography>
-      </Box>
-    );
+  if (!slug) {
+    return notFound();
   }
 
-  // Error / Not found
-  if (error || !clientData) {
+  // Fetch data on server
+  const client = await prisma.client.findUnique({
+    where: { slug },
+  });
+
+  if (!client) {
     return (
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', bgcolor: '#faf9f6', gap: 2, p: 4, textAlign: 'center' }}>
         <Typography sx={{ fontSize: '4rem' }}>💌</Typography>
@@ -67,95 +35,48 @@ export default function ClientWeddingECard() {
     );
   }
 
-  const defaultLayoutOrder = [
-    "hero",
-    "couple",
-    "schedule",
-    "gallery",
-    "countdown",
-    "colorTheme",
-    "gift",
-    "rsvp",
-    "location",
-    "location",
-    "poweredBy",
-    "mobileNav"
-  ];
-
-  // Process the layout order to filter out inactive items and support both [string] and [{id, isActive}] formats
-  const rawLayoutOrder = clientData.layoutOrder || defaultLayoutOrder;
-  const layoutOrder = Array.isArray(rawLayoutOrder) 
-    ? rawLayoutOrder
-        .map((item: any) => (typeof item === 'string' ? { id: item, isActive: true } : item))
-        .filter((item: any) => item && item.isActive !== false)
-        .map((item: any) => item.id)
-    : defaultLayoutOrder;
-
-  const renderSection = (section: string) => {
-    switch (section) {
-      case 'hero': return <Box id="home" key="hero"><HeroSection data={clientData.hero} /></Box>;
-      case 'couple': return <CoupleSection key="couple" data={{ brideName: clientData.brideName, groomName: clientData.groomName, ...(clientData.coupleSection as any) }} />;
-      case 'schedule':
-        return (
-          <Box id="schedule" key="schedule">
-            <ScheduleSection
-              data={clientData.scheduleSection as any}
-              eventDate={clientData.eventDate}
-              brideParents={{
-                father: (clientData.coupleSection as any)?.brideFather,
-                mother: (clientData.coupleSection as any)?.brideMother
-              }}
-              groomParents={{
-                father: (clientData.coupleSection as any)?.groomFather,
-                mother: (clientData.coupleSection as any)?.groomMother
-              }}
-              dressCode={clientData.dressCodeSection as any}
-              brideName={(clientData.coupleSection as any)?.brideName}
-              groomName={(clientData.coupleSection as any)?.groomName}
-            />
-          </Box>
-        );
-      case 'gallery': return <Box id="gallery" key="gallery"><GallerySection data={clientData.galleryImages as any} /></Box>;
-      case 'countdown': return <Box id="countdown" key="countdown"><CountdownSection data={clientData.countdownSection as any} eventDate={clientData.eventDate} brideName={clientData.brideName} groomName={clientData.groomName} venueName={(clientData.locationSection as any)?.venueName} /></Box>;
-      case 'dressCode': 
-      case 'dresscodesection':
-      case 'DressCode':
-        return null; // Merged into Schedule
-      case 'gift':
-      case 'giftMoney':
-        return <GiftSection key="gift" data={clientData.giftSection} />;
-      case 'guestbook': return null; // Separate page, link in footer nav only
-      case 'rsvp': return <Box id="rsvp" key="rsvp"><RSVPSection clientId={clientData.id} primaryColor={clientData.primaryColor} /></Box>;
-      case 'location':
-      case 'venue':
-        return <Box id="location" key="location"><LocationSection data={clientData.locationSection as any} /></Box>;
-      case 'poweredBy': return <PoweredBy key="poweredBy" />;
-      case 'mobileNav': return <MobileNavigation key="mobileNav" items={(clientData.mobileNavSection as any)?.items || []} primaryColor={clientData.primaryColor} />;
-      default: return null;
-    }
+  // Map DB fields → frontend-friendly shape (Same logic as API)
+  const heroSection = (client.heroSection as any) || {};
+  const hero = {
+    groomName: client.groomName,
+    brideName: client.brideName,
+    eventDate: dayjs(client.eventDate).format('DD . MM . YY'),
+    locationText: heroSection.locationText || '',
+    mediaType: heroSection.mediaType || 'video',
+    heroStyle: heroSection.heroStyle || 'classic',
+    heroNameImage: heroSection.heroNameImage || '',
+    showFallingPetals: !!heroSection.showFallingPetals,
+    heroVideo: heroSection.heroVideo || '',
+    heroImage: heroSection.heroImage || '',
+    heroPoster: heroSection.heroPoster || '',
+    heroBackgroundColor: heroSection.heroBackgroundColor || '#ffffff',
   };
 
-  return (
-    <Box sx={{
-      minHeight: '100vh',
-      width: '100%',
-      mx: 'auto',
-      overflowX: 'hidden',
-      bgcolor: clientData.secondaryColor || '#faf9f6',
-      color: 'text.primary',
-      // ล็อคภาษาไทยที่ Prompt เสมอ และใช้ฟอนต์อังกฤษที่คุณเลือกเป็นตัวนำ
-      fontFamily: clientData.fontFamily ? `'${clientData.fontFamily}', "Prompt", sans-serif` : '"Prompt", sans-serif',
-      '--script-font': clientData.fontFamily ? `'${clientData.fontFamily}', "Prompt", cursive` : '"Parisienne", cursive',
-      pb: { xs: 15, md: 0 },
-      boxShadow: { lg: '0 0 80px rgba(0,0,0,0.08)' },
-      position: 'relative'
-    }}>
+  const clientData = {
+    id: client.id,
+    slug: client.slug,
+    brideName: client.brideName,
+    groomName: client.groomName,
+    eventDate: client.eventDate,
+    primaryColor: client.primaryColor,
+    secondaryColor: client.secondaryColor,
+    fontFamily: client.fontFamily,
+    layoutOrder: client.layoutOrder || null,
+    hero,
+    coupleSection: (client.coupleSection as any) || { 
+      introText: 'Two paths that led to one beautiful journey...', 
+      bridePic: '', 
+      groomPic: '', 
+      coupleStyle: 'arch-duo' 
+    },
+    scheduleSection: client.scheduleSection || null,
+    locationSection: client.locationSection || null,
+    galleryImages: client.galleryImages || null,
+    countdownSection: client.countdownSection || null,
+    dressCodeSection: client.dressCodeSection || null,
+    giftSection: client.giftSection || null,
+    mobileNavSection: client.mobileNavSection || null,
+  };
 
-      {/* 0. Falling Petals Overlay (Performance Optimized) */}
-      {clientData.hero?.showFallingPetals && <FallingPetals />}
-
-      {/* Dynamic Sections from DB Config */}
-      {layoutOrder.map((section: string) => renderSection(section))}
-    </Box>
-  );
+  return <ClientECardPage clientData={clientData} />;
 }

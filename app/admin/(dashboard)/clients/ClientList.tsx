@@ -1,10 +1,10 @@
 'use client';
 import { useState } from 'react';
-import { Box, Button, Typography, Paper, Table, TableBody, TableCell, TableHead, TableRow, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Chip } from '@mui/material';
+import { Box, Button, Typography, Paper, Table, TableBody, TableCell, TableHead, TableRow, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Chip, Tooltip } from '@mui/material';
 import { Edit2, Trash, Add, Copy } from 'iconsax-react';
 import { createClient, deleteClient } from './actions';
-import { useSnackbar } from '../components/SnackbarProvider';
-import { useConfirm } from '../components/ConfirmProvider';
+import { useSnackbar } from '../../components/SnackbarProvider';
+import { useConfirm } from '../../components/ConfirmProvider';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -38,7 +38,7 @@ export default function ClientList({ initialClients }: { initialClients: any[] }
     } else {
       showSnackbar('สร้างลูกค้าเรียบร้อย เข้าสู่หน้าออกแบบ...', 'success');
       setOpen(false);
-      router.push(`/admin/builder?clientId=${res.client.id}`);
+      router.push(`/admin/builder?clientId=${res.client?.id}`);
     }
   };
 
@@ -59,12 +59,16 @@ export default function ClientList({ initialClients }: { initialClients: any[] }
   return (
     <Box>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-        <Button variant="outlined" startIcon={<Copy size={18} variant="Outline" color="#f2a1a1" />} sx={{ borderRadius: 1, borderColor: '#cbd5e1', color: '#f2a1a1', '&:hover': { bgcolor: '#f8fafc', borderColor: '#f2a1a1' } }}>
-          จัดการ Templates
-        </Button>
-        <Button variant="contained" startIcon={<Add size={18} variant="Bold" color="white" />} onClick={() => setOpen(true)} sx={{ bgcolor: '#f2a1a1', color: '#ffffff', borderRadius: 1, boxShadow: 'none', '&:hover': { bgcolor: '#db2777' } }}>
-          สร้างการ์ดลูกค้าใหม่
-        </Button>
+        <Tooltip title="จัดการ Templates" arrow>
+          <Button variant="outlined" startIcon={<Copy size={18} variant="Outline" color="#f2a1a1" />} sx={{ borderRadius: 1, borderColor: '#cbd5e1', color: '#f2a1a1', '&:hover': { bgcolor: '#f8fafc', borderColor: '#f2a1a1' } }}>
+            จัดการ Templates
+          </Button>
+        </Tooltip>
+        <Tooltip title="สร้างการ์ดลูกค้าใหม่" arrow>
+          <Button variant="contained" startIcon={<Add size={18} variant="Bold" color="white" />} onClick={() => setOpen(true)} sx={{ bgcolor: '#f2a1a1', color: '#ffffff', borderRadius: 1, boxShadow: 'none', '&:hover': { bgcolor: '#db2777' } }}>
+            สร้างการ์ดลูกค้าใหม่
+          </Button>
+        </Tooltip>
       </Box>
 
       <Paper sx={{ width: '100%', overflow: 'hidden', borderRadius: 1, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
@@ -90,14 +94,18 @@ export default function ClientList({ initialClients }: { initialClients: any[] }
                 </TableCell>
                 <TableCell sx={{ color: '#475569' }}>{new Date(client.eventDate).toLocaleDateString('th-TH')}</TableCell>
                 <TableCell align="right">
-                  <Link href={`/admin/builder?clientId=${client.id}`} style={{ textDecoration: 'none' }}>
-                    <Button size="small" variant="outlined" startIcon={<Edit2 size={16} variant="Bold" color="#f2a1a1" />} sx={{ borderRadius: 1, mr: 1, textTransform: 'none', borderColor: '#cbd5e1', color: '#0f172a' }}>
-                      เข้าห้อง Design
-                    </Button>
-                  </Link>
-                  <IconButton size="small" color="error" onClick={() => handleDelete(client.id, `${client.groomName} & ${client.brideName}`)} sx={{ bgcolor: '#fef2f2' }}>
-                    <Trash size={18} variant="Bold" color="#f2a1a1" />
-                  </IconButton>
+                  <Tooltip title="เข้าห้องออกแบบการ์ด" arrow>
+                    <Link href={`/admin/builder?clientId=${client.id}`} style={{ textDecoration: 'none' }}>
+                      <Button size="small" variant="outlined" startIcon={<Edit2 size={16} variant="Bold" color="#f2a1a1" />} sx={{ borderRadius: 1, mr: 1, textTransform: 'none', borderColor: '#cbd5e1', color: '#0f172a' }}>
+                        เข้าห้อง Design
+                      </Button>
+                    </Link>
+                  </Tooltip>
+                  <Tooltip title="ลบข้อมูลลูกค้า" arrow>
+                    <IconButton size="small" color="error" onClick={() => handleDelete(client.id, `${client.groomName} & ${client.brideName}`)} sx={{ bgcolor: '#fef2f2' }}>
+                      <Trash size={18} variant="Bold" color="#f2a1a1" />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}

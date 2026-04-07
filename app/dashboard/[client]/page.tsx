@@ -36,11 +36,12 @@ import {
   Lock,
   InfoCircle,
   Danger,
-  Trash
+  Trash,
+  Logout
 } from 'iconsax-react';
 import { useParams } from 'next/navigation';
 import * as XLSX from 'xlsx';
-import { deleteRSVP } from '@/app/admin/clients/actions';
+import { deleteRSVP } from '@/app/admin/(dashboard)/clients/actions';
 
 interface RSVPData {
   id: string;
@@ -328,6 +329,20 @@ export default function CoupleDashboard() {
                 <Calendar size="18" color={brandColor} variant="Bulk" />
                 <Typography variant="body2" sx={{ color: '#444', fontWeight: 700 }}>{clientData?.eventDate ? new Date(clientData.eventDate).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) : '-'}</Typography>
               </Stack>
+              <Button 
+                onClick={() => setAuthenticated(false)}
+                size="small"
+                sx={{ 
+                  color: brandColor, 
+                  fontWeight: 800, 
+                  textTransform: 'none',
+                  borderRadius: '50px',
+                  '&:hover': { bgcolor: alpha(brandColor, 0.05) }
+                }}
+                startIcon={<Logout size="16" variant="Bulk" color={brandColor} />}
+              >
+                Log Out
+              </Button>
             </Stack>
           </Box>
 

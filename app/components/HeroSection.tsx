@@ -4,6 +4,8 @@ import React from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import { motion, Variants } from 'framer-motion';
 import { isThai, getFontFamily } from '../utils/fontHelper';
+import Image from 'next/image';
+
 
 export interface HeroData {
   groomName: string;
@@ -64,7 +66,9 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               </motion.div>
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
-                  <Box component="img" src={data.heroNameImage} sx={{ maxWidth: '100%', height: { xs: 120, md: 240 }, objectFit: 'contain', mb: 4, filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.2))' }} />
+                  <Box sx={{ position: 'relative', width: '100%', height: { xs: 120, md: 240 }, mb: 4 }}>
+                    <Image src={data.heroNameImage} alt="Wedding Names" fill style={{ objectFit: 'contain' }} />
+                  </Box>
                 </motion.div>
               ) : (
                 <>
@@ -128,7 +132,9 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               </motion.div>
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
-                  <Box component="img" src={data.heroNameImage} sx={{ maxWidth: '100%', height: { xs: 100, md: 240 }, objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }} />
+                  <Box sx={{ position: 'relative', width: '100%', height: { xs: 100, md: 240 } }}>
+                    <Image src={data.heroNameImage} alt="Wedding Names" fill style={{ objectFit: 'contain' }} />
+                  </Box>
                 </motion.div>
               ) : (
                 <Box sx={{ borderRight: '2px solid rgba(212, 175, 55, 0.6)', pr: 3, py: 1 }}>
@@ -187,7 +193,9 @@ export default function HeroSection({ data }: { data?: HeroData }) {
             <Box sx={{ position: 'relative', mb: { xs: 4, md: 6 } }}>
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
-                  <Box component="img" src={data.heroNameImage} sx={{ maxWidth: '90%', height: { xs: 150, md: 320 }, objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }} />
+                  <Box sx={{ position: 'relative', width: '100%', height: { xs: 150, md: 320 } }}>
+                    <Image src={data.heroNameImage} alt="Wedding Names" fill style={{ objectFit: 'contain' }} />
+                  </Box>
                 </motion.div>
               ) : (
                 <motion.div variants={fadeInUp}>
@@ -247,17 +255,14 @@ export default function HeroSection({ data }: { data?: HeroData }) {
       {/* Seamless Video or Image Background System */}
       <Box sx={{ position: 'absolute', inset: 0, zIndex: 0 }}>
         {data?.mediaType === 'image' ? (
-          <Box
-            component="img"
+          <Image
             src={data?.heroImage || "/images/demo/index-cover.png"}
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
+            alt="Wedding Background"
+            fill
+            priority
+            style={{
               objectFit: 'cover',
-              objectPosition: 'center', // Resizes appropriately for mobile
+              objectPosition: 'center',
               opacity: 0.85,
             }}
           />

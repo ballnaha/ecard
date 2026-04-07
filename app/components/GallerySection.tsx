@@ -5,7 +5,9 @@ import { Box, Container, Typography, IconButton, Dialog, Fade } from '@mui/mater
 import { motion, AnimatePresence } from 'framer-motion';
 import { CloseSquare, Maximize1 } from 'iconsax-react';
 import { getFontFamily, isThai } from '../utils/fontHelper';
+import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
+
 import { Pagination, Autoplay, EffectCoverflow, EffectCreative, Navigation } from 'swiper/modules';
 
 // Import Swiper styles
@@ -48,13 +50,12 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               paddingBottom: '40px'
             },
             '.swiper-slide': {
-              borderRadius: '24px',
-              overflow: 'hidden',
-              boxShadow: '0 20px 50px rgba(0,0,0,0.15)',
               backgroundColor: '#fff',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              willChange: 'transform',
+              backfaceVisibility: 'hidden'
             }
           }}>
             <Swiper
@@ -101,10 +102,13 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
                         },
                         '.swiper-slide-active &': {
                           pointerEvents: 'auto'
-                        }
+                        },
+                        willChange: 'transform',
+                        backfaceVisibility: 'hidden',
+                        transform: 'translateZ(0)' // Force GPU acceleration
                       }}
                     >
-                        <Box component="img" src={src} sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
                     </Box>
                 </SwiperSlide>
               ))}
@@ -126,10 +130,11 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               opacity: 0.5,
               filter: 'blur(1px)',
               '&.swiper-slide-active': {
-                transform: 'scale(1)',
                 opacity: 1,
                 filter: 'blur(0px)',
-                boxShadow: '0 25px 60px rgba(142, 125, 93, 0.25)'
+                boxShadow: '0 25px 60px rgba(142, 125, 93, 0.25)',
+                willChange: 'transform',
+                backfaceVisibility: 'hidden'
               }
             }
           }}>
@@ -141,7 +146,7 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               {images.map((src, index) => (
                 <SwiperSlide key={index} onClick={() => setSelectedImg(src)} style={{ cursor: 'zoom-in' }}>
                    <Box component={motion.div} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} sx={{ width: '100%', aspectRatio: '2/3', position: 'relative', overflow: 'hidden' }}>
-                        <Box component="img" src={src} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
                     </Box>
                 </SwiperSlide>
               ))}
@@ -160,7 +165,8 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               width: { xs: '320px', md: '550px' }, height: { xs: '450px', md: '750px' },
               borderRadius: '24px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.2)',
               transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)', opacity: 0.3, filter: 'blur(3px)',
-              '&.swiper-slide-active': { opacity: 1, filter: 'blur(0px)', transform: 'scale(1.1)' }
+              willChange: 'transform', backfaceVisibility: 'hidden',
+              '&.swiper-slide-active': { opacity: 1, filter: 'blur(0px)', transform: 'scale(1.1) translateZ(0)' }
             }
           }}>
             <Swiper
@@ -178,7 +184,7 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               {images.map((src, index) => (
                 <SwiperSlide key={index} onClick={() => setSelectedImg(src)} style={{ cursor: 'zoom-in' }}>
                    <Box component={motion.div} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} sx={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-                        <Box component="img" src={src} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
                     </Box>
                 </SwiperSlide>
               ))}
@@ -262,7 +268,9 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
         <AnimatePresence>
           {selectedImg && (
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4 }} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Box component="img" src={selectedImg} sx={{ maxWidth: '95vw', maxHeight: '90vh', objectFit: 'contain', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }} />
+              <Box sx={{ position: 'relative', width: '95vw', height: '90vh' }}>
+                <Image src={selectedImg} alt="Gallery Preview" fill style={{ objectFit: 'contain' }} />
+              </Box>
             </motion.div>
           )}
         </AnimatePresence>

@@ -134,7 +134,54 @@ const theme = createTheme({
           paddingRight: '16px',
         }
       }
-    }
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiInputBase-input': {
+            fontWeight: 500,
+            color: 'rgba(74, 69, 66, 0.85)',
+          },
+          '& .MuiInputLabel-root': {
+            fontWeight: 500,
+            color: 'rgba(74, 69, 66, 0.6)',
+          },
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          color: 'rgba(74, 69, 66, 0.85)',
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          color: 'rgba(74, 69, 66, 0.65)',
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          fontWeight: 500,
+          color: 'rgba(74, 69, 66, 0.85)',
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          fontWeight: 500,
+          color: 'rgba(74, 69, 66, 0.85)',
+          fontFamily: '"Prompt", sans-serif',
+        },
+      },
+    },
   },
 });
 

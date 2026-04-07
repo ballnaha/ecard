@@ -6,8 +6,23 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { clientId, name, phone, attending, guestCount, note } = body;
 
-    if (!clientId || !name) {
+    if (!clientId || !name || !phone) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Check for existing RSVP by phone for this specific client
+    const existingRsvp = await prisma.rSVP.findFirst({
+      where: {
+        clientId,
+        phone,
+      },
+    });
+
+    if (existingRsvp) {
+      return NextResponse.json(
+        { error: 'เบอร์โทรศัพท์นี้ได้ลงทะเบียนไว้แล้ว' }, 
+        { status: 409 }
+      );
     }
 
     const rsvp = await prisma.rSVP.create({

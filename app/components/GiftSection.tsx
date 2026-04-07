@@ -33,7 +33,7 @@ export default function GiftSection({ data }: { data?: any }) {
           top: '10%',
           left: '-5%',
           fontSize: { xs: '6rem', md: '12rem' },
-          fontFamily: getFontFamily('Gratitude'), 
+          fontFamily: getFontFamily('Gratitude'),
           color: 'rgba(142, 125, 93, 0.04)',
           whiteSpace: 'nowrap',
           zIndex: 0,
@@ -55,12 +55,12 @@ export default function GiftSection({ data }: { data?: any }) {
           }}>
             Wedding Gift
           </Typography>
-          <Typography sx={{ 
-            fontFamily: getFontFamily(data?.title || 'Gifts & Blessings'), 
-            fontSize: isThai(data?.title || 'Gifts & Blessings') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '3rem', md: '4rem' }, 
-            color: '#1a1a1a', 
+          <Typography sx={{
+            fontFamily: getFontFamily(data?.title || 'Gifts & Blessings'),
+            fontSize: isThai(data?.title || 'Gifts & Blessings') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '3rem', md: '4rem' },
+            color: '#1a1a1a',
             fontWeight: isThai(data?.title || 'Gifts & Blessings') ? 600 : 400,
-            lineHeight: 1.2 
+            lineHeight: 1.2
           }}>
             {data?.title || 'Gifts & Blessings'}
           </Typography>
@@ -104,8 +104,8 @@ export default function GiftSection({ data }: { data?: any }) {
 
               <Typography sx={{
                 fontFamily: '"Prompt", sans-serif',
-                fontSize: '0.8rem',
-                color: 'rgba(0,0,0,0.5)',
+                fontSize: '0.85rem',
+                color: 'rgba(0,0,0,0.7)',
                 lineHeight: 1.6,
                 mb: 4
               }}>
@@ -113,10 +113,10 @@ export default function GiftSection({ data }: { data?: any }) {
                 เราขอน้อมรับด้วยหัวใจและความขอบคุณอย่างยิ่ง
               </Typography>
 
-              <Box sx={{ 
-                display: 'flex', 
-                flexDirection: { xs: 'column', md: data?.qrCode ? 'row' : 'column' }, 
-                alignItems: 'center', 
+              <Box sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: data?.qrCode ? 'row' : 'column' },
+                alignItems: 'center',
                 justifyContent: 'center',
                 gap: { xs: 4, md: 8 },
                 mb: 2
@@ -170,8 +170,8 @@ export default function GiftSection({ data }: { data?: any }) {
                     <Divider sx={{ width: '20px', borderColor: 'rgba(142, 125, 93, 0.3)' }} />
                     <Typography sx={{
                       fontFamily: '"Prompt", sans-serif',
-                      fontSize: '0.65rem',
-                      color: 'rgba(0,0,0,0.4)',
+                      fontSize: '0.75rem',
+                      color: 'rgba(0,0,0,0.7)',
                       textTransform: 'uppercase',
                       letterSpacing: '0.2em'
                     }}>
@@ -180,16 +180,16 @@ export default function GiftSection({ data }: { data?: any }) {
                   </Box>
                 </Box>
               </Box>
-              
+
               <Box sx={{ mt: 5 }}>
-                <Button 
-                  LinkComponent={Link} 
+                <Button
+                  LinkComponent={Link}
                   href="/guestbook"
-                  variant="outlined" 
+                  variant="outlined"
                   startIcon={<DrawIcon />}
-                  sx={{ 
-                    borderRadius: '40px', 
-                    px: 3, 
+                  sx={{
+                    borderRadius: '40px',
+                    px: 3,
                     py: 1.2,
                     borderColor: 'rgba(142, 125, 93, 0.4)',
                     color: '#8e7d5d',
