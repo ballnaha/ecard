@@ -61,6 +61,7 @@ export default async function ClientWeddingECard({
     primaryColor: client.primaryColor,
     secondaryColor: client.secondaryColor,
     fontFamily: client.fontFamily,
+    musicUrl: client.musicUrl,
     layoutOrder: client.layoutOrder || null,
     hero,
     coupleSection: (client.coupleSection as any) || { 

@@ -29,6 +29,7 @@ model Client {
   primaryColor     String   @default("#8e7d5d")
   secondaryColor   String   @default("#faf9f6")
   fontFamily       String   @default("Prompt")
+  musicUrl         String?
   layoutOrder      Json?    // ["hero", "couple", "schedule", "gallery", "countdown", "colorTheme", "gift", "rsvp", "location"]
 
   // Section Data (เก็บเป็น Json เพื่อความยืดหยุ่นมากๆ ไม่ต้องแก้ Database บ่อยๆ)
@@ -55,8 +56,9 @@ model Wish {
   clientId  String
   client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   name      String
-  message   String   @db.Text
-  image     String?  // รูปแนบคำอวยพร
+  message   String?  @db.Text
+  drawing   String?  @db.LongText // Base64 or URL to drawing
+  images    Json?    // Array of image URLs
   createdAt DateTime @default(now())
 }
 

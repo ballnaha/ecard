@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack, alpha, Checkbox, List, ListItem, ListItemText, ListItemIcon, Paper, Tooltip } from '@mui/material';
 import { Reorder } from 'framer-motion';
-import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash, EyeSlash, Layer, Home, Calendar, Gallery, Location, PresentionChart, Heart, People, Gift, MessageText1, Link1 } from 'iconsax-react';
+import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash, EyeSlash, Layer, Home, Calendar, Gallery, Location, PresentionChart, Heart, People, Gift, MessageText1, Link1, Music, CloseCircle } from 'iconsax-react';
 import { useSnackbar } from '../../components/SnackbarProvider';
 import { updateClientLayout, updateClientHero, updateClientTheme, updateClientCouple, updateClientGallery, updateClientCountdown, updateClientSchedule, updateClientDressCode, updateClientLocation, updateClientGift, updateClientMobileNav } from '../clients/actions';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -14,6 +14,7 @@ const initialLayoutBase = [
   { id: 'hero', title: 'หน้าปก (Hero Section)', icon: '🎞️', isActive: true },
   { id: 'couple', title: 'ข้อมูลบ่าวสาว (Couple Section)', icon: '👫', isActive: true },
   { id: 'schedule', title: 'ตารางพิธีการ (Schedule)', icon: '📅', isActive: true },
+  { id: 'dressCode', title: 'การแต่งกาย (Dress Code)', icon: '👕', isActive: true },
   { id: 'countdown', title: 'นับถอยหลัง (Countdown)', icon: '⏰', isActive: true },
   { id: 'gallery', title: 'แกลเลอรี่ (Gallery)', icon: '📸', isActive: true },
   { id: 'location', title: 'สถานที่จัดงาน (Venue)', icon: '📍', isActive: true },
@@ -28,6 +29,7 @@ const sectionIconMap: Record<string, any> = {
   hero: <Home />,
   couple: <Heart />,
   schedule: <Calendar />,
+  dressCode: <ColorSwatch />,
   countdown: <PresentionChart />,
   gallery: <Gallery />,
   location: <Location />,
@@ -61,7 +63,7 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [heroStyle, setHeroStyle] = useState<'classic' | 'editorial' | 'minimal'>(() => client?.heroSection?.heroStyle || 'classic');
   const [heroBackgroundColor, setHeroBackgroundColor] = useState<string>(() => client?.heroSection?.heroBackgroundColor || '#ffffff');
 
-  const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null });
+  const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null, music: null });
   const [savedPaths, setSavedPaths] = useState<Record<string, string>>({
     heroImage: client?.heroSection?.heroImage || '',
     heroVideo: client?.heroSection?.heroVideo || '',
@@ -70,7 +72,10 @@ export default function BuilderEditor({ client }: { client: any }) {
     bridePic: client?.coupleSection?.bridePic || '',
     groomPic: client?.coupleSection?.groomPic || '',
     giftQrCode: client?.giftSection?.qrCode || '',
+    music: client?.musicUrl || '',
   });
+
+  const [musicUrl, setMusicUrl] = useState<string | null>(client?.musicUrl || null);
 
   const [previewBridePic, setPreviewBridePic] = useState<string | null>(client?.coupleSection?.bridePic || null);
   const [previewGroomPic, setPreviewGroomPic] = useState<string | null>(client?.coupleSection?.groomPic || null);
@@ -158,7 +163,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     throw new Error(data.error || 'Upload failed');
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode') => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music') => {
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
     setPendingFiles(prev => ({ ...prev, [fileType]: file }));
@@ -169,10 +174,10 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'heroNameImage') setPreviewNameImage(url);
     if (fileType === 'bridePic') setPreviewBridePic(url);
     if (fileType === 'groomPic') setPreviewGroomPic(url);
-    if (fileType === 'giftQrCode') setPreviewGiftQrCode(url);
+    if (fileType === 'music') setMusicUrl(url);
   };
 
-  const handleFileRemove = async (fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode') => {
+  const handleFileRemove = async (fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music') => {
     setPendingFiles(prev => ({ ...prev, [fileType]: null }));
     if (fileType === 'heroImage') setPreviewImage(null);
     if (fileType === 'heroVideo') setPreviewVideo(null);
@@ -181,6 +186,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'bridePic') setPreviewBridePic(null);
     if (fileType === 'groomPic') setPreviewGroomPic(null);
     if (fileType === 'giftQrCode') setPreviewGiftQrCode(null);
+    if (fileType === 'music') setMusicUrl(null);
     const pathToDelete = savedPaths[fileType];
     if (pathToDelete && client) {
       setSavedPaths(prev => ({ ...prev, [fileType]: '' }));
@@ -257,6 +263,10 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
     setIsSaving(true);
     try {
+      const finalPaths = { ...savedPaths };
+      if (pendingFiles.music) finalPaths.music = await uploadOneFile(pendingFiles.music, 'music');
+      formData.set('musicUrl', finalPaths.music || '');
+
       const res = await updateClientTheme(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
       else {
@@ -419,21 +429,38 @@ export default function BuilderEditor({ client }: { client: any }) {
   const activeBuilderSections = items.filter(i => i.isActive && i.id !== 'mobileNav' && i.id !== 'poweredBy');
 
   return (
-    <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
+    <Box sx={{ maxWidth: '800px', mx: 'auto', px: { xs: 0, sm: 2 } }}>
       <Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, alignItems: 'center' }}>
-          <Typography variant="h6" fontWeight="700">ลำดับการแสดงผล (Layout Sections)</Typography>
-          <Stack direction="row" spacing={1.5}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between', 
+          mb: 3, 
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: 2
+        }}>
+          <Typography variant="h6" fontWeight="800" color="#0f172a" sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>
+            ลำดับการแสดงผล (Layout Sections)
+          </Typography>
+          <Stack direction="row" spacing={1.5} sx={{ width: { xs: '100%', sm: 'auto' } }}>
             <Button
               variant="outlined"
+              fullWidth
               startIcon={<ColorSwatch variant="Bold" size={20} color="#f2a1a1" />}
-              onClick={() => setEditingItem({ id: 'theme', title: 'ธีมและสีหลักของงาน' })}
-              sx={{ color: '#f2a1a1', borderColor: '#f2a1a1', borderRadius: '50px', fontWeight: 700, px: 3, '&:hover': { bgcolor: '#fff5f5', borderColor: '#e89191' } }}
+              onClick={() => setEditingItem({ id: 'theme', title: 'ธีมและเพลงประกอบ' })}
+              sx={{ color: '#f2a1a1', borderColor: '#f2a1a1', borderRadius: '50px', fontWeight: 800, px: 3, textTransform: 'none', '&:hover': { bgcolor: '#fff5f5', borderColor: '#e89191' } }}
             >
-              ธีมและสีสัน
+              ธีม & เพลง
             </Button>
-            <Button variant="contained" disabled={isSaving} startIcon={<Save2 variant="Bold" size={20} color="currentColor" />} onClick={handleSave} sx={{ bgcolor: alpha('#f2a1a1', 1), color: '#ffffff', borderRadius: '50px', fontWeight: 700, px: 3, '&:hover': { bgcolor: '#e89191', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease', boxShadow: '0 8px 25px rgba(242, 161, 161, 0.3)' }}>
-              บันทึกเลย์เอาต์
+            <Button 
+              variant="contained" 
+              fullWidth
+              disabled={isSaving} 
+              startIcon={<Save2 variant="Bold" size={20} color="currentColor" />} 
+              onClick={handleSave} 
+              sx={{ bgcolor: alpha('#f2a1a1', 1), color: '#ffffff', borderRadius: '50px', fontWeight: 800, px: 3, textTransform: 'none', '&:hover': { bgcolor: '#e89191', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease', boxShadow: '0 8px 25px rgba(242, 161, 161, 0.3)' }}
+            >
+              บันทึกหน้า
             </Button>
           </Stack>
         </Box>
@@ -490,8 +517,20 @@ export default function BuilderEditor({ client }: { client: any }) {
 
       {/* Settings Drawer */}
       <Drawer
-        anchor="right" open={!!editingItem} onClose={() => setEditingItem(null)} sx={{ zIndex: 1250 }}
-        PaperProps={{ sx: { width: { xs: '100%', sm: 500, md: 550, lg: 600 }, p: { xs: 3, md: 5 }, bgcolor: '#f8fafc', boxShadow: '-10px 0 30px rgba(0,0,0,0.05)' } }}
+        anchor="right" 
+        open={!!editingItem} 
+        onClose={() => setEditingItem(null)} 
+        sx={{ zIndex: 1250 }}
+        PaperProps={{ 
+          sx: { 
+            width: { xs: '100%', sm: 500, md: 550 }, 
+            p: { xs: 2.5, md: 4.5 }, 
+            bgcolor: '#f8fafc', 
+            boxShadow: '-10px 0 30px rgba(0,0,0,0.05)',
+            borderTopLeftRadius: { xs: '24px', sm: 0 },
+            borderBottomLeftRadius: { xs: '24px', sm: 0 }
+          } 
+        }}
       >
         {editingItem && (
           <Box>
@@ -814,6 +853,132 @@ export default function BuilderEditor({ client }: { client: any }) {
               </Box>
             )}
 
+            {editingItem.id === 'dressCode' && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3.5 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#fdf4f4', borderRadius: '24px', border: '1px solid #fce7e7' }}>
+                  <Typography variant="subtitle2" fontWeight={800} color="#991b1b" sx={{ mb: 1 }}>👗 ธีมสีการแต่งกาย (Dress Code)</Typography>
+                  <Typography variant="caption" sx={{ color: '#b91c1c', display: 'block', mb: 2 }}>
+                    กำหนดโทนสีเพื่อให้แขกในงานเตรียมตัวมาร่วมงานได้อย่างสวยงาม และคุมโทนภาพในงานครับ
+                  </Typography>
+
+                  <Stack spacing={2.5}>
+                    <TextField
+                      label="หัวข้อหลัก"
+                      value={dressCodeTitle}
+                      onChange={(e) => setDressCodeTitle(e.target.value)}
+                      size="small"
+                      fullWidth
+                      sx={{ bgcolor: 'white' }}
+                    />
+                    <TextField
+                      label="ข้อความเชิญชวน"
+                      value={dressCodeSubtitle}
+                      onChange={(e) => setDressCodeSubtitle(e.target.value)}
+                      multiline
+                      rows={2}
+                      size="small"
+                      fullWidth
+                      sx={{ bgcolor: 'white' }}
+                    />
+                  </Stack>
+                </Box>
+
+                <Box sx={{ px: 1 }}>
+                  <Typography variant="subtitle2" fontWeight={700} color="#334155" sx={{ mb: 2 }}>พาเลทสี (Color Palette)</Typography>
+                  <Stack direction="row" spacing={1.5} flexWrap="wrap" sx={{ gap: 1.5 }}>
+                    {dressCodeColors.map((color, idx) => (
+                      <Box key={idx} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ position: 'relative' }}>
+                          <Box 
+                            sx={{ 
+                              width: 55, 
+                              height: 55, 
+                              borderRadius: '15px', 
+                              bgcolor: color, 
+                              border: '3px solid #fff', 
+                              boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+                              display: 'block'
+                            }} 
+                          />
+                          <IconButton
+                            size="small"
+                            onClick={() => setDressCodeColors(prev => prev.filter((_, i) => i !== idx))}
+                            sx={{ position: 'absolute', top: -10, right: -10, bgcolor: '#ef4444', color: '#fff', '&:hover': { bgcolor: '#dc2626' }, width: 22, height: 22, p: 0 }}
+                          >
+                            <Trash variant="Outline" size={14} color="#fff" />
+                          </IconButton>
+                        </Box>
+                        <TextField 
+                          value={color}
+                          onChange={(e) => {
+                            const newColors = [...dressCodeColors];
+                            newColors[idx] = e.target.value;
+                            setDressCodeColors(newColors);
+                          }}
+                          size="small"
+                          placeholder="#000000"
+                          inputProps={{ sx: { fontSize: '0.65rem', textAlign: 'center', p: 0.5, width: 68, textTransform: 'uppercase', height: '24px' } }}
+                          sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px', bgcolor: '#fff' } }}
+                        />
+                      </Box>
+                    ))}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                      <Box
+                        onClick={() => setDressCodeColors(prev => [...prev, '#A78B71'])}
+                        sx={{
+                          width: 55, height: 55, borderRadius: '15px', border: '2px dashed #cbd5e1',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          '&:hover': { borderColor: '#94a3b8', bgcolor: '#f8fafc', transform: 'scale(1.05)' }
+                        }}
+                      >
+                        <Typography variant="h5" color="#94a3b8">+</Typography>
+                      </Box>
+                      <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.6rem' }}>เพิ่มสี</Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+
+                <Button
+                  onClick={handleDressCodeSave}
+                  variant="contained"
+                  fullWidth
+                  disabled={isSaving}
+                  sx={{ py: 2, bgcolor: '#f2a1a1', borderRadius: '50px', fontWeight: 800 }}
+                >
+                  {isSaving ? <CircularProgress size={24} color="inherit" /> : 'บันทึก Dress Code'}
+                </Button>
+              </Box>
+            )}
+
+            {editingItem.id === 'guestbook' && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box sx={{ p: 2.5, bgcolor: '#f0f9ff', borderRadius: '24px', border: '1px solid #e0f2fe' }}>
+                  <Typography variant="subtitle2" fontWeight={800} color="#0369a1" sx={{ mb: 1 }}>📖 สมุดอวยพรดิจิทัล (Guestbook)</Typography>
+                  <Typography variant="caption" sx={{ color: '#0369a1', display: 'block', mb: 2 }}>
+                    ให้แขกสามารถเขียนคำอวยพรด้วยลายมือ หรือพิมพ์ข้อความ และแนบรูปถ่ายได้โดยตรงครับ
+                  </Typography>
+                  <TextField
+                    label="หัวข้อ (Title)"
+                    defaultValue="Wishes & Blessings"
+                    size="small"
+                    fullWidth
+                    sx={{ bgcolor: 'white' }}
+                  />
+                </Box>
+
+                <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', fontStyle: 'italic' }}>
+                    * ส่วนนี้จะแสดงแบบฟอร์มให้แขกใช้งานได้ทันทีในหน้าเว็บครับ คุณสามารถจัดการคำอวยพรได้ที่หน้า Dashboard หลักของลูกค้ารายนี้
+                  </Typography>
+                </Paper>
+
+                <Button variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1', py: 1.5, fontWeight: 700 }} onClick={() => setEditingItem(null)}>
+                  เสร็จสิ้น
+                </Button>
+              </Box>
+            )}
+
             {editingItem.id === 'theme' && (
               <Box component="form" action={handleThemeSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3.5 }}>
                 <Box sx={{ p: 2.5, bgcolor: '#fdf4f4', borderRadius: '24px', border: '1px solid #fce7e7', mb: 1 }}>
@@ -872,6 +1037,56 @@ export default function BuilderEditor({ client }: { client: any }) {
                       </Typography>
                     </Box>
                   </Stack>
+                </Box>
+
+                <Divider sx={{ my: 1 }} />
+
+                <Box sx={{ p: 2.5, bgcolor: '#f0fdf4', borderRadius: '24px', border: '1px solid #dcfce7' }}>
+                  <Typography variant="subtitle2" fontWeight={800} color="#166534" sx={{ mb: 1 }}>🎵 เพลงประกอบ (Background Music)</Typography>
+                  <Typography variant="caption" sx={{ color: '#15803d', display: 'block', mb: 2 }}>
+                    อัปโหลดไฟล์เพลง (.mp3) เพื่อสร้างบรรยากาศให้กับการ์ดครับ
+                  </Typography>
+
+                  {musicUrl ? (
+                    <Box sx={{ p: 2, bgcolor: 'white', borderRadius: '16px', border: '1px solid #bbf7d0', mb: 2 }}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Box sx={{ p: 1, bgcolor: '#f0fdf4', borderRadius: '50%', color: '#22c55e' }}>
+                          <Music size="20" variant="Bold" color="#22c55e" />
+                        </Box>
+                        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                          <Typography variant="body2" fontWeight={700} noWrap>
+                            {savedPaths.music ? savedPaths.music.split('/').pop() : 'ไฟล์ที่เลือกอยู่ขณะนี้'}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">Ready to play</Typography>
+                        </Box>
+                        <IconButton size="small" onClick={() => handleFileRemove('music')} sx={{ color: '#ef4444' }}>
+                          <Trash size={18} variant="Bold" color="#ef4444" />
+                        </IconButton>
+                      </Stack>
+                    </Box>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      fullWidth
+                      sx={{
+                        borderRadius: '16px',
+                        py: 3,
+                        borderStyle: 'dashed',
+                        borderColor: '#22c55e',
+                        color: '#166534',
+                        bgcolor: 'rgba(34, 197, 94, 0.05)',
+                        '&:hover': { bgcolor: 'rgba(34, 197, 94, 0.1)', borderColor: '#22c55e' }
+                      }}
+                    >
+                      <Stack spacing={1} alignItems="center">
+                        <Music size="32" variant="Bulk" />
+                        <Typography variant="body2" fontWeight={700}>กดเพื่อเลือกไฟล์เพลง (.mp3)</Typography>
+                        <Typography variant="caption">แนะนำขนาดไม่เกิน 5MB</Typography>
+                      </Stack>
+                      <input hidden type="file" accept="audio/mpeg" onChange={(e) => handleFileSelect(e, 'music')} />
+                    </Button>
+                  )}
                 </Box>
 
                 <Divider sx={{ my: 1 }} />

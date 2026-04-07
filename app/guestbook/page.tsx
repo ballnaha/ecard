@@ -80,7 +80,7 @@ export default function GuestbookPage() {
               overflow: 'hidden'
             }}
           >
-            <GuestWishesForm />
+            <GuestWishesForm clientId="demo-guestbook" />
           </Paper>
         </motion.div>
       </Container>

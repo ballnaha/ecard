@@ -133,6 +133,7 @@ export async function updateClientTheme(id: string, formData: FormData) {
     const primaryColor = formData.get('primaryColor') as string;
     const secondaryColor = formData.get('secondaryColor') as string;
     const fontFamily = formData.get('fontFamily') as string;
+    const musicUrl = formData.get('musicUrl') as string;
     
     await prisma.client.update({
       where: { id },
@@ -140,6 +141,7 @@ export async function updateClientTheme(id: string, formData: FormData) {
         primaryColor: primaryColor || undefined,
         secondaryColor: secondaryColor || undefined,
         fontFamily: fontFamily || undefined,
+        musicUrl: musicUrl === '' ? null : (musicUrl || undefined),
       }
     });
 

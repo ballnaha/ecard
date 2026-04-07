@@ -39,13 +39,22 @@ export default async function BuilderPage({ searchParams }: { searchParams: Prom
   }
 
   return (
-    <Box>
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-
-        <Box>
-          <Typography variant="h4" fontWeight="800" color="#1a1a1a" sx={{ mb: 0.5 }}>Card Builder: {client.groomName} & {client.brideName}</Typography>
-          <Typography variant="body1" color="text.secondary">จัดเรียงลำดับการแสดงผล E-Card และตั้งค่าของคู่บ่าวสาว</Typography>
-        </Box>
+    <Box sx={{ px: { xs: 2, md: 0 } }}>
+      <Box sx={{ mb: { xs: 3, md: 4 }, pt: { xs: 2, md: 0 } }}>
+        <Typography 
+          variant="h4" 
+          fontWeight="800" 
+          color="#1a1a1a" 
+          sx={{ 
+            mb: 0.5,
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+          }}
+        >
+          Card Builder: {client.groomName} & {client.brideName}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8rem', md: '1rem' } }}>
+          จัดเรียงลำดับการแสดงผล E-Card และตั้งค่าของคู่บ่าวสาว
+        </Typography>
       </Box>
 
       <BuilderEditor key={client.id + '-' + client.updatedAt.getTime()} client={client} />

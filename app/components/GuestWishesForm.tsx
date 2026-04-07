@@ -13,17 +13,26 @@ import {
   Magicpen,
   Eraser,
   Gallery,
-  DocumentUpload
+  DocumentUpload,
+  Home
 } from 'iconsax-react';
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
 
-export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?: string }) {
+export default function GuestWishesForm({
+  clientId,
+  fontFamily = 'Prompt'
+}: {
+  clientId: string;
+  fontFamily?: string
+}) {
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const theme = useTheme();
 
   const [name, setName] = useState('');
+  const [message, setMessage] = useState('');
   const [images, setImages] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Drawing state
@@ -99,41 +108,97 @@ export default function GuestWishesForm({ fontFamily = 'Prompt' }: { fontFamily?
       return;
     }
 
-    // Get the generated image from canvas
-    const canvasData = await canvasRef.current?.exportImage('png');
+    setIsSubmitting(true);
+    try {
+      // Get the generated image from canvas
+      const canvasData = await canvasRef.current?.exportImage('png');
 
-    console.log('Form Submitted', {
-      name,
-      imagesCount: images.length,
-      hasDrawing: canvasData // base64 string
-    });
+      const formData = new FormData();
+      formData.append('clientId', clientId);
+      formData.append('name', name);
+      formData.append('message', message);
+      if (canvasData) formData.append('drawing', canvasData);
 
-    setSnackbar({
-      open: true,
-      message: 'ส่งคำอวยพรเรียบร้อยแล้ว ขอบคุณที่ร่วมยินดีกับเรา!',
-      severity: 'success'
-    });
+      images.forEach((img) => {
+        formData.append('images', img);
+      });
 
-    setName('');
-    setImages([]);
-    clearCanvas();
+      const res = await fetch('/api/wishes', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSnackbar({
+          open: true,
+          message: 'ส่งคำอวยพรเรียบร้อยแล้ว ขอบคุณที่ร่วมยินดีกับเรา!',
+          severity: 'success'
+        });
+
+        setName('');
+        setMessage('');
+        setImages([]);
+        clearCanvas();
+      } else {
+        throw new Error(data.error || 'Failed to submit');
+      }
+    } catch (err: any) {
+      setSnackbar({
+        open: true,
+        message: 'เกิดข้อผิดพลาด: ' + err.message,
+        severity: 'error'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', p: { xs: 2, md: 4 } }}>
-      <Typography variant="h5" sx={{ mb: 1, textAlign: 'center', fontWeight: 600, color: '#1a1a1a', fontFamily: `Prompt, sans-serif` }}>
-        เขียนคำอวยพร
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Box sx={{ width: 40 }} /> {/* Spacer to balance */}
+        <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 600, color: '#1a1a1a', fontFamily: `Prompt, sans-serif` }}>
+          เขียนคำอวยพร
+        </Typography>
+        <Tooltip title="กลับหน้าแรก (Go to Home)" arrow>
+          <IconButton
+            onClick={() => document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' })}
+            sx={{
+              color: '#8e7d5d',
+              bgcolor: alpha('#8e7d5d', 0.05),
+              '&:hover': { bgcolor: alpha('#8e7d5d', 0.1), transform: 'translateY(-2px)' },
+              transition: 'all 0.3s ease'
+            }}
+          >
+            <Home variant="Bold" size="22" />
+          </IconButton>
+        </Tooltip>
+      </Stack>
 
 
       <TextField
+        id="guest-wish-name"
         fullWidth
         label="ชื่อของคุณ (Your Name)"
         variant="outlined"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        sx={{ mb: 4 }}
+        sx={{ mb: 3 }}
         required
+      />
+
+      <TextField
+        id="guest-wish-message"
+        fullWidth
+        label="ข้อความอวยพร (Your Message - Optional)"
+        variant="outlined"
+        multiline
+        rows={3}
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        sx={{ mb: 4 }}
       />
 
       <Box sx={{ mb: 4 }}>

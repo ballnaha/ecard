@@ -3,6 +3,7 @@
 import React from 'react';
 import { Box, Container, Typography, Stack } from '@mui/material';
 import { motion } from 'framer-motion';
+import { getFontFamily } from '../utils/fontHelper';
 
 interface DressCodeData {
   title?: string;
@@ -19,13 +20,13 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
     <Box component="section" sx={{ py: { xs: 8, md: 10 }, backgroundColor: '#fff', textAlign: 'center' }}>
       <Container maxWidth="md">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }}>
-          <Typography variant="overline" sx={{ color: '#8e7d5d', letterSpacing: '0.6em', fontSize: '0.75rem', mb: 1, display: 'block' }}>
+          <Typography variant="overline" sx={{ color: 'var(--primary-color, #8e7d5d)', letterSpacing: '0.6em', fontSize: '0.75rem', mb: 1, display: 'block', fontFamily: getFontFamily(title) }}>
             {title}
           </Typography>
-          <Typography sx={{ fontFamily: '"Bodoni Moda", serif', fontSize: { xs: '1.8rem', md: '2.5rem' }, color: '#1a1a1a', fontStyle: 'italic', mb: 2 }}>
+          <Typography sx={{ fontFamily: 'var(--script-font, "Parisienne", cursive)', fontSize: { xs: '2.2rem', md: '3.2rem' }, color: '#1a1a1a', fontStyle: 'italic', mb: 2 }}>
             Wedding Theme & Colors
           </Typography>
-          <Typography sx={{ fontFamily: '"Montserrat", sans-serif', fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(0,0,0,0.5)', mb: 6, textTransform: 'uppercase' }}>
+          <Typography sx={{ fontFamily: getFontFamily(subtitle), fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(0,0,0,0.5)', mb: 6, textTransform: 'uppercase' }}>
             {subtitle}
           </Typography>
 

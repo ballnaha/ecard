@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import HeroSection from '@/app/components/HeroSection';
 import CoupleSection from '@/app/components/CoupleSection';
+import DressCodeSection from '@/app/components/DressCodeSection';
 import GallerySection from '@/app/components/GallerySection';
 import CountdownSection from '@/app/components/CountdownSection';
 import ScheduleSection from '@/app/components/ScheduleSection';
@@ -12,23 +13,28 @@ import LocationSection from '@/app/components/LocationSection';
 import RSVPSection from '@/app/components/RSVPSection';
 import PoweredBy from '@/app/components/PoweredBy';
 import FallingPetals from '@/app/components/FallingPetals';
+import GuestWishesForm from '@/app/components/GuestWishesForm';
 import MobileNavigation from '@/app/components/MobileNavigation';
+import AudioPlayer from '@/app/components/AudioPlayer';
+import InvitationCover from '@/app/components/InvitationCover';
 
 interface ClientECardPageProps {
   clientData: any;
 }
 
 export default function ClientECardPage({ clientData }: ClientECardPageProps) {
+  const [isCoverOpen, setIsCoverOpen] = useState(false);
   const defaultLayoutOrder = [
     "hero",
     "couple",
     "schedule",
+    "dressCode",
     "gallery",
     "countdown",
-    "colorTheme",
     "gift",
     "rsvp",
     "location",
+    "guestbook",
     "poweredBy",
     "mobileNav"
   ];
@@ -74,6 +80,12 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
       case 'location':
       case 'venue':
         return <Box id="location" key="location"><LocationSection data={clientData.locationSection as any} /></Box>;
+      case 'dressCode': return <DressCodeSection key="dressCode" data={clientData.dressCodeSection as any} />;
+      case 'guestbook': return (
+        <Box id="guestbook" key="guestbook" sx={{ py: 8, bgcolor: 'background.paper' }}>
+          <GuestWishesForm clientId={clientData.id} fontFamily={clientData.fontFamily} />
+        </Box>
+      );
       case 'poweredBy': return <PoweredBy key="poweredBy" />;
       case 'mobileNav': return <MobileNavigation key="mobileNav" items={(clientData.mobileNavSection as any)?.items || []} primaryColor={clientData.primaryColor} />;
       default: return null;
@@ -94,7 +106,16 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
       boxShadow: { lg: '0 0 80px rgba(0,0,0,0.08)' },
       position: 'relative'
     }}>
+      <InvitationCover 
+        brideName={clientData.brideName} 
+        groomName={clientData.groomName} 
+        eventDate={clientData.hero?.eventDate}
+        googleMapsUrl={(clientData.locationSection as any)?.googleMapExternal}
+        onOpen={() => setIsCoverOpen(true)}
+        primaryColor={clientData.primaryColor}
+      />
       {clientData.hero?.showFallingPetals && <FallingPetals />}
+      {isCoverOpen && <AudioPlayer primaryColor={clientData.primaryColor} audioUrl={clientData.musicUrl} />}
       {layoutOrder.map((section: string) => renderSection(section))}
     </Box>
   );

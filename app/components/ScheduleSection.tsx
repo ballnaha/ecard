@@ -251,56 +251,6 @@ export default function ScheduleSection({
           </Box>
         </Box>
 
-        {/* Centered Dress Code Palette */}
-        {dressCodeColors.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} viewport={{ once: true }}>
-            <Box sx={{ 
-              mt: { xs: 8, md: 10 }, 
-              pt: 8, 
-              borderTop: '1px solid rgba(142,125,93,0.1)', 
-              textAlign: 'center' 
-            }}>
-              <Typography sx={{
-                fontFamily: '"Prompt", sans-serif',
-                fontSize: '0.85rem',
-                color: '#8e7d5d',
-                fontWeight: 600,
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                mb: 3,
-                display: 'block'
-              }}>
-                {dressCode?.title || 'Dress Code'}
-              </Typography>
-
-              <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap" sx={{ mb: 4 }}>
-                {dressCodeColors.map((color, i) => (
-                  <Box key={i} sx={{ textAlign: 'center' }}>
-                    <Box sx={{
-                      width: { xs: 50, md: 65 },
-                      height: { xs: 50, md: 65 },
-                      bgcolor: color,
-                      borderRadius: '50%',
-                      border: '4px solid #fff',
-                      boxShadow: '0 8px 25px rgba(0,0,0,0.1)'
-                    }} />
-                  </Box>
-                ))}
-              </Stack>
-
-              <Typography sx={{
-                fontFamily: '"Prompt", sans-serif',
-                fontSize: '0.9rem',
-                color: 'rgba(0,0,0,0.5)',
-                lineHeight: 1.8,
-                maxWidth: '600px',
-                mx: 'auto'
-              }}>
-                {dressCode?.subtitle}
-              </Typography>
-            </Box>
-          </motion.div>
-        )}
       </Container>
     </Box>
   );
