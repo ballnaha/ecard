@@ -103,7 +103,7 @@ export default function GuestbookPage() {
               overflow: 'hidden'
             }}
           >
-            <GuestWishesForm fontFamily={fontFamily} />
+            <GuestWishesForm clientId={clientData?.id || slug} fontFamily={fontFamily} />
           </Paper>
         </motion.div>
       </Container>

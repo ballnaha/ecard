@@ -42,6 +42,7 @@ const staggerContainer: Variants = {
 export default function HeroSection({ data }: { data?: HeroData }) {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const style = data?.heroStyle || 'classic';
+  const mediaType = data?.mediaType || 'video';
 
   React.useEffect(() => {
     if (videoRef.current) {
@@ -249,12 +250,12 @@ export default function HeroSection({ data }: { data?: HeroData }) {
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
-        backgroundColor: data?.mediaType === 'color' ? (data?.heroBackgroundColor || '#ffffff') : '#000',
+        backgroundColor: mediaType === 'color' ? (data?.heroBackgroundColor || '#ffffff') : '#000',
       }}
     >
       {/* Seamless Video or Image Background System */}
       <Box sx={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        {data?.mediaType === 'image' ? (
+        {mediaType === 'image' ? (
           <Image
             src={data?.heroImage || "/images/demo/index-cover.png"}
             alt="Wedding Background"
@@ -266,7 +267,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               opacity: 0.85,
             }}
           />
-        ) : data?.mediaType === 'video' ? (
+        ) : mediaType === 'video' ? (
           <video
             ref={videoRef}
             autoPlay
@@ -292,7 +293,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
       </Box>
 
       {/* Lux Overlay - Only for video/image */}
-      {data?.mediaType !== 'color' && (
+      {mediaType !== 'color' && (
         <Box
           sx={{
             position: 'absolute',
