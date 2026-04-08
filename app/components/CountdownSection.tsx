@@ -57,12 +57,12 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
   const TimeUnit = ({ label, value }: { label: string; value: number }) => (
     <Box sx={{
       textAlign: 'center',
-      minWidth: { xs: '80px', md: '120px' },
+      minWidth: { xs: '70px', md: '120px' },
       px: { xs: 0, md: 2 }
     }}>
       <Typography sx={{
         fontFamily: '"Share Tech Mono", monospace',
-        fontSize: { xs: '3rem', md: '5.2rem' },
+        fontSize: { xs: '2.5rem', md: '5.2rem' },
         color: '#1a1a1a',
         letterSpacing: '0.05em',
         lineHeight: 1,
