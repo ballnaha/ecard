@@ -155,6 +155,7 @@ export default function BuilderEditor({ client }: { client: any }) {
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [giftAccountName, setGiftAccountName] = useState(client?.giftSection?.accountName || '');
   const [eventDate, setEventDate] = useState<Dayjs | null>(client?.eventDate ? dayjs(client.eventDate).utc().utcOffset(7) : dayjs('2026-10-10').utc().utcOffset(7));
   const { showSnackbar } = useSnackbar();
 
@@ -207,6 +208,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'heroNameImage') setPreviewNameImage(url);
     if (fileType === 'bridePic') setPreviewBridePic(url);
     if (fileType === 'groomPic') setPreviewGroomPic(url);
+    if (fileType === 'giftQrCode') setPreviewGiftQrCode(url);
     if (fileType === 'music') setMusicUrl(url);
   };
 
@@ -851,11 +853,59 @@ export default function BuilderEditor({ client }: { client: any }) {
                 <TextField name="giftMessage" label="ข้อความแสดงความขอบคุณ" multiline rows={3} defaultValue={client?.giftSection?.message || ''} size="small" fullWidth />
                 <Divider sx={{ my: 1 }} />
                 <TextField name="bankName" label="ธนาคาร" defaultValue={client?.giftSection?.bankName || ''} size="small" fullWidth />
-                <TextField name="accountName" label="ชื่อบัญชี" defaultValue={client?.giftSection?.accountName || ''} size="small" fullWidth />
+                <TextField name="accountName" label="ชื่อบัญชี" value={giftAccountName} onChange={e => setGiftAccountName(e.target.value)} size="small" fullWidth />
                 <TextField name="accountNumber" label="เลขบัญชี" defaultValue={client?.giftSection?.accountNumber || ''} size="small" fullWidth />
                 <Box>
                   <Typography variant="caption" fontWeight={700}>รูป QR Code</Typography>
-                  {previewGiftQrCode && <Box sx={{ position: 'relative', my: 1 }}><img src={previewGiftQrCode} style={{ width: '100%', height: 200, objectFit: 'contain', border: '1px solid #ddd' }} /><Tooltip title="ลบ QR Code" arrow><IconButton onClick={() => handleFileRemove('giftQrCode')} sx={{ position: 'absolute', top: 4, right: 4 }}><Trash size={16} variant="Bold" /></IconButton></Tooltip></Box>}
+                  {previewGiftQrCode && (
+                    <Box sx={{ position: 'relative', my: 1, width: 'fit-content', mx: 'auto' }}>
+                      <Box sx={{ position: 'relative', p: 1, bgcolor: '#fff', borderRadius: 2, border: '1px solid #ddd' }}>
+                        <img src={previewGiftQrCode} style={{ width: 180, height: 180, objectFit: 'contain' }} />
+                        
+                        {/* Preview Initial Overlay */}
+                        {giftAccountName && (
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              top: '50%',
+                              left: '50%',
+                              transform: 'translate(-50%, -50%)',
+                              width: '40px',
+                              height: '40px',
+                              bgcolor: '#fff',
+                              borderRadius: '50%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                              border: '2px solid #fff',
+                            }}
+                          >
+                            <Box sx={{
+                              width: '32px',
+                              height: '32px',
+                              bgcolor: primaryColor,
+                              borderRadius: '50%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              color: '#fff',
+                              fontWeight: 500,
+                              fontSize: '1.3rem',
+                              fontFamily: '"Parisienne", cursive'
+                            }}>
+                              {(giftAccountName.match(/[a-zA-Z]/) || [giftAccountName.charAt(0)])[0].toUpperCase()}
+                            </Box>
+                          </Box>
+                        )}
+                      </Box>
+                      <Tooltip title="ลบ QR Code" arrow>
+                        <IconButton onClick={() => handleFileRemove('giftQrCode')} sx={{ position: 'absolute', top: -10, right: -10, bgcolor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', '&:hover': { bgcolor: '#f1f5f9' } }}>
+                          <Trash size={16} variant="Bold" color="#ef4444" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  )}
                   <Button variant="outlined" component="label" fullWidth sx={{ borderStyle: 'dashed' }}>เลือกไฟล์ QR Code<input hidden type="file" accept="image/*" onChange={e => handleFileSelect(e, 'giftQrCode')} /></Button>
                 </Box>
                 <Button type="submit" variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกข้อมูลของขวัญ</Button>

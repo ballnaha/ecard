@@ -7,7 +7,7 @@ import Link from 'next/link';
 import DrawIcon from '@mui/icons-material/Draw';
 import { getFontFamily, isThai } from '../utils/fontHelper';
 
-export default function GiftSection({ data }: { data?: any }) {
+export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?: any, primaryColor?: string }) {
   const bankDetails = {
     bankName: data?.bankName || 'KASIKORNBANK (KBank)',
     accountNumber: data?.accountNumber || 'xxx-x-x-5678-x',
@@ -126,14 +126,18 @@ export default function GiftSection({ data }: { data?: any }) {
                 {data?.qrCode && (
                   <Box
                     sx={{
-                      width: '160px',
-                      height: '160px',
-                      borderRadius: '20px',
+                      width: '180px', // slightly larger for better readability with logo
+                      height: '180px',
+                      borderRadius: '24px',
                       overflow: 'hidden',
                       p: 1.5,
                       backgroundColor: '#fff',
-                      border: '1px solid rgba(142, 125, 93, 0.08)',
-                      boxShadow: '0 8px 30px rgba(0,0,0,0.04)'
+                      border: '1px solid rgba(142, 125, 93, 0.1)',
+                      boxShadow: '0 12px 40px rgba(0,0,0,0.06)',
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}
                   >
                     <Box
@@ -142,6 +146,45 @@ export default function GiftSection({ data }: { data?: any }) {
                       alt="Wedding Gift QR Code"
                       sx={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
+                    
+                    {/* QR Center Initial Overlay */}
+                    {bankDetails.accountName && (
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '42px',
+                          height: '42px',
+                          bgcolor: '#fff',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                          border: '2px solid #fff',
+                          zIndex: 2
+                        }}
+                      >
+                        <Box sx={{
+                          width: '34px',
+                          height: '34px',
+                          bgcolor: primaryColor,
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#fff',
+                          fontWeight: 500,
+                          fontSize: '1.4rem',
+                          fontFamily: getFontFamily('Parisienne'),
+                          textTransform: 'uppercase'
+                        }}>
+                          {(bankDetails.accountName.match(/[a-zA-Z]/) || [bankDetails.accountName.charAt(0)])[0].toUpperCase()}
+                        </Box>
+                      </Box>
+                    )}
                   </Box>
                 )}
 

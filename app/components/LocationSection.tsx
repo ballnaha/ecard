@@ -47,7 +47,7 @@ export default function LocationSection({ data }: { data?: LocationData }) {
             fontSize: '0.75rem',
             mb: 2,
             display: 'block',
-            fontWeight: 700
+            fontWeight: 400
           }}>
             THE VENUE
           </Typography>
