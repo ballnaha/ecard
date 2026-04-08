@@ -47,11 +47,18 @@ export default function HeroSection({ data }: { data?: HeroData }) {
 
   React.useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.play().catch(error => {
-        if (error.name !== "AbortError") {
-          console.error("Hero video play error:", error);
+      // Delay playing video by 1.2s to wait for the cover fade transition 
+      // This massively improves smoothness on mobile/LINE app
+      const timer = setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play().catch(error => {
+            if (error.name !== "AbortError") {
+              console.error("Hero video play error:", error);
+            }
+          });
         }
-      });
+      }, 1200);
+      return () => clearTimeout(timer);
     }
   }, []);
 

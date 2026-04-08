@@ -28,11 +28,23 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
   console.log('Mobile Nav Items Target:', clientData.mobileNavSection?.items);
   
   const [isCoverOpen, setIsCoverOpen] = useState(false);
+  const [showContent, setShowContent] = useState(false);
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Handle phased transition to avoid stuttering
+  React.useEffect(() => {
+    if (isCoverOpen) {
+      // Delay mounting heavy content until the cover exit animation is well underway
+      const timer = setTimeout(() => {
+        setShowContent(true);
+      }, 1000); // 1s delay for full smoothness
+      return () => clearTimeout(timer);
+    }
+  }, [isCoverOpen]);
 
   const defaultLayoutOrder = [
     "hero",
@@ -136,18 +148,24 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
       <Box sx={{
         opacity: isCoverOpen ? 1 : 0,
         visibility: isCoverOpen ? 'visible' : 'hidden',
-        transition: 'opacity 0.8s ease-in-out',
+        transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
         display: mounted ? 'block' : 'none',
         bgcolor: clientData.secondaryColor || '#faf9f6',
+        willChange: 'opacity',
       }}>
-        {clientData.hero?.showFallingPetals && <FallingPetals />}
+        {clientData.hero?.showFallingPetals && isCoverOpen && <FallingPetals />}
         {isCoverOpen && (
           <AudioPlayer 
             primaryColor={clientData.primaryColor} 
             audioUrl={clientData.musicUrl || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"} 
           />
         )}
-        {layoutOrder.map((section: string) => renderSection(section))}
+        {layoutOrder.map((section: string) => {
+          // Optimization: Only render HeroSection initially
+          if (section === 'hero') return renderSection(section);
+          if (showContent) return renderSection(section);
+          return null;
+        })}
       </Box>
     </Box>
   );

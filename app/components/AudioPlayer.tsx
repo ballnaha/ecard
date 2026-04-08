@@ -17,48 +17,58 @@ export default function AudioPlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  // Return null if no audio URL is provided
-  if (!audioUrl) return null;
+  const isPlayingRef = useRef(false);
 
   // Sync state with audio events
-  const handlePlay = () => setIsPlaying(true);
-  const handlePause = () => setIsPlaying(false);
+  const handlePlay = () => {
+    setIsPlaying(true);
+    isPlayingRef.current = true;
+  };
+  const handlePause = () => {
+    setIsPlaying(false);
+    isPlayingRef.current = false;
+  };
 
-  // Show the player and attempt autoplay on interaction
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
+    // Show the player quickly after mount
+    const timer = setTimeout(() => setIsVisible(true), 1200);
+
+    // Initial attempt to play (will likely be triggered by the user's interaction on the envelope)
+    // but the interaction context is lost due to async/await in the cover.
+    // So we still need a global 'one-time' listener for anyone who hasn't interacted yet.
     const startAudio = () => {
-      audio.play()
-        .then(() => setIsPlaying(true))
-        .catch(err => console.log('Autoplay attempt failed:', err));
+      if (audio.paused) {
+        audio.play()
+          .then(() => setIsPlaying(true))
+          .catch(err => console.log('Autoplay attempt failed:', err));
         
+        // Remove all listeners once triggered once
+        cleanupListeners();
+      }
+    };
+
+    const cleanupListeners = () => {
       window.removeEventListener('click', startAudio);
       window.removeEventListener('touchstart', startAudio);
-      window.removeEventListener('mousedown', startAudio);
       window.removeEventListener('scroll', startAudio);
     };
 
     window.addEventListener('click', startAudio, { once: true });
     window.addEventListener('touchstart', startAudio, { once: true });
-    window.addEventListener('mousedown', startAudio, { once: true });
     window.addEventListener('scroll', startAudio, { once: true });
-
-    const timer = setTimeout(() => setIsVisible(true), 1500);
 
     // Stop music when user leaves the tab/browser (Page Visibility API)
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        if (audio.paused === false) {
+        if (!audio.paused) {
           audio.pause();
-          // We don't change setIsPlaying(false) here because we want to know 
-          // it was "supposed" to be playing when they come back
         }
       } else {
         // Resume if the state says it should be playing
-        if (isPlaying && audio.paused) {
+        if (isPlayingRef.current && audio.paused) {
           audio.play().catch(() => setIsPlaying(false));
         }
       }
@@ -67,28 +77,34 @@ export default function AudioPlayer({
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      window.removeEventListener('click', startAudio);
-      window.removeEventListener('touchstart', startAudio);
-      window.removeEventListener('mousedown', startAudio);
-      window.removeEventListener('scroll', startAudio);
+      cleanupListeners();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearTimeout(timer);
     };
-  }, [isPlaying]); // Add isPlaying to dependencies for the visibility handler logic
+  }, []);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        // Most browsers block auto-play until interaction
-        audioRef.current.play().catch(err => {
-          console.log('Audio play blocked by browser:', err);
-        });
-      }
-      setIsPlaying(!isPlaying);
+  const togglePlay = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+      isPlayingRef.current = false;
+    } else {
+      audio.play()
+        .then(() => {
+          setIsPlaying(true);
+          isPlayingRef.current = true;
+        })
+        .catch(err => console.log('Play failed:', err));
     }
   };
+
+  if (!audioUrl) return null;
 
   return (
     <>
