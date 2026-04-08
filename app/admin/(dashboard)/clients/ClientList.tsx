@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Box, Button, Typography, Paper, Table, TableBody, TableCell, TableHead, TableRow, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Chip, Tooltip } from '@mui/material';
+import { Box, Button, Typography, Paper, Table, TableBody, TableCell, TableHead, TableRow, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Chip, Tooltip, Stack } from '@mui/material';
 import { Edit2, Trash, Add, Copy } from 'iconsax-react';
 import { createClient, deleteClient } from './actions';
 import { useSnackbar } from '../../components/SnackbarProvider';
@@ -93,7 +93,22 @@ export default function ClientList({ initialClients }: { initialClients: any[] }
               <TableRow key={client.id} hover>
                 <TableCell sx={{ fontWeight: 600, color: '#0f172a' }}>{client.groomName} & {client.brideName}</TableCell>
                 <TableCell>
-                  <Chip label={`/${client.slug}`} size="small" sx={{ borderRadius: 1, bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Chip label={`/${client.slug}`} size="small" sx={{ borderRadius: 1, bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
+                    <Tooltip title="คัดลอกลิงก์การ์ด (สำรับเปิดใน LINE)" arrow>
+                      <IconButton 
+                        size="small" 
+                        onClick={() => {
+                          const url = `${window.location.origin}/${client.slug}?openExternalBrowser=1`;
+                          navigator.clipboard.writeText(url);
+                          showSnackbar('คัดลอกลิงก์การ์ดเรียบร้อย!', 'success');
+                        }}
+                        sx={{ color: '#94a3b8', '&:hover': { color: '#f2a1a1' } }}
+                      >
+                        <Copy size={16} variant="Outline" />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
                 </TableCell>
                 <TableCell sx={{ color: '#475569' }}>{dayjs(client.eventDate).utc().utcOffset(7).format('DD/MM/YYYY')}</TableCell>
                 <TableCell align="right">

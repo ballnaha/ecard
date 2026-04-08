@@ -141,8 +141,8 @@ export default function InvitationCover({
           key="invitation-cover"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05, filter: 'blur(20px)' }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          exit={{ opacity: 0, scale: 1.08 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           style={{
             position: 'fixed',
             inset: 0,
@@ -670,10 +670,10 @@ export default function InvitationCover({
                         px: 4, py: 1, borderRadius: '50px',
                         color: primaryColor, borderColor: alpha(primaryColor, 0.3),
                         fontFamily: 'Prompt', letterSpacing: '0.1em', fontSize: '0.8rem',
-                        textTransform: 'none', bgcolor: 'rgba(255,255,255,0.6)',
-                        backdropFilter: 'blur(10px)', boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
+                        textTransform: 'none', bgcolor: 'rgba(255,255,255,0.9)',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.05)',
                         border: '1px solid', transition: 'all 0.3s ease',
-                        '&:hover': { bgcolor: 'white', borderColor: primaryColor, boxShadow: '0 15px 35px rgba(0,0,0,0.1)' }
+                        '&:hover': { bgcolor: 'white', borderColor: primaryColor, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }
                       }}
                     >
                       ดูแผนที่

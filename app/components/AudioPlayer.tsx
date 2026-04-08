@@ -48,14 +48,33 @@ export default function AudioPlayer({
 
     const timer = setTimeout(() => setIsVisible(true), 1500);
 
+    // Stop music when user leaves the tab/browser (Page Visibility API)
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (audio.paused === false) {
+          audio.pause();
+          // We don't change setIsPlaying(false) here because we want to know 
+          // it was "supposed" to be playing when they come back
+        }
+      } else {
+        // Resume if the state says it should be playing
+        if (isPlaying && audio.paused) {
+          audio.play().catch(() => setIsPlaying(false));
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       window.removeEventListener('click', startAudio);
       window.removeEventListener('touchstart', startAudio);
       window.removeEventListener('mousedown', startAudio);
       window.removeEventListener('scroll', startAudio);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearTimeout(timer);
     };
-  }, []);
+  }, [isPlaying]); // Add isPlaying to dependencies for the visibility handler logic
 
   const togglePlay = () => {
     if (audioRef.current) {

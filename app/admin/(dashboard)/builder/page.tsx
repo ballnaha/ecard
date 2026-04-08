@@ -82,7 +82,7 @@ export default async function BuilderPage({ searchParams }: { searchParams: Prom
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <Link href={`/${client.slug}`} target="_blank" style={{ textDecoration: 'none' }}>
+            <Link href={`/${client.slug}?openExternalBrowser=1`} target="_blank" style={{ textDecoration: 'none' }}>
               <Button
                 variant="outlined"
                 size="medium"

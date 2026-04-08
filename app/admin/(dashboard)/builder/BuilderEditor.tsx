@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack, alpha, Checkbox, List, ListItem, ListItemText, ListItemIcon, Paper, Tooltip } from '@mui/material';
 import { Reorder } from 'framer-motion';
-import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash, EyeSlash, Layer, Home, Calendar, Gallery, Location, PresentionChart, Heart, People, Gift, MessageText1, Link1, Music, CloseCircle } from 'iconsax-react';
+import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash, EyeSlash, Layer, Home, Calendar, Gallery, Location, PresentionChart, Heart, People, Gift, MessageText1, Link1, Music, CloseCircle, Copy } from 'iconsax-react';
 import { useSnackbar } from '../../components/SnackbarProvider';
 import { updateClientLayout, updateClientHero, updateClientTheme, updateClientCouple, updateClientGallery, updateClientCountdown, updateClientSchedule, updateClientDressCode, updateClientLocation, updateClientGift, updateClientMobileNav } from '../clients/actions';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -861,7 +861,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                     <Box sx={{ position: 'relative', my: 1, width: 'fit-content', mx: 'auto' }}>
                       <Box sx={{ position: 'relative', p: 1, bgcolor: '#fff', borderRadius: 2, border: '1px solid #ddd' }}>
                         <img src={previewGiftQrCode} style={{ width: 180, height: 180, objectFit: 'contain' }} />
-                        
+
                         {/* Preview Initial Overlay */}
                         {giftAccountName && (
                           <Box
@@ -1082,6 +1082,38 @@ export default function BuilderEditor({ client }: { client: any }) {
 
             {editingItem.id === 'theme' && (
               <Box component="form" action={handleThemeSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3.5 }}>
+
+                {/* PUBLIC LINK SHARING BOX */}
+                <Box sx={{ p: 2.5, bgcolor: '#f5f3ff', borderRadius: '24px', border: '1px solid #ddd6fe' }}>
+                  <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1.5 }}>
+                    <Box sx={{ p: 1, bgcolor: '#ede9fe', borderRadius: '50%', color: '#7c3aed' }}>
+                      <Link1 size="24" variant="Bold" color="#7c3aed" />
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2" fontWeight={800} color="#5b21b6">ลิงก์ส่งงานให้แขก (Public Link)</Typography>
+                      <Typography variant="caption" color="#7c3aed">ลิงก์นี้จะบังคับเปิดบน Browser หลักเพื่อความลื่นไหลที่สุด</Typography>
+                    </Box>
+                  </Stack>
+                  <Box sx={{ p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #e1dbff', mb: 2 }}>
+                    <Typography variant="caption" sx={{ color: '#6d28d9', fontWeight: 600, wordBreak: 'break-all', display: 'block' }}>
+                      {typeof window !== 'undefined' ? window.location.origin : ''}/{client?.slug}?openExternalBrowser=1
+                    </Typography>
+                  </Box>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    startIcon={<Copy size={18} variant="Bold" />}
+                    onClick={() => {
+                      const url = `${window.location.origin}/${client?.slug}?openExternalBrowser=1`;
+                      navigator.clipboard.writeText(url);
+                      showSnackbar('คัดลอกลิงก์ส่งงานเรียบร้อย!', 'success');
+                    }}
+                    sx={{ bgcolor: '#7c3aed', color: 'white', borderRadius: '12px', fontWeight: 700, textTransform: 'none', py: 1.2, '&:hover': { bgcolor: '#6d28d9' } }}
+                  >
+                    คัดลอกลิงก์ส่งงาน
+                  </Button>
+                </Box>
+
                 <Box sx={{ p: 2.5, bgcolor: '#fdf4f4', borderRadius: '24px', border: '1px solid #fce7e7', mb: 1 }}>
                   <Typography variant="subtitle2" fontWeight={800} color="#991b1b" sx={{ mb: 1 }}>✨ สีหลัก (Primary Color)</Typography>
                   <Typography variant="caption" sx={{ color: '#b91c1c', display: 'block', mb: 2, lineHeight: 1.5 }}>

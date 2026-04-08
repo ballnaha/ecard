@@ -53,7 +53,6 @@ const Petal = ({ left, duration, delay, size, rotation }: PetalProps) => (
       zIndex: 9999,
       pointerEvents: 'none',
       opacity: 0,
-      filter: 'blur(0.5px)',
       animation: `${fall} ${duration} linear ${delay} infinite`,
       transform: `rotate(${rotation})`,
       willChange: 'transform, opacity', // Performance hint for browser
@@ -76,8 +75,8 @@ export default function FallingPetals() {
 
   useEffect(() => {
     // Generate petals only on client side to avoid hydration mismatch
-    // We limit to 15-20 petals for best mobile performance
-    const petalCount = 12;
+    // We limit to 8 petals for best mobile performance (important for LINE app)
+    const petalCount = 8;
     const newPetals: PetalProps[] = Array.from({ length: petalCount }).map(() => ({
       left: `${Math.random() * 100}%`,
       duration: `${10 + Math.random() * 15}s`, // Slower fall (10-25s) is more cinematic

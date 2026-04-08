@@ -489,9 +489,9 @@ export default function AdminClients() {
 
                       {/* Actions */}
                       <Stack direction="row" spacing={1} alignItems="center">
-                        <Tooltip title="Preview Card" arrow>
+                        <Tooltip title="Preview Card (Open in Browser)" arrow>
                           <IconButton 
-                            onClick={() => window.open(`/${client.slug}`, '_blank')}
+                            onClick={() => window.open(`/${client.slug}?openExternalBrowser=1`, '_blank')}
                             sx={{ 
                               width: 40,
                               height: 40,
@@ -529,6 +529,24 @@ export default function AdminClients() {
                             }}
                           >
                             <People size="20" variant="Bulk" color={brandColor} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Copy Guest Link (for LINE)" arrow>
+                          <IconButton 
+                            onClick={() => {
+                              const url = `${window.location.origin}/${client.slug}?openExternalBrowser=1`;
+                              navigator.clipboard.writeText(url);
+                              showSnackbar('คัดลอกลิงก์ส่งงานให้แขกเรียบร้อย!', 'success');
+                            }}
+                            sx={{ 
+                              width: 40,
+                              height: 40,
+                              bgcolor: alpha('#7c3aed', 0.08),
+                              borderRadius: '12px',
+                              '&:hover': { bgcolor: alpha('#7c3aed', 0.15) }
+                            }}
+                          >
+                            <DirectNormal size="20" variant="Bulk" color="#7c3aed" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Copy Dashboard Link" arrow>

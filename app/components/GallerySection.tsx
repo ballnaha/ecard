@@ -67,13 +67,13 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               loop={images.length > 2}
               creativeEffect={{
                 prev: {
-                    shadow: true,
+                    shadow: false,
                     translate: ['-120%', 0, 500],
                     rotate: [0, 0, -15],
                     opacity: 1
                 },
                 next: {
-                    shadow: true,
+                    shadow: false,
                     translate: ['8%', '8%', -1],
                     scale: 0.93,
                     opacity: 1
@@ -127,11 +127,9 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               overflow: 'hidden',
               transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
               transform: 'scale(0.85)',
-              opacity: 0.5,
-              filter: 'blur(1px)',
+              opacity: 0.4,
               '&.swiper-slide-active': {
                 opacity: 1,
-                filter: 'blur(0px)',
                 boxShadow: '0 25px 60px rgba(142, 125, 93, 0.25)',
                 willChange: 'transform',
                 backfaceVisibility: 'hidden'

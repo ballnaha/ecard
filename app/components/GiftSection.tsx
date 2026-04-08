@@ -86,8 +86,7 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
             <Paper elevation={0} sx={{
               p: { xs: 3, md: 5 },
               borderRadius: '32px',
-              backgroundColor: 'rgba(255,255,255,0.6)',
-              backdropFilter: 'blur(10px)',
+              backgroundColor: 'rgba(255,255,255,0.95)', // Increased opacity
               border: '1px solid rgba(142, 125, 93, 0.1)',
               textAlign: 'center',
               boxShadow: '0 15px 50px rgba(0,0,0,0.02)'
