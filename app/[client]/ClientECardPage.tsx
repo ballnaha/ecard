@@ -81,7 +81,7 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
           </Box>
         );
       case 'gallery': return <Box id="gallery" key="gallery"><GallerySection data={clientData.galleryImages as any} /></Box>;
-      case 'countdown': return <Box id="countdown" key="countdown"><CountdownSection data={clientData.countdownSection as any} eventDate={clientData.eventDate} brideName={clientData.brideName} groomName={clientData.groomName} venueName={(clientData.locationSection as any)?.venueName} /></Box>;
+      case 'countdown': return <Box id="countdown" key="countdown"><CountdownSection data={clientData.countdownSection as any} eventDate={clientData.eventDate} brideName={clientData.brideName} groomName={clientData.groomName} venueName={(clientData.locationSection as any)?.venueName} schedules={clientData.scheduleSection as any[]} /></Box>;
       case 'gift':
       case 'giftMoney':
         return <GiftSection key="gift" data={clientData.giftSection} />;

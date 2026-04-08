@@ -12,12 +12,13 @@ interface CountdownData {
   subtitle?: string;
 }
 
-export default function CountdownSection({ data, eventDate, brideName, groomName, venueName }: {
+export default function CountdownSection({ data, eventDate, brideName, groomName, venueName, schedules }: {
   data?: CountdownData;
   eventDate?: Date;
   brideName?: string;
   groomName?: string;
   venueName?: string;
+  schedules?: any[];
 }) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -57,7 +58,7 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
   const TimeUnit = ({ label, value }: { label: string; value: number }) => (
     <Box sx={{
       textAlign: 'center',
-      minWidth: { xs: '70px', md: '120px' },
+      minWidth: { xs: '95px', md: '120px' },
       px: { xs: 0, md: 2 }
     }}>
       <Typography sx={{
@@ -130,6 +131,7 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
               brideName={brideName}
               groomName={groomName}
               venueName={venueName}
+              schedules={schedules}
             />
           </Box>
         </Box>

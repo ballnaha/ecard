@@ -11,17 +11,39 @@ interface CalendarProps {
   brideName?: string;
   groomName?: string;
   venueName?: string;
+  schedules?: any[];
 }
 
-export default function CalendarButton({ eventDate, brideName, groomName, venueName }: CalendarProps) {
+export default function CalendarButton({ eventDate, brideName, groomName, venueName, schedules }: CalendarProps) {
   const dateStr = eventDate ? dayjs(eventDate).format('YYYYMMDD') : '20260514';
+
+  // Helper to parse "07.29" or "07:29" into "072900"
+  const parseTime = (timeStr?: string) => {
+    if (!timeStr) return null;
+    const cleanTime = timeStr.replace('.', ':').split(':');
+    if (cleanTime.length < 2) return null;
+    const hh = cleanTime[0].trim().padStart(2, '0');
+    const mm = cleanTime[1].trim().padStart(2, '0');
+    return `${hh}${mm}00`;
+  };
+
+  // Get Start Time from the first schedule item
+  const firstTime = schedules && schedules.length > 0 ? parseTime(schedules[0].time) : '110000';
+  
+  // Get End Time from the last schedule item, add ~4 hours for default buffer
+  const lastTimeRaw = schedules && schedules.length > 0 ? schedules[schedules.length - 1].time : '170000';
+  const lastTimeParsed = parseTime(lastTimeRaw);
+  
+  // Create solid end time (if last is 11:30, maybe end at 15:30)
+  const startDate = `${dateStr}T${firstTime || '110000'}`;
+  const endDate = `${dateStr}T${lastTimeParsed || '210000'}`;
   
   const eventDetails = {
     title: `Wedding: ${brideName || 'Mook'} & ${groomName || 'Top'}`,
     location: venueName || 'The Glasshouse Estate, Chiang Mai',
     description: `We are so excited to have you celebrate our special day with us! \n\nWedding of ${brideName} & ${groomName}`,
-    startDate: `${dateStr}T110000`, // Assume 11 AM start
-    endDate: `${dateStr}T210000`    // Assume 9 PM end
+    startDate,
+    endDate
   };
 
   const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventDetails.title)}&dates=${eventDetails.startDate}/${eventDetails.endDate}&details=${encodeURIComponent(eventDetails.description)}&location=${encodeURIComponent(eventDetails.location)}`;
