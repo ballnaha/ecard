@@ -2,6 +2,9 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import prisma from '@/lib/prisma';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 import ClientECardPage from './ClientECardPage';
 import { notFound } from 'next/navigation';
 
@@ -40,7 +43,7 @@ export default async function ClientWeddingECard({
   const hero = {
     groomName: client.groomName,
     brideName: client.brideName,
-    eventDate: dayjs(client.eventDate).format('DD . MM . YY'),
+    eventDate: dayjs(client.eventDate).utc().utcOffset(7).format('DD . MM . YY'),
     locationText: heroSection.locationText || '',
     mediaType: heroSection.mediaType || 'video',
     heroStyle: heroSection.heroStyle || 'classic',

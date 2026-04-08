@@ -5,6 +5,9 @@ import { Button, Stack, Typography, Box } from '@mui/material';
 import { CalendarMonth as CalendarIcon, Apple as AppleIcon, Google as GoogleIcon } from '@mui/icons-material';
 
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
  
 interface CalendarProps {
   eventDate?: Date;
@@ -15,7 +18,7 @@ interface CalendarProps {
 }
 
 export default function CalendarButton({ eventDate, brideName, groomName, venueName, schedules }: CalendarProps) {
-  const dateStr = eventDate ? dayjs(eventDate).format('YYYYMMDD') : '20260514';
+  const dateStr = eventDate ? dayjs(eventDate).utc().utcOffset(7).format('YYYYMMDD') : '20261010';
 
   // Helper to parse "07.29" or "07:29" into "072900"
   const parseTime = (timeStr?: string) => {

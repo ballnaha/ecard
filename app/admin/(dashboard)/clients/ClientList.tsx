@@ -11,7 +11,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import 'dayjs/locale/th';
+
+dayjs.extend(utc);
 
 export default function ClientList({ initialClients }: { initialClients: any[] }) {
   const [open, setOpen] = useState(false);
@@ -27,7 +30,7 @@ export default function ClientList({ initialClients }: { initialClients: any[] }
     setLoading(true);
     const fd = new FormData(e.currentTarget);
     if (eventDate) {
-      fd.set('eventDate', eventDate.format('YYYY-MM-DD'));
+      fd.set('eventDate', eventDate.toISOString());
     }
 
     const res = await createClient(fd);
@@ -92,7 +95,7 @@ export default function ClientList({ initialClients }: { initialClients: any[] }
                 <TableCell>
                   <Chip label={`/${client.slug}`} size="small" sx={{ borderRadius: 1, bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
                 </TableCell>
-                <TableCell sx={{ color: '#475569' }}>{new Date(client.eventDate).toLocaleDateString('th-TH')}</TableCell>
+                <TableCell sx={{ color: '#475569' }}>{dayjs(client.eventDate).utc().utcOffset(7).format('DD/MM/YYYY')}</TableCell>
                 <TableCell align="right">
                   <Tooltip title="เข้าห้องออกแบบการ์ด" arrow>
                     <Link href={`/admin/builder?clientId=${client.id}`} style={{ textDecoration: 'none' }}>

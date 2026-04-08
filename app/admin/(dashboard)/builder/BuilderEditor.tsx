@@ -9,6 +9,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 const initialLayoutBase = [
   { id: 'hero', title: 'หน้าปก (Hero Section)', icon: '🎞️', isActive: true },
@@ -152,7 +155,7 @@ export default function BuilderEditor({ client }: { client: any }) {
   });
 
   const [isSaving, setIsSaving] = useState(false);
-  const [eventDate, setEventDate] = useState<Dayjs | null>(client?.eventDate ? dayjs(client.eventDate) : dayjs('2026-05-14'));
+  const [eventDate, setEventDate] = useState<Dayjs | null>(client?.eventDate ? dayjs(client.eventDate).utc().utcOffset(7) : dayjs('2026-10-10').utc().utcOffset(7));
   const { showSnackbar } = useSnackbar();
 
   const handleToggleActive = (id: string) => {

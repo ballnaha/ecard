@@ -5,6 +5,9 @@ import { Box, Container, Typography, Stack } from '@mui/material';
 import { motion } from 'framer-motion';
 import CalendarButton from './CalendarButton';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 import { getFontFamily, isThai } from '../utils/fontHelper';
 
 interface CountdownData {
@@ -27,7 +30,7 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
     seconds: 0
   });
 
-  const target = eventDate ? dayjs(eventDate).valueOf() : dayjs('2026-05-14').valueOf();
+  const target = eventDate ? dayjs(eventDate).utc().utcOffset(7).valueOf() : dayjs('2026-10-10').utc().utcOffset(7).valueOf();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {

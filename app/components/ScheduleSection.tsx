@@ -4,7 +4,10 @@ import React from 'react';
 import { Box, Container, Typography, Stack, Divider } from '@mui/material';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import 'dayjs/locale/th';
+
+dayjs.extend(utc);
 import { Glass, Heart, Record, Sun1, Music, Calendar, Profile2User } from 'iconsax-react';
 
 interface ScheduleItem {
@@ -52,7 +55,7 @@ export default function ScheduleSection({
 
   const scheduleItems = (data && data.length > 0) ? data : defaultSchedule;
   const dressCodeColors = dressCode?.colors || [];
-  const formattedDate = eventDate ? dayjs(eventDate).locale('th') : dayjs('2026-10-10').locale('th');
+  const formattedDate = eventDate ? dayjs(eventDate).utc().utcOffset(7).locale('th') : dayjs('2026-10-10').utc().utcOffset(7).locale('th');
 
   const getIcon = (iconName?: string) => {
     if (!iconName) return <Calendar variant="Outline" size={36} />;
