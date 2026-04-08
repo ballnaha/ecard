@@ -182,31 +182,7 @@ export default function GiftSection({ data }: { data?: any }) {
                 </Box>
               </Box>
 
-              <Box sx={{ mt: 5 }}>
-                <Button
-                  LinkComponent={Link}
-                  href="/guestbook"
-                  variant="outlined"
-                  startIcon={<DrawIcon />}
-                  sx={{
-                    borderRadius: '40px',
-                    px: 3,
-                    py: 1.2,
-                    borderColor: 'rgba(142, 125, 93, 0.4)',
-                    color: '#8e7d5d',
-                    textTransform: 'none',
-                    fontFamily: '"Prompt", sans-serif',
-                    fontSize: '0.85rem',
-                    fontWeight: 500,
-                    '&:hover': {
-                      borderColor: '#8e7d5d',
-                      backgroundColor: 'rgba(142, 125, 93, 0.05)'
-                    }
-                  }}
-                >
-                  ส่งคำอวยพร (Digital Guestbook)
-                </Button>
-              </Box>
+
             </Paper>
           </motion.div>
         </Box>

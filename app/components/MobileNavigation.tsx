@@ -64,11 +64,6 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
 
   const scrollToSection = async (id: string, index: number) => {
     setValue(index);
-    if (id === 'guestbook') {
-      router.push(`/${params.client}/guestbook`);
-      return;
-    }
-
     // Start Fade Out
     setIsTransitioning(true);
 

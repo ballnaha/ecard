@@ -108,13 +108,13 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
           <Box sx={{ height: '1px', width: '60px', bgcolor: '#8e7d5d', opacity: 0.5, mx: 'auto', mt: 3 }} />
         </Box>
 
-        <Stack direction="row" justifyContent="center" alignItems="center" spacing={{ xs: 0, md: 2 }} sx={{ mb: 6 }}>
+        <Stack direction="row" justifyContent="center" alignItems="center" spacing={{ xs: 0, md: 1 }} sx={{ mb: 6 }}>
           <TimeUnit label="Days" value={timeLeft.days} />
-          <Box sx={{ height: '40px', width: '1px', backgroundColor: 'rgba(142,125,93,0.3)', mt: -4 }} />
+          <Box sx={{ height: '45px', width: '1.5px', backgroundColor: 'rgba(142,125,93,0.4)', alignSelf: 'center', opacity: 0.8 }} />
           <TimeUnit label="Hours" value={timeLeft.hours} />
-          <Box sx={{ height: '40px', width: '1px', backgroundColor: 'rgba(142,125,93,0.3)', mt: -4 }} />
+          <Box sx={{ height: '45px', width: '1.5px', backgroundColor: 'rgba(142,125,93,0.4)', alignSelf: 'center', opacity: 0.8 }} />
           <TimeUnit label="Mins" value={timeLeft.minutes} />
-          <Box sx={{ height: '40px', width: '1px', backgroundColor: 'rgba(142,125,93,0.3)', mt: -4 }} />
+          <Box sx={{ height: '45px', width: '1.5px', backgroundColor: 'rgba(142,125,93,0.4)', alignSelf: 'center', opacity: 0.8 }} />
           <TimeUnit label="Secs" value={timeLeft.seconds} />
         </Stack>
 

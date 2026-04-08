@@ -14,6 +14,7 @@ import RSVPSection from '@/app/components/RSVPSection';
 import PoweredBy from '@/app/components/PoweredBy';
 import FallingPetals from '@/app/components/FallingPetals';
 import GuestWishesForm from '@/app/components/GuestWishesForm';
+import GuestbookSection from '@/app/components/GuestbookSection';
 import MobileNavigation from '@/app/components/MobileNavigation';
 import AudioPlayer from '@/app/components/AudioPlayer';
 import InvitationCover from '@/app/components/InvitationCover';
@@ -91,8 +92,12 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         return <Box id="location" key="location"><LocationSection data={clientData.locationSection as any} /></Box>;
       case 'dressCode': return <DressCodeSection key="dressCode" data={clientData.dressCodeSection as any} />;
       case 'guestbook': return (
-        <Box id="guestbook" key="guestbook" sx={{ py: 8, bgcolor: 'background.paper' }}>
-          <GuestWishesForm clientId={clientData.id} fontFamily={clientData.fontFamily} />
+        <Box id="guestbook" key="guestbook">
+          <GuestbookSection 
+            clientId={clientData.id} 
+            fontFamily={clientData.fontFamily} 
+            primaryColor={clientData.primaryColor}
+          />
         </Box>
       );
       case 'poweredBy': return <PoweredBy key="poweredBy" />;

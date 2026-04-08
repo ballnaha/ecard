@@ -566,96 +566,49 @@ export default function InvitationCover({
                   </motion.div>
                 </div>
 
-                {/* Wax Seal — with break animation */}
-                <AnimatePresence>
-                  {(phase === 'idle' || phase === 'seal-break') && (
-                    <motion.div
-                      key="wax-seal"
-                      exit={{ opacity: 0, scale: 1.4 }}
-                      transition={{ duration: 0.5, ease: 'easeOut' }}
-                      style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        zIndex: 10,
-                        cursor: phase === 'idle' ? 'pointer' : 'default',
-                      }}
-                      onClick={handleOpen}
-                    >
-                      {/* Particles that fly out when seal breaks */}
-                      {phase === 'seal-break' && (
-                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
-                          {Array.from({ length: 12 }).map((_, i) => (
-                            <SealParticle key={i} index={i} primaryColor={primaryColor} />
-                          ))}
-                        </div>
-                      )}
-
-                      <motion.div
-                        whileTap={phase === 'idle' ? { scale: 0.92 } : {}}
-                        animate={phase === 'seal-break'
-                          ? {
-                            scale: [1, 1.15, 0.6],
-                            rotate: [0, -8, 15],
-                            opacity: [1, 1, 0],
-                          }
-                          : {}
-                        }
-                        transition={phase === 'seal-break'
-                          ? {
-                            duration: 0.6,
-                            times: [0, 0.4, 1],
-                            ease: [0.22, 1, 0.36, 1],
-                          }
-                          : {}
-                        }
-                      >
-                        {/* Glow ring before breaking */}
-                        {phase === 'seal-break' && (
-                          <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 2.5, opacity: [0, 0.5, 0] }}
-                            transition={{ duration: 0.8 }}
-                            style={{
-                              position: 'absolute',
-                              inset: -10,
-                              borderRadius: '50%',
-                              border: `2px solid ${alpha(primaryColor, 0.3)}`,
-                              pointerEvents: 'none',
-                            }}
-                          />
-                        )}
-
-                        <Box sx={{
-                          position: 'relative',
-                          width: { xs: 80, md: 110 },
-                          height: { xs: 80, md: 110 },
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.4))',
-                        }}>
-                          <img
-                            src="/images/wax-seal.png"
-                            alt=""
-                            style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'contain' }}
-                          />
-                          <Typography sx={{
-                            color: 'rgba(0,0,0,0.5)',
-                            fontSize: { xs: '1.2rem', md: '1.6rem' },
-                            fontWeight: 700,
-                            fontFamily: 'var(--script-font)',
-                            zIndex: 2,
-                            opacity: 0.7
-                          }}>
-                            {initials}
-                          </Typography>
-                        </Box>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* Wax Seal — disappears instantly */}
+                {phase === 'idle' && (
+                  <motion.div
+                    key="wax-seal"
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.1 }}
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      zIndex: 10,
+                      cursor: 'pointer',
+                    }}
+                    onClick={handleOpen}
+                  >
+                    <Box sx={{
+                      position: 'relative',
+                      width: { xs: 80, md: 110 },
+                      height: { xs: 80, md: 110 },
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.4))',
+                    }}>
+                      <img
+                        src="/images/wax-seal.png"
+                        alt=""
+                        style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'contain' }}
+                      />
+                      <Typography sx={{
+                        color: 'rgba(0,0,0,0.5)',
+                        fontSize: { xs: '1.2rem', md: '1.6rem' },
+                        fontWeight: 700,
+                        fontFamily: 'var(--script-font)',
+                        zIndex: 2,
+                        opacity: 0.7
+                      }}>
+                        {initials}
+                      </Typography>
+                    </Box>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
 

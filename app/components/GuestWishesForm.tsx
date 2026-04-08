@@ -157,24 +157,10 @@ export default function GuestWishesForm({
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', p: { xs: 2, md: 4 } }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Box sx={{ width: 40 }} /> {/* Spacer to balance */}
-        <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 600, color: '#1a1a1a', fontFamily: `Prompt, sans-serif` }}>
+      <Stack direction="row" justifyContent="center" alignItems="center" sx={{ mb: 2 }}>
+        <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 600, color: '#1a1a1a', fontFamily: '"Prompt", sans-serif' }}>
           เขียนคำอวยพร
         </Typography>
-        <Tooltip title="กลับหน้าแรก (Go to Home)" arrow>
-          <IconButton
-            onClick={() => document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' })}
-            sx={{
-              color: '#8e7d5d',
-              bgcolor: alpha('#8e7d5d', 0.05),
-              '&:hover': { bgcolor: alpha('#8e7d5d', 0.1), transform: 'translateY(-2px)' },
-              transition: 'all 0.3s ease'
-            }}
-          >
-            <Home variant="Bold" size="22" />
-          </IconButton>
-        </Tooltip>
       </Stack>
 
 
@@ -204,7 +190,7 @@ export default function GuestWishesForm({
       <Box sx={{ mb: 4 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
           <Typography variant="subtitle1" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontWeight: 500, fontFamily: `Prompt, sans-serif` }}>
-            <Edit2 size="20" color={theme.palette.primary.main} variant="Bulk" /> พื้นที่เขียนคำอวยพร
+            <Edit2 size="20" color={theme.palette.primary.main} variant="Bulk" /> วาดภาพอวยพร (Optional)
           </Typography>
 
           <Stack direction="row" spacing={0.5}>
@@ -220,7 +206,7 @@ export default function GuestWishesForm({
             </Tooltip>
             <Tooltip title="ล้างทั้งหมด (Clear)">
               <IconButton size="small" onClick={clearCanvas} sx={{ color: theme.palette.error.main }}>
-                <Trash size="18" variant="Linear" />
+                <Trash size="18" variant="Linear" color="#8e7d5d" />
               </IconButton>
             </Tooltip>
           </Stack>

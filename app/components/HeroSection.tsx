@@ -68,7 +68,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
                   <Box sx={{ position: 'relative', width: '100%', height: { xs: 120, md: 240 }, mb: 4 }}>
-                    <Image src={data.heroNameImage} alt="Wedding Names" fill style={{ objectFit: 'contain' }} />
+                    <Image src={data.heroNameImage} alt="Wedding Names" fill unoptimized style={{ objectFit: 'contain' }} />
                   </Box>
                 </motion.div>
               ) : (
@@ -134,7 +134,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
                   <Box sx={{ position: 'relative', width: '100%', height: { xs: 100, md: 240 } }}>
-                    <Image src={data.heroNameImage} alt="Wedding Names" fill style={{ objectFit: 'contain' }} />
+                    <Image src={data.heroNameImage} alt="Wedding Names" fill unoptimized style={{ objectFit: 'contain' }} />
                   </Box>
                 </motion.div>
               ) : (
@@ -194,8 +194,8 @@ export default function HeroSection({ data }: { data?: HeroData }) {
             <Box sx={{ position: 'relative', mb: { xs: 4, md: 6 } }}>
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
-                  <Box sx={{ position: 'relative', width: '100%', height: { xs: 150, md: 320 } }}>
-                    <Image src={data.heroNameImage} alt="Wedding Names" fill style={{ objectFit: 'contain' }} />
+                  <Box sx={{ position: 'relative', width: { xs: '280px', md: '500px' }, height: { xs: 150, md: 320 }, mx: 'auto' }}>
+                    <Image src={data.heroNameImage} alt="Wedding Names" fill unoptimized style={{ objectFit: 'contain' }} />
                   </Box>
                 </motion.div>
               ) : (
@@ -269,6 +269,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
           />
         ) : mediaType === 'video' ? (
           <video
+            key={data?.heroVideo || 'default-video'}
             ref={videoRef}
             autoPlay
             muted

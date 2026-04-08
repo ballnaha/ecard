@@ -680,7 +680,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                     <Box component="img" src={previewNameImage} sx={{ width: '100%', height: 120, objectFit: 'contain', borderRadius: 1, border: '1px solid #e2e8f0', bgcolor: '#f8fafc' }} />
                     <Tooltip title="ลบรูปภาพชื่อ" arrow>
                       <IconButton onClick={() => handleFileRemove('heroNameImage')} size="small" sx={{ position: 'absolute', top: 4, right: 4, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff' }}>
-                        <Trash size={14} variant="Bold" />
+                        <Trash size={14} variant="Bold" color="white" />
                       </IconButton>
                     </Tooltip>
                   </Box>
