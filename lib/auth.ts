@@ -19,8 +19,8 @@ export const authOptions: NextAuthOptions = {
 
         if (adminCount === 0) {
           // ยังไม่มีแอดมินในฐานข้อมูล -> ใช้ค่า .env เป็นค่าเริ่มต้น
-          const validUsername = process.env.ADMIN_USERNAME || 'admin';
-          const validPassword = process.env.ADMIN_PASSWORD || 'secret123';
+          const validUsername = process.env.ADMIN_USERNAME;
+          const validPassword = process.env.ADMIN_PASSWORD;
           if (credentials.username === validUsername && credentials.password === validPassword) {
             return { id: "1", name: credentials.username, role: "admin" }
           }

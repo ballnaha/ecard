@@ -16,15 +16,15 @@ export async function changePassword(formData: FormData) {
   if (!currentPassword || !newPassword) return { error: "กรุณากรอกข้อมูลให้ครบถ้วน" };
 
   const adminCount = await prisma.admin.count();
-  
+
   if (adminCount === 0) {
     // กำลังใช้งานรหัสผ่านจาก .env, เราจะทำการสร้างบัญชีลงตาราง Admin เลย
-    const validPassword = process.env.ADMIN_PASSWORD || 'secret123';
-    
+    const validPassword = process.env.ADMIN_PASSWORD;
+
     if (currentPassword !== validPassword) {
       return { error: "รหัสผ่านเดิมไม่ถูกต้อง" };
     }
-    
+
     const hashed = bcrypt.hashSync(newPassword, 10);
     await prisma.admin.create({
       data: {
@@ -38,11 +38,11 @@ export async function changePassword(formData: FormData) {
   } else {
     // เปลี่ยนจากฐานข้อมูล
     const adminFound = await prisma.admin.findUnique({ where: { username } });
-    
+
     if (!adminFound || !bcrypt.compareSync(currentPassword, adminFound.password)) {
       return { error: "รหัสผ่านเดิมไม่ถูกต้อง" };
     }
-    
+
     const hashed = bcrypt.hashSync(newPassword, 10);
     await prisma.admin.update({
       where: { username },

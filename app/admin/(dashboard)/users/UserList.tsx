@@ -138,7 +138,7 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
             textTransform: 'none',
             fontSize: '0.9rem',
             boxShadow: '0 8px 24px rgba(242, 161, 161, 0.35)',
-            '&:hover': { 
+            '&:hover': {
               boxShadow: '0 12px 32px rgba(242, 161, 161, 0.45)',
               transform: 'translateY(-2px)'
             },
@@ -151,12 +151,12 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
 
       {/* User Cards Grid */}
       {initialUsers.length === 0 ? (
-        <Paper 
+        <Paper
           elevation={0}
-          sx={{ 
-            p: 8, 
-            textAlign: 'center', 
-            borderRadius: '24px', 
+          sx={{
+            p: 8,
+            textAlign: 'center',
+            borderRadius: '24px',
             border: '1px dashed #e2e8f0',
             bgcolor: '#fff'
           }}
@@ -172,7 +172,7 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
           </Typography>
           <Button
             variant="contained"
-            startIcon={<UserAdd variant="Bulk" size="20" />}
+            startIcon={<UserAdd variant="Bulk" size="20" color="#fff" />}
             onClick={handleOpenNew}
             sx={{
               background: primaryGradient,
@@ -188,10 +188,10 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
           </Button>
         </Paper>
       ) : (
-        <Box sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, 
-          gap: 3 
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+          gap: 3
         }}>
           {initialUsers.map((user) => (
             <Paper
@@ -209,16 +209,16 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
                 }
               }}
             >
-              <Box sx={{ 
-                p: 3, 
+              <Box sx={{
+                p: 3,
                 background: 'linear-gradient(135deg, #fff 0%, #fafafa 100%)',
                 borderBottom: '1px solid rgba(0,0,0,0.04)'
               }}>
                 <Stack direction="row" spacing={2} alignItems="center">
-                  <Avatar 
-                    sx={{ 
-                      width: 56, 
-                      height: 56, 
+                  <Avatar
+                    sx={{
+                      width: 56,
+                      height: 56,
                       background: user.status === 'active' ? primaryGradient : 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)',
                       fontWeight: 800,
                       fontSize: '1.25rem',
@@ -237,7 +237,7 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
                   </Box>
                 </Stack>
               </Box>
-              
+
               <Box sx={{ p: 3 }}>
                 <Stack spacing={2}>
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -271,32 +271,32 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
                       }}
                     />
                   </Stack>
-                  
+
                   <Divider sx={{ my: 1 }} />
-                  
+
                   <Stack direction="row" spacing={1} justifyContent="flex-end">
-                    <IconButton 
+                    <IconButton
                       size="small"
-                      onClick={() => handleOpenEdit(user)} 
-                      sx={{ 
+                      onClick={() => handleOpenEdit(user)}
+                      sx={{
                         width: 36,
                         height: 36,
                         borderRadius: '10px',
-                        bgcolor: alpha('#4facfe', 0.08), 
-                        '&:hover': { bgcolor: alpha('#4facfe', 0.15) } 
+                        bgcolor: alpha('#4facfe', 0.08),
+                        '&:hover': { bgcolor: alpha('#4facfe', 0.15) }
                       }}
                     >
                       <Edit size="18" variant="Bulk" color="#4facfe" />
                     </IconButton>
-                    <IconButton 
+                    <IconButton
                       size="small"
-                      onClick={() => handleDelete(user.id, user.username)} 
-                      sx={{ 
+                      onClick={() => handleDelete(user.id, user.username)}
+                      sx={{
                         width: 36,
                         height: 36,
                         borderRadius: '10px',
-                        bgcolor: alpha('#f43f5e', 0.08), 
-                        '&:hover': { bgcolor: alpha('#f43f5e', 0.15) } 
+                        bgcolor: alpha('#f43f5e', 0.08),
+                        '&:hover': { bgcolor: alpha('#f43f5e', 0.15) }
                       }}
                     >
                       <Trash size="18" variant="Bulk" color="#f43f5e" />
@@ -317,9 +317,9 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
         fullWidth
         scroll="paper"
         PaperProps={{
-          sx: { 
-            borderRadius: '24px', 
-            p: 2, 
+          sx: {
+            borderRadius: '24px',
+            p: 2,
             boxShadow: '0 25px 50px rgba(0,0,0,0.15)',
             border: '1px solid rgba(0,0,0,0.04)'
           }
@@ -332,18 +332,18 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
           <DialogContent sx={{ pt: '20px !important', pb: 1 }}>
             <Stack spacing={3}>
               <TextField
-                fullWidth 
-                label="Username" 
-                value={username} 
-                onChange={(e) => setUsername(e.target.value)} 
+                fullWidth
+                label="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 variant="outlined"
                 slotProps={{
                   input: {
-                    readOnly: true,
+                    readOnly: isEdit,
                   },
                 }}
-                sx={{                 
+                sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
                     '&.Mui-focused fieldset': { borderColor: brandColor }
@@ -352,14 +352,14 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
                 }}
               />
               <TextField
-                fullWidth 
+                fullWidth
                 label={isEdit ? "New Password (leave empty to keep current)" : "Password"}
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required={!isEdit}
                 variant="outlined"
-                sx={{ 
+                sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
                     '&.Mui-focused fieldset': { borderColor: brandColor }
@@ -369,11 +369,11 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
               />
               <FormControl variant="outlined">
                 <InputLabel sx={{ '&.Mui-focused': { color: '#a18cd1' } }}>Role</InputLabel>
-                <Select 
-                  value={role} 
-                  label="Role" 
+                <Select
+                  value={role}
+                  label="Role"
                   onChange={(e) => setRole(e.target.value)}
-                  sx={{ 
+                  sx={{
                     borderRadius: '12px',
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#a18cd1' }
                   }}
@@ -385,11 +385,11 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
               </FormControl>
               <FormControl variant="outlined">
                 <InputLabel sx={{ '&.Mui-focused': { color: brandColor } }}>Status</InputLabel>
-                <Select 
-                  value={status} 
-                  label="Status" 
+                <Select
+                  value={status}
+                  label="Status"
                   onChange={(e) => setStatus(e.target.value)}
-                  sx={{ 
+                  sx={{
                     borderRadius: '12px',
                     '&.MuiFocused .MuiOutlinedInput-notchedOutline': { borderColor: brandColor }
                   }}
@@ -401,11 +401,11 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
             </Stack>
           </DialogContent>
           <DialogActions sx={{ p: 3, gap: 1 }}>
-            <Button 
-              onClick={() => setOpen(false)} 
-              sx={{ 
-                fontWeight: 700, 
-                borderRadius: '12px', 
+            <Button
+              onClick={() => setOpen(false)}
+              sx={{
+                fontWeight: 700,
+                borderRadius: '12px',
                 px: 3,
                 color: '#64748b',
                 '&:hover': { bgcolor: alpha('#64748b', 0.05) }
@@ -414,18 +414,18 @@ export default function UserList({ initialUsers }: { initialUsers: any[] }) {
               Cancel
             </Button>
             <Button
-              type="submit" 
-              variant="contained" 
+              type="submit"
+              variant="contained"
               disabled={loading}
               sx={{
                 background: primaryGradient,
-                borderRadius: '12px', 
-                color: 'white', 
-                fontWeight: 700, 
-                px: 4, 
+                borderRadius: '12px',
+                color: 'white',
+                fontWeight: 700,
+                px: 4,
                 py: 1.2,
                 boxShadow: '0 8px 20px rgba(242, 161, 161, 0.25)',
-                '&:hover': { 
+                '&:hover': {
                   boxShadow: '0 12px 28px rgba(242, 161, 161, 0.35)'
                 },
                 transition: 'all 0.3s ease'
