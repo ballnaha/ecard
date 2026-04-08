@@ -103,6 +103,7 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [introText, setIntroText] = useState<string>(() => client?.coupleSection?.introText || 'Two paths that led to one beautiful journey...');
 
   const [showPetals, setShowPetals] = useState<boolean>(() => !!client?.heroSection?.showFallingPetals);
+  const [hideAllText, setHideAllText] = useState<boolean>(() => !!client?.heroSection?.hideAllText);
 
   const [primaryColor, setPrimaryColor] = useState<string>(client?.primaryColor || '#8e7d5d');
   const [secondaryColor, setSecondaryColor] = useState<string>(client?.secondaryColor || '#faf9f6');
@@ -248,6 +249,7 @@ export default function BuilderEditor({ client }: { client: any }) {
       if (finalPaths.heroPoster) formData.append('heroPoster', finalPaths.heroPoster);
       if (finalPaths.heroNameImage) formData.append('heroNameImage', finalPaths.heroNameImage);
       formData.append('showFallingPetals', String(showPetals));
+      formData.append('hideAllText', String(hideAllText));
       const res = await updateClientHero(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
       else {
@@ -673,6 +675,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                   <MenuItem value="minimal">Minimal Vertical (มินิมอล - แนวตั้ง)</MenuItem>
                 </TextField>
                 <FormControlLabel control={<Switch checked={showPetals} onChange={(e) => setShowPetals(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#22c55e' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#22c55e' } }} />} label={<Typography variant="body2" fontWeight={600}>แสดงกลีบดอกไม้ร่วง ✨</Typography>} />
+                <FormControlLabel control={<Switch checked={hideAllText} onChange={(e) => setHideAllText(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#f2a1a1' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#f2a1a1' } }} />} label={<Typography variant="body2" fontWeight={600}>Full Card Mode (ซ่อนข้อความทั้งหมด) 🧧</Typography>} />
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="subtitle2" fontWeight={700} color="#475569">รูปภาพชื่อบ่าวสาว (Calligraphy/Logo)</Typography>
                 {previewNameImage && (

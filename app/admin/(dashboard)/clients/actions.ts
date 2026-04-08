@@ -101,6 +101,7 @@ export async function updateClientHero(id: string, formData: FormData) {
     const heroNameImage = formData.get('heroNameImage') as string;
     const heroBackgroundColor = formData.get('heroBackgroundColor') as string;
     const showFallingPetals = formData.get('showFallingPetals') === 'true';
+    const hideAllText = formData.get('hideAllText') === 'true';
     
     // Check if client exists
     const existing = await prisma.client.findUnique({ where: { id } });
@@ -120,6 +121,7 @@ export async function updateClientHero(id: string, formData: FormData) {
     if (heroNameImage) heroSection.heroNameImage = heroNameImage;
     heroSection.heroBackgroundColor = heroBackgroundColor;
     heroSection.showFallingPetals = showFallingPetals;
+    heroSection.hideAllText = hideAllText;
     
     await prisma.client.update({
       where: { id },

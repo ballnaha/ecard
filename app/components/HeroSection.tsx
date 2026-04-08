@@ -20,6 +20,7 @@ export interface HeroData {
   heroNameImage?: string; // New: Custom image for names
   heroBackgroundColor?: string; // New: Solid background color
   showFallingPetals?: boolean; // New: Toggle falling petals effect
+  hideAllText?: boolean; // New: Hide all name/date/location text (Full Card Mode)
 }
 
 const fadeInUp: Variants = {
@@ -67,8 +68,17 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               </motion.div>
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
-                  <Box sx={{ position: 'relative', width: '100%', height: { xs: 120, md: 240 }, mb: 4 }}>
-                    <Image src={data.heroNameImage} alt="Wedding Names" fill unoptimized style={{ objectFit: 'contain' }} />
+                  <Box sx={{ position: 'relative', width: '100%', mb: 4, display: 'flex', justifyContent: 'center' }}>
+                    <Box 
+                      component="img" 
+                      src={data.heroNameImage} 
+                      alt="Wedding Names" 
+                      sx={{ 
+                        maxWidth: '100%', 
+                        height: { xs: 120, md: 240 }, 
+                        objectFit: 'contain' 
+                      }} 
+                    />
                   </Box>
                 </motion.div>
               ) : (
@@ -133,8 +143,17 @@ export default function HeroSection({ data }: { data?: HeroData }) {
               </motion.div>
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
-                  <Box sx={{ position: 'relative', width: '100%', height: { xs: 100, md: 240 } }}>
-                    <Image src={data.heroNameImage} alt="Wedding Names" fill unoptimized style={{ objectFit: 'contain' }} />
+                  <Box sx={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+                    <Box 
+                      component="img" 
+                      src={data.heroNameImage} 
+                      alt="Wedding Names" 
+                      sx={{ 
+                        maxWidth: '100%', 
+                        height: { xs: 100, md: 240 }, 
+                        objectFit: 'contain' 
+                      }} 
+                    />
                   </Box>
                 </motion.div>
               ) : (
@@ -194,8 +213,18 @@ export default function HeroSection({ data }: { data?: HeroData }) {
             <Box sx={{ position: 'relative', mb: { xs: 4, md: 6 } }}>
               {data?.heroNameImage ? (
                 <motion.div variants={fadeInUp}>
-                  <Box sx={{ position: 'relative', width: { xs: '280px', md: '500px' }, height: { xs: 150, md: 320 }, mx: 'auto' }}>
-                    <Image src={data.heroNameImage} alt="Wedding Names" fill unoptimized style={{ objectFit: 'contain' }} />
+                  <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 2 }}>
+                    <Box 
+                      component="img" 
+                      src={data.heroNameImage} 
+                      alt="Wedding Names" 
+                      sx={{ 
+                        maxWidth: '90%', 
+                        width: { xs: '280px', md: '500px' },
+                        height: { xs: 150, md: 320 }, 
+                        objectFit: 'contain'
+                      }} 
+                    />
                   </Box>
                 </motion.div>
               ) : (
@@ -299,13 +328,15 @@ export default function HeroSection({ data }: { data?: HeroData }) {
           sx={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%)',
+            background: data?.hideAllText 
+              ? 'transparent' // No overlay if hiding text
+              : 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%)',
             zIndex: 1,
           }}
         />
       )}
 
-      {renderContent()}
+      {!data?.hideAllText && renderContent()}
 
       {/* Elegant Scroll Indicator */}
       <Box sx={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', zIndex: 2 }}>
