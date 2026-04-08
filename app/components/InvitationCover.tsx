@@ -251,20 +251,20 @@ export default function InvitationCover({
             {/* Envelope 3D Container — Simplified for Stability */}
             <motion.div
               initial={{ rotateX: isMobile ? 2 : 4, rotateY: isMobile ? -2 : -4, z: 0 }}
-              whileHover={!isMobile ? { 
-                rotateX: 0, 
-                rotateY: 0, 
+              whileHover={!isMobile ? {
+                rotateX: 0,
+                rotateY: 0,
                 scale: 1.05,
-                transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } 
+                transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
               } : { scale: 1.02 }}
               animate={phase === 'idle'
                 ? { y: [0, -12, 0] }
                 : { y: 0, rotateX: 0, rotateY: 0 }
               }
               transition={phase === 'idle'
-                ? { 
-                    y: { duration: isMobile ? 3 : 4, repeat: Infinity, ease: 'easeInOut' },
-                  }
+                ? {
+                  y: { duration: isMobile ? 3 : 4, repeat: Infinity, ease: 'easeInOut' },
+                }
                 : { duration: 0.8, ease: 'easeOut' }
               }
               style={{
@@ -422,7 +422,7 @@ export default function InvitationCover({
                         px: 2, // Added padding to prevent touching edges
                         textAlign: 'center',
                       }}>
-                        {groomName} &amp; {brideName}
+                        {brideName} &amp; {groomName}
                       </Typography>
                     </motion.div>
 
