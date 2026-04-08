@@ -437,20 +437,21 @@ export async function deleteRSVP(id: string, slug: string) {
 export async function updateClientMobileNav(id: string, items: any[], slug?: string) {
   try {
     const data = { items };
-    await (prisma.client as any).update({
+    await prisma.client.update({
       where: { id },
       data: { mobileNavSection: data }
     });
     
+    // Force revalidation for the entire path
     if (slug) {
       revalidatePath(`/${slug}`);
-      revalidatePath(`/${slug}`, 'page');
-      revalidatePath(`/dashboard/${slug}`);
+      revalidatePath(`/${slug}`, 'layout');
     }
-    revalidatePath(`/admin/builder`);
+    revalidatePath(`/admin/builder`, 'page');
     
     return { success: true };
   } catch(e: any) {
+    console.error('Save Mobile Nav Error:', e);
     return { error: 'อัปเดตเมนูไม่สำเร็จ: ' + e.message };
   }
 }

@@ -46,16 +46,20 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
   const [value, setValue] = React.useState(0);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
+  // Filter items that are active AND have their corresponding section active on the page
   const activeItems = items.filter(i => i.isActive);
 
-  // If there's an explicit config, use it. Otherwise fallback to defaults.
-  const displayItems = activeItems.length > 0 
-    ? activeItems 
+  // Determine what to display:
+  // 1. If we have active items from the database/builder, use them.
+  // 2. If no items are active but we have an items array (saved config), don't show defaults (trust the builder choice).
+  // 3. ONLY show defaults if items array is completely missing/empty.
+  const displayItems = activeItems.length > 0
+    ? activeItems
     : (items.length > 0 ? [] : [
         { id: 'hero', label: 'Home', isActive: true },
-        { id: 'schedule', label: 'Schedule', isActive: true },
+        { id: 'schedule', label: 'ตารางงาน', isActive: true },
         { id: 'rsvp', label: 'RSVP', isActive: true },
-        { id: 'location', label: 'Location', isActive: true }
+        { id: 'location', label: 'สถานที่', isActive: true }
       ]);
 
   const scrollToSection = async (id: string, index: number) => {
@@ -124,85 +128,167 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
 
       <Box sx={{ 
         position: 'fixed', 
-        bottom: { xs: 20, md: 30 }, 
-        left: '50%', 
-        transform: 'translateX(-50%)', 
+        bottom: 0, 
+        left: 0, 
+        right: 0, 
         zIndex: 2000,
-        width: 'auto',
-        maxWidth: '90vw'
+        backgroundColor: 'rgba(255, 255, 255, 0.82)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        borderTop: '1px solid rgba(142, 125, 93, 0.2)',
+        boxShadow: '0 -10px 30px rgba(0,0,0,0.03)',
+        pb: 'env(safe-area-inset-bottom)', 
       }}>
-        <Paper
-          elevation={0}
+        {/* Animated Top Border Accent */}
+        <Box sx={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          height: '1px', 
+          background: 'linear-gradient(90deg, transparent 0%, rgba(142, 125, 93, 0.3) 50%, transparent 100%)' 
+        }} />
+
+        <Box
           sx={{
-            px: { xs: 1, md: 2.5 },
-            py: 1,
-            borderRadius: '100px', // Ultra rounded for pill look
-            backgroundColor: 'rgba(255, 255, 255, 0.75)',
-            backdropFilter: 'blur(15px) saturate(180%)',
-            border: '1px solid rgba(255, 255, 255, 0.5)',
-            boxShadow: '0 15px 35px rgba(142, 125, 93, 0.15)',
             display: 'flex',
             alignItems: 'center',
-            gap: { xs: 0.5, md: 1 }
+            overflowX: displayItems.length > 5 ? 'auto' : 'visible',
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': {
+              display: 'none',
+            },
+            WebkitOverflowScrolling: 'touch',
+            px: 0,
+            height: { xs: 68, md: 78 },
           }}
         >
-          {displayItems.map((item, idx) => {
-            const isSelected = value === idx;
-            return (
-              <Box
-                key={item.id}
-                onClick={() => scrollToSection(item.id, idx)}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  minWidth: { xs: 65, md: 85 },
-                  height: { xs: 52, md: 60 },
-                  borderRadius: '100px',
-                  color: isSelected ? primaryColor : 'rgba(0,0,0,0.35)',
-                  bgcolor: isSelected ? alpha(primaryColor, 0.06) : 'transparent',
-                  transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                  '&:hover': {
-                    bgcolor: alpha(primaryColor, 0.04),
-                    color: primaryColor,
-                  }
-                }}
-              >
-                {/* Icon */}
-                <Box sx={{ 
-                  display: 'flex', 
-                  mb: 0.5,
-                  transform: isSelected ? 'translateY(-2px)' : 'none',
-                  transition: 'transform 0.4s ease'
-                }}>
-                  {React.cloneElement(iconMap[item.id] || <Category />, { 
-                    size: isSelected ? 22 : 20, 
-                    variant: isSelected ? "Bold" : "Outline",
-                    color: 'currentColor'
-                  })}
-                </Box>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            width: '100%',
+            justifyContent: displayItems.length > 5 ? 'flex-start' : 'space-evenly',
+            gap: 0
+          }}>
+            {displayItems.map((item, idx) => {
+              const isSelected = value === idx;
+              const isMiddle = idx === Math.floor(displayItems.length / 2);
 
-                {/* Label */}
-                <Typography 
+              if (isMiddle) {
+                return (
+                  <Box
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id, idx)}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      flex: displayItems.length > 5 ? '0 0 auto' : 1,
+                      minWidth: displayItems.length > 5 ? 85 : 'auto',
+                      height: '100%',
+                      position: 'relative',
+                      zIndex: 10
+                    }}
+                  >
+                    <Box
+                      component={motion.div}
+                      whileTap={{ scale: 0.9 }}
+                      sx={{
+                        position: 'absolute',
+                        top: { xs: -32, md: -42 },
+                        width: { xs: 62, md: 72 },
+                        height: { xs: 62, md: 72 },
+                        borderRadius: '50%',
+                        bgcolor: primaryColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: `0 12px 30px ${alpha(primaryColor, 0.45)}`,
+                        border: '5px solid rgba(255, 255, 255, 1)',
+                        background: `linear-gradient(135deg, ${primaryColor} 0%, ${alpha(primaryColor, 0.8)} 100%)`
+                      }}
+                    >
+                      {React.cloneElement(iconMap[item.id] || <Category />, { 
+                        size: 26, 
+                        variant: isSelected ? "Bold" : "Outline",
+                        color: '#fff'
+                      })}
+                    </Box>
+                    <Typography 
+                      sx={{
+                        fontSize: { xs: '0.6rem', md: '0.68rem' },
+                        fontWeight: 700,
+                        letterSpacing: '0.05em',
+                        textTransform: 'uppercase',
+                        whiteSpace: 'nowrap',
+                        fontFamily: '"Prompt", sans-serif',
+                        color: primaryColor,
+                        mt: 5.5,
+                        opacity: 1
+                      }}
+                    >
+                      {item.label}
+                    </Typography>
+                  </Box>
+                );
+              }
+
+              return (
+                <Box
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id, idx)}
                   sx={{
-                    fontSize: { xs: '0.55rem', md: '0.65rem' },
-                    fontWeight: isSelected ? 700 : 500,
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                    whiteSpace: 'nowrap',
-                    fontFamily: '"Prompt", sans-serif',
-                    opacity: isSelected ? 1 : 0.7,
-                    transition: 'all 0.3s ease'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    flex: displayItems.length > 5 ? '0 0 auto' : 1,
+                    minWidth: displayItems.length > 5 ? 75 : 'auto',
+                    height: '100%',
+                    color: isSelected ? primaryColor : 'rgba(0,0,0,0.3)',
+                    transition: 'all 0.4s ease',
+                    position: 'relative',
+                    '&:hover': {
+                      color: primaryColor,
+                    }
                   }}
                 >
-                  {item.label}
-                </Typography>
-              </Box>
-            );
-          })}
-        </Paper>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    mb: 0.5,
+                    zIndex: 1,
+                    transform: isSelected ? 'translateY(-2px)' : 'none',
+                    transition: 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+                  }}>
+                    {React.cloneElement(iconMap[item.id] || <Category />, { 
+                      size: 20, 
+                      variant: isSelected ? "Bold" : "Outline",
+                      color: 'currentColor'
+                    })}
+                  </Box>
+                  <Typography 
+                    sx={{
+                      fontSize: { xs: '0.6rem', md: '0.68rem' },
+                      fontWeight: isSelected ? 700 : 500,
+                      letterSpacing: '0.05em',
+                      textTransform: 'uppercase',
+                      whiteSpace: 'nowrap',
+                      fontFamily: '"Prompt", sans-serif',
+                      opacity: isSelected ? 1 : 0.65,
+                      zIndex: 1,
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    {item.label}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
       </Box>
     </>
   );

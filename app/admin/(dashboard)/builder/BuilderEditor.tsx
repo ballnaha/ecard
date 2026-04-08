@@ -43,7 +43,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     // If client has a saved layout order
     if (client?.layoutOrder && Array.isArray(client.layoutOrder) && client.layoutOrder.length > 0) {
       const savedLayout = client.layoutOrder as any[];
-      
+
       // Step 1: Create a map of saved items for quick access to their isActive status and saved index
       const savedMap = new Map();
       savedLayout.forEach((item, index) => {
@@ -57,7 +57,7 @@ export default function BuilderEditor({ client }: { client: any }) {
         const id = typeof item === 'string' ? item : item.id;
         const base = initialLayoutBase.find(l => l.id === id);
         if (!base) return null;
-        
+
         const savedData = savedMap.get(id);
         return { ...base, isActive: savedData.isActive };
       }).filter(Boolean) as typeof initialLayoutBase;
@@ -591,7 +591,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                 <Typography variant="subtitle2" fontWeight={700} color="#475569">
                   เลือกเมนูที่แสดงบน Footer Bar (Sync จาก Section ที่เปิดอยู่)
                 </Typography>
-                <Paper variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                <Paper variant="outlined" sx={{ borderRadius: 1, overflow: 'hidden' }}>
                   <Reorder.Group axis="y" values={mobileNavItems} onReorder={setMobileNavItems} as="div">
                     <List dense sx={{ p: 0 }}>
                       {mobileNavItems.filter(nav => activeBuilderSections.find(s => s.id === nav.id)).map((nav) => {

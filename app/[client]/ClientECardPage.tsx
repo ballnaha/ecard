@@ -23,6 +23,9 @@ interface ClientECardPageProps {
 }
 
 export default function ClientECardPage({ clientData }: ClientECardPageProps) {
+  console.log('--- ClientECardPage Debug ---');
+  console.log('Mobile Nav Items Target:', clientData.mobileNavSection?.items);
+  
   const [isCoverOpen, setIsCoverOpen] = useState(false);
   const [mounted, setMounted] = React.useState(false);
 
