@@ -98,6 +98,41 @@ export default function ScheduleSection({
     <Box component="section" sx={{ py: { xs: 6, md: 10 }, backgroundColor: '#ffffff', position: 'relative', overflow: 'hidden' }}>
       <Container maxWidth="lg">
 
+        {/* Section Header */}
+        <Box sx={{ mb: { xs: 6, md: 8 }, textAlign: 'center' }}>
+          <Typography 
+            variant="overline" 
+            sx={{ 
+              letterSpacing: '0.6em', 
+              color: 'var(--primary-color)', 
+              opacity: 0.6, 
+              fontWeight: 600,
+              fontSize: { xs: '0.65rem', md: '0.8rem' }
+            }}
+          >
+            THE CELEBRATION
+          </Typography>
+          <Typography 
+            sx={{ 
+              fontFamily: 'var(--script-font, "Parisienne", cursive)', 
+              fontSize: { xs: '2.8rem', md: '4rem' },
+              color: 'var(--primary-color)',
+              mt: 1,
+              lineHeight: 1.2
+            }}
+          >
+            Wedding Schedule
+          </Typography>
+          <Box sx={{ 
+            width: '60px', 
+            height: '1px', 
+            bgcolor: '#8e7d5d', 
+            opacity: 0.5, 
+            mx: 'auto', 
+            mt: 3 
+          }} />
+        </Box>
+
         {/* Invitation Header (The Parents & Formal Invite) */}
         <Box sx={{ mb: { xs: 8, md: 10 }, textAlign: 'center' }}>
           <Stack spacing={3} alignItems="center">

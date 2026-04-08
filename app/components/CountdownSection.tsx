@@ -12,8 +12,8 @@ interface CountdownData {
   subtitle?: string;
 }
 
-export default function CountdownSection({ data, eventDate, brideName, groomName, venueName }: { 
-  data?: CountdownData; 
+export default function CountdownSection({ data, eventDate, brideName, groomName, venueName }: {
+  data?: CountdownData;
   eventDate?: Date;
   brideName?: string;
   groomName?: string;
@@ -55,23 +55,25 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
   if (!isClient) return <Box sx={{ minHeight: '300px' }} />;
 
   const TimeUnit = ({ label, value }: { label: string; value: number }) => (
-    <Box sx={{ 
-      textAlign: 'center', 
+    <Box sx={{
+      textAlign: 'center',
       minWidth: { xs: '80px', md: '120px' },
       px: { xs: 0, md: 2 }
     }}>
-      <Typography sx={{ 
-        fontFamily: 'var(--script-font, "Parisienne", cursive)', 
-        fontSize: { xs: '2.5rem', md: '4.5rem' }, 
+      <Typography sx={{
+        fontFamily: '"Share Tech Mono", monospace',
+        fontSize: { xs: '3rem', md: '5.2rem' },
         color: '#1a1a1a',
+        letterSpacing: '0.05em',
         lineHeight: 1,
-        fontWeight: 400
+        fontWeight: 400,
+        textShadow: '0 0 10px rgba(0,0,0,0.03)'
       }}>
         {value.toString().padStart(2, '0')}
       </Typography>
-      <Typography sx={{ 
-        fontFamily: '"Prompt", sans-serif', 
-        fontSize: '0.65rem', 
+      <Typography sx={{
+        fontFamily: '"Prompt", sans-serif',
+        fontSize: '0.65rem',
         letterSpacing: '0.3em',
         textTransform: 'uppercase',
         color: '#8e7d5d',
@@ -93,15 +95,16 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
           <Typography variant="overline" sx={{ color: '#8e7d5d', letterSpacing: '0.6em', fontSize: '0.75rem', mb: 2, display: 'block' }}>
             {data?.subtitle || 'Counting Down Today'}
           </Typography>
-          <Typography sx={{ 
-            fontFamily: getFontFamily(data?.title || 'Until Forever Begins'), 
-            fontSize: isThai(data?.title || 'Until Forever Begins') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '3rem', md: '4.5rem' }, 
-            color: '#1a1a1a', 
+          <Typography sx={{
+            fontFamily: getFontFamily(data?.title || 'Until Forever Begins'),
+            fontSize: isThai(data?.title || 'Until Forever Begins') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '3rem', md: '4.5rem' },
+            color: '#1a1a1a',
             fontWeight: isThai(data?.title || 'Until Forever Begins') ? 600 : 400,
-            lineHeight: 1.2 
+            lineHeight: 1.2
           }}>
             {data?.title || 'Until Forever Begins'}
           </Typography>
+          <Box sx={{ height: '1px', width: '60px', bgcolor: '#8e7d5d', opacity: 0.5, mx: 'auto', mt: 3 }} />
         </Box>
 
         <Stack direction="row" justifyContent="center" alignItems="center" spacing={{ xs: 0, md: 2 }} sx={{ mb: 6 }}>
@@ -120,13 +123,13 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
               {eventDate ? dayjs(eventDate).format('MMMM DD, YYYY') : 'MAY 14, 2026'}
             </Typography>
           </motion.div>
-          
+
           <Box sx={{ mt: 4 }}>
-            <CalendarButton 
-              eventDate={eventDate} 
-              brideName={brideName} 
-              groomName={groomName} 
-              venueName={venueName} 
+            <CalendarButton
+              eventDate={eventDate}
+              brideName={brideName}
+              groomName={groomName}
+              venueName={venueName}
             />
           </Box>
         </Box>

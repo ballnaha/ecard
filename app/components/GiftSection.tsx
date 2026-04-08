@@ -64,6 +64,7 @@ export default function GiftSection({ data }: { data?: any }) {
           }}>
             {data?.title || 'Gifts & Blessings'}
           </Typography>
+          <Box sx={{ height: '1px', width: '60px', bgcolor: '#8e7d5d', opacity: 0.5, mx: 'auto', mt: 3 }} />
           <Typography sx={{
             fontFamily: '"Prompt", sans-serif',
             fontSize: '0.8rem',

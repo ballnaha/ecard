@@ -86,25 +86,25 @@ export default function InvitationCover({
   const handleOpen = useCallback(async () => {
     if (phase !== 'idle') return;
 
-    // Phase 1: Wax seal breaks + Flowers disappear (0 → 500ms)
+    // Phase 1: Wax seal breaks immediately
     setPhase('seal-break');
 
-    // Phase 2: Flap opens (Wait 600ms total to ensure flowers are fading/gone)
-    await new Promise(r => setTimeout(r, 600));
+    // Phase 2: Flap opens FASTER (Reduced from 600ms to 250ms for snappier feel)
+    await new Promise(r => setTimeout(r, 250));
     setPhase('flap-open');
 
-    // Animate flap: rotate open AND fade out simultaneously
+    // Animate flap
     flapControls.start({
       rotateX: 180,
       opacity: 0,
       transition: {
-        rotateX: { duration: 1.2, ease: [0.4, 0.0, 0.2, 1] },
-        opacity: { duration: 0.6, delay: 0.3, ease: 'easeOut' },
+        rotateX: { duration: 1.0, ease: [0.4, 0, 0.2, 1] },
+        opacity: { duration: 0.4, delay: 0.2, ease: 'easeOut' },
       }
     });
 
-    // Phase 3: Card rises (waiting for flap to reach peak)
-    await new Promise(r => setTimeout(r, 700));
+    // Phase 3: Card rises (Start earlier while flap is still moving)
+    await new Promise(r => setTimeout(r, 400));
     setPhase('card-rise');
 
     cardControls.start({
@@ -248,8 +248,9 @@ export default function InvitationCover({
               </Typography>
             </motion.div>
 
-            {/* Envelope 3D Container — Simplified for Stability */}
+            {/* Envelope 3D Container — Clicking the container itself now triggers the open action */}
             <motion.div
+              onClick={handleOpen}
               initial={{ rotateX: isMobile ? 2 : 4, rotateY: isMobile ? -2 : -4, z: 0 }}
               whileHover={!isMobile ? {
                 rotateX: 0,
@@ -257,6 +258,7 @@ export default function InvitationCover({
                 scale: 1.05,
                 transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
               } : { scale: 1.02 }}
+              whileTap={{ scale: 0.98, transition: { duration: 0.1 } }} // Tactile feedback
               animate={phase === 'idle'
                 ? { y: [0, -12, 0] }
                 : { y: 0, rotateX: 0, rotateY: 0 }
@@ -274,6 +276,7 @@ export default function InvitationCover({
                 zIndex: 5,
                 perspective: isMobile ? '1200px' : '2000px',
                 transformStyle: 'preserve-3d',
+                cursor: phase === 'idle' ? 'pointer' : 'default',
               }}
             >
               {/* Main Physical Shadow — Optimized for Mobile (less blur) */}

@@ -135,6 +135,7 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
           }}>
             Join Our Celebration
           </Typography>
+          <Box sx={{ height: '1px', width: '60px', bgcolor: '#8e7d5d', opacity: 0.5, mx: 'auto', mt: 3 }} />
           <Typography sx={{
             fontFamily: '"Prompt", sans-serif',
             fontSize: '0.8rem',
@@ -154,11 +155,25 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
         >
           <Paper elevation={0} sx={{
             p: { xs: 3, md: 6 },
-            borderRadius: '24px',
-            backgroundColor: 'rgba(255,255,255,0.8)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(142, 125, 93, 0.1)',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.03)'
+            borderRadius: '32px',
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            backdropFilter: 'blur(15px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(15px) saturate(180%)',
+            border: '1px solid rgba(255, 255, 255, 0.4)',
+            boxShadow: '0 25px 65px rgba(0,0,0,0.05)',
+            position: 'relative',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '32px',
+              padding: '1.5px',
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.6) 0%, transparent 40%, transparent 60%, rgba(142,125,93,0.1) 100%)',
+              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              maskComposite: 'exclude',
+              pointerEvents: 'none',
+              zIndex: 1
+            }
           }}>
             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3.5 }}>
               <TextField

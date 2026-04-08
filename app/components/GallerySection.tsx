@@ -249,7 +249,7 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
           }}>
             Captured Moments
           </Typography>
-          <Box sx={{ height: '1px', width: '60px', backgroundColor: 'rgba(142, 125, 93, 0.3)', mx: 'auto', mt: 3 }} />
+          <Box sx={{ height: '1px', width: '60px', bgcolor: '#8e7d5d', opacity: 0.5, mx: 'auto', mt: 3 }} />
         </Box>
 
         {renderSwiper()}

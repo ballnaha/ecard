@@ -31,9 +31,10 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
           }}>
             {title}
           </Typography>
-          <Typography sx={{ fontFamily: 'var(--script-font, "Parisienne", cursive)', fontSize: { xs: '2.2rem', md: '3.2rem' }, color: '#1a1a1a', fontStyle: 'italic', mb: 2 }}>
+          <Typography sx={{ fontFamily: 'var(--script-font, "Parisienne", cursive)', fontSize: { xs: '2.2rem', md: '3.2rem' }, color: '#1a1a1a', fontStyle: 'italic', mb: 1 }}>
             Wedding Theme & Colors
           </Typography>
+          <Box sx={{ height: '1px', width: '60px', bgcolor: '#8e7d5d', opacity: 0.5, mx: 'auto', mt: 2, mb: 3 }} />
           <Typography sx={{
             fontFamily: '"Prompt", sans-serif',
             fontSize: '0.7rem',
