@@ -133,7 +133,12 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         bgcolor: clientData.secondaryColor || '#faf9f6',
       }}>
         {clientData.hero?.showFallingPetals && <FallingPetals />}
-        {isCoverOpen && <AudioPlayer primaryColor={clientData.primaryColor} audioUrl={clientData.musicUrl} />}
+        {isCoverOpen && (
+          <AudioPlayer 
+            primaryColor={clientData.primaryColor} 
+            audioUrl={clientData.musicUrl || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"} 
+          />
+        )}
         {layoutOrder.map((section: string) => renderSection(section))}
       </Box>
     </Box>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Paper, BottomNavigation, BottomNavigationAction, alpha } from '@mui/material';
+import { Box, Paper, BottomNavigation, BottomNavigationAction, alpha, Typography } from '@mui/material';
 import { useRouter, useParams } from 'next/navigation';
 import {
   Home,
@@ -124,77 +124,84 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
 
       <Box sx={{ 
         position: 'fixed', 
-        bottom: { xs: 15, md: 25 }, 
+        bottom: { xs: 20, md: 30 }, 
         left: '50%', 
         transform: 'translateX(-50%)', 
-        width: { xs: '92%', sm: 'auto' }, 
-        minWidth: { sm: 460 },
-        zIndex: 2000 
+        zIndex: 2000,
+        width: 'auto',
+        maxWidth: '90vw'
       }}>
         <Paper
           elevation={0}
           sx={{
-            borderRadius: '35px',
-            overflow: 'hidden',
-            backgroundColor: 'rgba(255, 255, 255, 0.85)',
-            backdropFilter: 'blur(15px)',
-            border: '1px solid rgba(255, 255, 255, 0.6)',
-            boxShadow: '0 15px 45px rgba(0,0,0,0.1)',
+            px: { xs: 1, md: 2.5 },
+            py: 1,
+            borderRadius: '100px', // Ultra rounded for pill look
+            backgroundColor: 'rgba(255, 255, 255, 0.75)',
+            backdropFilter: 'blur(15px) saturate(180%)',
+            border: '1px solid rgba(255, 255, 255, 0.5)',
+            boxShadow: '0 15px 35px rgba(142, 125, 93, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: { xs: 0.5, md: 1 }
           }}
         >
-          <BottomNavigation
-            showLabels
-            value={value}
-            onChange={(event, newValue) => {
-              const selected = displayItems[newValue];
-              scrollToSection(selected.id, newValue);
-            }}
-            sx={{
-              height: 75,
-              backgroundColor: 'transparent',
-              '& .MuiBottomNavigationAction-root': {
-                color: 'rgba(0,0,0,0.35)',
-                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                minWidth: 'auto',
-                padding: '12px 0',
-                '&.Mui-selected': {
-                  color: primaryColor,
-                  '& .MuiSvgIcon-root, & .iconsax': {
-                    transform: 'translateY(-4px) scale(1.15)',
-                    color: primaryColor
-                  }
-                }
-              },
-              '& .MuiBottomNavigationAction-label': {
-                fontFamily: '"Prompt", sans-serif',
-                fontSize: '0.65rem',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                marginTop: '5px',
-                textTransform: 'uppercase',
-                opacity: 0.8,
-                transition: 'all 0.3s ease',
-                '&.Mui-selected': {
-                  fontSize: '0.65rem',
-                  opacity: 1,
-                  color: primaryColor
-                }
-              }
-            }}
-          >
-            {displayItems.map((item, idx) => (
-              <BottomNavigationAction 
+          {displayItems.map((item, idx) => {
+            const isSelected = value === idx;
+            return (
+              <Box
                 key={item.id}
-                label={item.label} 
-                icon={React.cloneElement(iconMap[item.id] || <Category />, { 
-                  size: 24, 
-                  variant: value === idx ? "Bold" : "Outline",
-                  color: 'currentColor',
-                  className: 'iconsax'
-                })} 
-              />
-            ))}
-          </BottomNavigation>
+                onClick={() => scrollToSection(item.id, idx)}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  minWidth: { xs: 65, md: 85 },
+                  height: { xs: 52, md: 60 },
+                  borderRadius: '100px',
+                  color: isSelected ? primaryColor : 'rgba(0,0,0,0.35)',
+                  bgcolor: isSelected ? alpha(primaryColor, 0.06) : 'transparent',
+                  transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                  '&:hover': {
+                    bgcolor: alpha(primaryColor, 0.04),
+                    color: primaryColor,
+                  }
+                }}
+              >
+                {/* Icon */}
+                <Box sx={{ 
+                  display: 'flex', 
+                  mb: 0.5,
+                  transform: isSelected ? 'translateY(-2px)' : 'none',
+                  transition: 'transform 0.4s ease'
+                }}>
+                  {React.cloneElement(iconMap[item.id] || <Category />, { 
+                    size: isSelected ? 22 : 20, 
+                    variant: isSelected ? "Bold" : "Outline",
+                    color: 'currentColor'
+                  })}
+                </Box>
+
+                {/* Label */}
+                <Typography 
+                  sx={{
+                    fontSize: { xs: '0.55rem', md: '0.65rem' },
+                    fontWeight: isSelected ? 700 : 500,
+                    letterSpacing: '0.04em',
+                    textTransform: 'uppercase',
+                    whiteSpace: 'nowrap',
+                    fontFamily: '"Prompt", sans-serif',
+                    opacity: isSelected ? 1 : 0.7,
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  {item.label}
+                </Typography>
+              </Box>
+            );
+          })}
         </Paper>
       </Box>
     </>
