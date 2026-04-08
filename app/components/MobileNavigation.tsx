@@ -43,7 +43,7 @@ const iconMap: Record<string, any> = {
 export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' }: { items?: NavItem[], primaryColor?: string }) {
   const router = useRouter();
   const params = useParams();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(-1);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   // Filter items that are active AND have their corresponding section active on the page

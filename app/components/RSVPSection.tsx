@@ -156,9 +156,7 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
           <Paper elevation={0} sx={{
             p: { xs: 3, md: 6 },
             borderRadius: '32px',
-            backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            backdropFilter: 'blur(15px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(15px) saturate(180%)',
+            backgroundColor: 'rgba(255, 255, 255, 0.95)', // Increased opacity
             border: '1px solid rgba(255, 255, 255, 0.4)',
             boxShadow: '0 25px 65px rgba(0,0,0,0.05)',
             position: 'relative',
@@ -207,20 +205,19 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
                   <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mb: 1 }}>
                       <Box
                         component={motion.div}
-                        whileTap={{ scale: 0.97 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => setFormData(prev => ({ ...prev, attending: 'yes' }))}
                         sx={{
                           p: 2.5,
                           borderRadius: '20px',
                           cursor: 'pointer',
                           textAlign: 'center',
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                           border: '2px solid',
                           borderColor: formData.attending === 'yes' ? primaryColor : 'rgba(0, 0, 0, 0.06)',
-                          bgcolor: formData.attending === 'yes' ? `${primaryColor}15` : 'white', // 15 = hex for 8% opacity
+                          bgcolor: formData.attending === 'yes' ? `${primaryColor}15` : 'white', 
                           color: formData.attending === 'yes' ? primaryColor : 'rgba(0,0,0,0.4)',
                           boxShadow: formData.attending === 'yes' ? `0 10px 25px ${primaryColor}20` : 'none',
-                          '&:hover': { borderColor: primaryColor, bgcolor: `${primaryColor}08` }
+                          transition: 'background-color 0.2s, border-color 0.2s, box-shadow 0.2s'
                         }}
                       >
                         <Typography sx={{ fontWeight: 800, fontSize: '1rem', mb: 0.5 }}>ไปร่วมงาน</Typography>
@@ -228,20 +225,19 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
                       </Box>
                       <Box
                         component={motion.div}
-                        whileTap={{ scale: 0.97 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => setFormData(prev => ({ ...prev, attending: 'no' }))}
                         sx={{
                           p: 2.5,
                           borderRadius: '20px',
                           cursor: 'pointer',
                           textAlign: 'center',
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                           border: '2px solid',
                           borderColor: formData.attending === 'no' ? '#f2a1a1' : 'rgba(0, 0, 0, 0.06)',
                           bgcolor: formData.attending === 'no' ? '#f2a1a115' : 'white',
                           color: formData.attending === 'no' ? '#f2a1a1' : 'rgba(0,0,0,0.4)',
                           boxShadow: formData.attending === 'no' ? '0 10px 25px rgba(242, 161, 161, 0.2)' : 'none',
-                          '&:hover': { borderColor: '#f2a1a1', bgcolor: '#f2a1a108' }
+                          transition: 'background-color 0.2s, border-color 0.2s, box-shadow 0.2s'
                         }}
                       >
                         <Typography sx={{ fontWeight: 800, fontSize: '1rem', mb: 0.5 }}>ไม่สะดวกไปร่วมงาน</Typography>
@@ -250,20 +246,18 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
                   </Box>
               </Box>
 
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {formData.attending === 'yes' && (
-                  <Box>
-                    <motion.div
-                      key="guest-count-section"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.6)', mb: 2, fontSize: '0.75rem', letterSpacing: '0.1em', fontWeight: 600, mt: 1 }}>
-                        NUMBER OF GUESTS / จำนวนผู้ร่วมงาน
-                      </Typography>
+                  <motion.div
+                    key="guest-count-section"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                  >
+                    <Typography variant="body2" sx={{ color: 'rgba(0,0,0,0.6)', mb: 2, fontSize: '0.75rem', letterSpacing: '0.1em', fontWeight: 600, mt: 1 }}>
+                      NUMBER OF GUESTS / จำนวนผู้ร่วมงาน
+                    </Typography>
                       <Box sx={{ 
                         display: 'grid', 
                         gridTemplateColumns: 'repeat(5, 1fr)', 
@@ -307,7 +301,6 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
                         ระบุจำนวนคน (Number of persons)
                       </Typography>
                     </motion.div>
-                  </Box>
                 )}
               </AnimatePresence>
 
