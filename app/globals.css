@@ -77,6 +77,18 @@ body {
   color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Remove tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove focus outlines globally for clicking/tapping */
+*:focus {
+  outline: none !important;
+}
+
+/* Specifically for buttons and links to ensure no blue square appears */
+button, a, div {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ═════ SCROLLBAR ═════ */

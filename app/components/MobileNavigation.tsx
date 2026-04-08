@@ -155,6 +155,7 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
             overflowX: displayItems.length > 5 ? 'auto' : 'visible',
             msOverflowStyle: 'none',
             scrollbarWidth: 'none',
+            WebkitTapHighlightColor: 'transparent',
             '&::-webkit-scrollbar': {
               display: 'none',
             },
