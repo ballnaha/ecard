@@ -17,10 +17,10 @@ const initialLayoutBase = [
   { id: 'dressCode', title: 'การแต่งกาย (Dress Code)', icon: '👕', isActive: true },
   { id: 'countdown', title: 'นับถอยหลัง (Countdown)', icon: '⏰', isActive: true },
   { id: 'gallery', title: 'แกลเลอรี่ (Gallery)', icon: '📸', isActive: true },
-  { id: 'location', title: 'สถานที่จัดงาน (Venue)', icon: '📍', isActive: true },
   { id: 'rsvp', title: 'ตอบรับบัตรเชิญ (RSVP)', icon: '✉️', isActive: true },
   { id: 'gift', title: 'ซองของขวัญ (Gift)', icon: '🎁', isActive: true },
-  { id: 'guestbook', title: 'สมุดอวยพร (Guestbook)', icon: '📖', isActive: true },
+  { id: 'guestbook', title: 'สมุดอวยพร (Guestbook)', icon: '📖', isActive: false },
+  { id: 'location', title: 'สถานที่จัดงาน (Venue)', icon: '📍', isActive: true },
   { id: 'poweredBy', title: 'เครดิตผู้พัฒนา (Powered By)', icon: '🛡️', isActive: true },
   { id: 'mobileNav', title: 'เมนูนำทางมือถือ (Mobile Nav)', icon: '📱', isActive: true },
 ];
@@ -40,18 +40,37 @@ const sectionIconMap: Record<string, any> = {
 
 export default function BuilderEditor({ client }: { client: any }) {
   const [items, setItems] = useState(() => {
-    if (client?.layoutOrder && Array.isArray(client.layoutOrder)) {
+    // If client has a saved layout order
+    if (client?.layoutOrder && Array.isArray(client.layoutOrder) && client.layoutOrder.length > 0) {
       const savedLayout = client.layoutOrder as any[];
-      const hydratedItems = savedLayout.map((item: any) => {
+      
+      // Step 1: Create a map of saved items for quick access to their isActive status and saved index
+      const savedMap = new Map();
+      savedLayout.forEach((item, index) => {
         const id = typeof item === 'string' ? item : item.id;
         const isActive = typeof item === 'string' ? true : (item.isActive ?? true);
+        savedMap.set(id, { isActive, index });
+      });
+
+      // Step 2: Hydrate items based on saved order (to preserve user customization)
+      const hydratedItems = savedLayout.map((item: any) => {
+        const id = typeof item === 'string' ? item : item.id;
         const base = initialLayoutBase.find(l => l.id === id);
-        return base ? { ...base, isActive } : null;
+        if (!base) return null;
+        
+        const savedData = savedMap.get(id);
+        return { ...base, isActive: savedData.isActive };
       }).filter(Boolean) as typeof initialLayoutBase;
-      const missingItems = initialLayoutBase.filter(l => !hydratedItems.find(h => h.id === l.id));
+
+      // Step 3: Find any items that exist in initialLayoutBase but are missing in the saved layout
+      const missingItems = initialLayoutBase.filter(l => !savedMap.has(l.id));
+
+      // Return the combined list: Saved items first (in their saved order), then missing items (in their default order)
       return [...hydratedItems, ...missingItems];
     }
-    return initialLayoutBase;
+
+    // Default: Strictly follow initialLayoutBase if no layoutOrder exists
+    return [...initialLayoutBase];
   });
 
   const [editingItem, setEditingItem] = useState<any | null>(null);
@@ -149,6 +168,16 @@ export default function BuilderEditor({ client }: { client: any }) {
     setIsSaving(false);
     if (res?.error) showSnackbar(res.error, 'error');
     else showSnackbar('บันทึกการจัดเรียงและสถานะการแสดงผลสำเร็จ!', 'success');
+  };
+
+  const handleResetOrder = () => {
+    // Keep the current isActive status but reset the order to match initialLayoutBase
+    const resetItems = initialLayoutBase.map(base => {
+      const current = items.find(i => i.id === base.id);
+      return current ? { ...base, isActive: current.isActive } : base;
+    });
+    setItems(resetItems);
+    showSnackbar('คืนค่าลำดับแสดงผลเป็นค่าเริ่มต้นแล้ว (อย่าลืมกดบันทักเพื่อยืนยัน)', 'info');
   };
 
   const uploadOneFile = async (file: File, fileType: string): Promise<string> => {
@@ -429,13 +458,13 @@ export default function BuilderEditor({ client }: { client: any }) {
   const activeBuilderSections = items.filter(i => i.isActive && i.id !== 'mobileNav' && i.id !== 'poweredBy');
 
   return (
-    <Box sx={{ maxWidth: '800px', mx: 'auto', px: { xs: 0, sm: 2 } }}>
+    <Box sx={{ maxWidth: 'auto', mx: 'auto', px: { xs: 0, sm: 2 } }}>
       <Box>
-        <Box sx={{ 
-          display: 'flex', 
+        <Box sx={{
+          display: 'flex',
           flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: 'space-between', 
-          mb: 3, 
+          justifyContent: 'space-between',
+          mb: 3,
           alignItems: { xs: 'stretch', sm: 'center' },
           gap: 2
         }}>
@@ -445,6 +474,22 @@ export default function BuilderEditor({ client }: { client: any }) {
           <Stack direction="row" spacing={1.5} sx={{ width: { xs: '100%', sm: 'auto' } }}>
             <Button
               variant="outlined"
+              size="small"
+              onClick={handleResetOrder}
+              sx={{
+                borderRadius: '50px',
+                color: '#94a3b8',
+                borderColor: '#e2e8f0',
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 2,
+                '&:hover': { bgcolor: '#f8fafc', borderColor: '#cbd5e1' }
+              }}
+            >
+              รีเซ็ตลำดับ
+            </Button>
+            <Button
+              variant="outlined"
               fullWidth
               startIcon={<ColorSwatch variant="Bold" size={20} color="#f2a1a1" />}
               onClick={() => setEditingItem({ id: 'theme', title: 'ธีมและเพลงประกอบ' })}
@@ -452,12 +497,12 @@ export default function BuilderEditor({ client }: { client: any }) {
             >
               ธีม & เพลง
             </Button>
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               fullWidth
-              disabled={isSaving} 
-              startIcon={<Save2 variant="Bold" size={20} color="currentColor" />} 
-              onClick={handleSave} 
+              disabled={isSaving}
+              startIcon={<Save2 variant="Bold" size={20} color="currentColor" />}
+              onClick={handleSave}
               sx={{ bgcolor: alpha('#f2a1a1', 1), color: '#ffffff', borderRadius: '50px', fontWeight: 800, px: 3, textTransform: 'none', '&:hover': { bgcolor: '#e89191', transform: 'translateY(-2px)' }, transition: 'all 0.3s ease', boxShadow: '0 8px 25px rgba(242, 161, 161, 0.3)' }}
             >
               บันทึกหน้า
@@ -517,19 +562,19 @@ export default function BuilderEditor({ client }: { client: any }) {
 
       {/* Settings Drawer */}
       <Drawer
-        anchor="right" 
-        open={!!editingItem} 
-        onClose={() => setEditingItem(null)} 
+        anchor="right"
+        open={!!editingItem}
+        onClose={() => setEditingItem(null)}
         sx={{ zIndex: 1250 }}
-        PaperProps={{ 
-          sx: { 
-            width: { xs: '100%', sm: 500, md: 550 }, 
-            p: { xs: 2.5, md: 4.5 }, 
-            bgcolor: '#f8fafc', 
+        PaperProps={{
+          sx: {
+            width: { xs: '100%', sm: 500, md: 550 },
+            p: { xs: 2.5, md: 4.5 },
+            bgcolor: '#f8fafc',
             boxShadow: '-10px 0 30px rgba(0,0,0,0.05)',
             borderTopLeftRadius: { xs: '24px', sm: 0 },
             borderBottomLeftRadius: { xs: '24px', sm: 0 }
-          } 
+          }
         }}
       >
         {editingItem && (
@@ -889,16 +934,16 @@ export default function BuilderEditor({ client }: { client: any }) {
                     {dressCodeColors.map((color, idx) => (
                       <Box key={idx} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                         <Box sx={{ position: 'relative' }}>
-                          <Box 
-                            sx={{ 
-                              width: 55, 
-                              height: 55, 
-                              borderRadius: '15px', 
-                              bgcolor: color, 
-                              border: '3px solid #fff', 
+                          <Box
+                            sx={{
+                              width: 55,
+                              height: 55,
+                              borderRadius: '15px',
+                              bgcolor: color,
+                              border: '3px solid #fff',
                               boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
                               display: 'block'
-                            }} 
+                            }}
                           />
                           <IconButton
                             size="small"
@@ -908,7 +953,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                             <Trash variant="Outline" size={14} color="#fff" />
                           </IconButton>
                         </Box>
-                        <TextField 
+                        <TextField
                           value={color}
                           onChange={(e) => {
                             const newColors = [...dressCodeColors];

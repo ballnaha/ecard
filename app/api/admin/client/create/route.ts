@@ -27,7 +27,20 @@ export async function POST(req: NextRequest) {
         slug: slug.toLowerCase(),
         eventDate: new Date(eventDate),
         primaryColor: '#615b56', // Default theme color
-        layoutOrder: ['hero', 'countdown', 'couple', 'gallery', 'location', 'rsvp']
+        layoutOrder: [
+          { id: "hero", isActive: true },
+          { id: "couple", isActive: true },
+          { id: "schedule", isActive: true },
+          { id: "dressCode", isActive: true },
+          { id: "countdown", isActive: true },
+          { id: "gallery", isActive: true },
+          { id: "location", isActive: true },
+          { id: "rsvp", isActive: true },
+          { id: "gift", isActive: true },
+          { id: "guestbook", isActive: true },
+          { id: "poweredBy", isActive: true },
+          { id: "mobileNav", isActive: true }
+        ]
       }
     });
 

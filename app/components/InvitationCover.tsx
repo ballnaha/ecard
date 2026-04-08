@@ -670,6 +670,20 @@ export default function InvitationCover({
               }}
             >
               <Stack spacing={4} sx={{ mt: 6, alignItems: 'center' }}>
+                <Typography 
+                  sx={{
+                    color: '#94a3b8',
+                    fontSize: { xs: '0.65rem', md: '0.75rem' },
+                    mb: -3, // Offset the stack spacing
+                    fontFamily: 'Prompt',
+                    fontWeight: 400,
+                    letterSpacing: '0.05em',
+                    opacity: 0.8,
+                    textAlign: 'center'
+                  }}
+                >
+                  ขออภัยหากมิได้เรียนเชิญด้วยตัวเอง
+                </Typography>
                 <Typography
                   onClick={handleOpen}
                   sx={{

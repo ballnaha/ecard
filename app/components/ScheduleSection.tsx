@@ -258,6 +258,20 @@ export default function ScheduleSection({
           </Box>
         </Box>
 
+        {/* Apology Text - Formal Conclusion */}
+        <Box sx={{ mt: { xs: 8, md: 12 }, textAlign: 'center' }}>
+          <Typography sx={{
+            fontFamily: '"Prompt", sans-serif',
+            fontSize: { xs: '0.9rem', md: '1rem' },
+            color: 'rgba(0,0,0,0.45)',
+            fontWeight: 400,
+            fontStyle: 'italic',
+            letterSpacing: '0.02em'
+          }}>
+            ขออภัยหากมิได้เรียนเชิญด้วยตัวเอง
+          </Typography>
+        </Box>
+
       </Container>
     </Box>
   );

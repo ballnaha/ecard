@@ -23,7 +23,18 @@ export async function createClient(formData: FormData) {
         eventDate: new Date(eventDateStr),
         // LayoutOrder default (Template เริ่มต้น)
         layoutOrder: [
-          "hero", "couple", "schedule", "gallery", "countdown", "colorTheme", "gift", "rsvp", "location", "poweredBy", "mobileNav"
+          { id: "hero", isActive: true },
+          { id: "couple", isActive: true },
+          { id: "schedule", isActive: true },
+          { id: "dressCode", isActive: true },
+          { id: "countdown", isActive: true },
+          { id: "gallery", isActive: true },
+          { id: "location", isActive: true },
+          { id: "rsvp", isActive: true },
+          { id: "gift", isActive: true },
+          { id: "guestbook", isActive: true },
+          { id: "poweredBy", isActive: true },
+          { id: "mobileNav", isActive: true }
         ]
       }
     });
