@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       const fileName = `${crypto.randomUUID()}${ext}`;
       const filePath = path.join(uploadDir, fileName);
       fs.writeFileSync(filePath, buffer);
-      imageUrls.push(`/uploads/${clientId}/wishes/${fileName}`);
+      imageUrls.push(`/api/media/${clientId}/wishes/${fileName}`);
     }
 
     // Save drawing (if it's a large base64, we might want to save it as a file)
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       const fileName = `drawing_${crypto.randomUUID()}.png`;
       const filePath = path.join(uploadDir, fileName);
       fs.writeFileSync(filePath, buffer);
-      savedDrawingPath = `/uploads/${clientId}/wishes/${fileName}`;
+      savedDrawingPath = `/api/media/${clientId}/wishes/${fileName}`;
     }
 
     const wish = await prisma.wish.create({

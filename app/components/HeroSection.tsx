@@ -56,6 +56,33 @@ export default function HeroSection({ data }: { data?: HeroData }) {
   }, []);
 
   const renderContent = () => {
+    const isHidden = data?.hideAllText === true || String(data?.hideAllText) === 'true';
+
+    if (isHidden) {
+      if (!data?.heroNameImage) return null;
+      return (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.5 }}
+          style={{ position: 'absolute', inset: 0, zIndex: 1, width: '100%', height: '100%' }}
+        >
+          <Box 
+            component="img" 
+            src={data.heroNameImage} 
+            alt="Full Card Edition" 
+            sx={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'contain', 
+              objectPosition: 'center',
+              display: 'block'
+            }} 
+          />
+        </motion.div>
+      );
+    }
+    
     switch (style) {
       case 'editorial':
         return (
@@ -328,7 +355,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
           sx={{
             position: 'absolute',
             inset: 0,
-            background: data?.hideAllText 
+            background: (data?.hideAllText === true || String(data?.hideAllText) === 'true')
               ? 'transparent' // No overlay if hiding text
               : 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%)',
             zIndex: 1,
@@ -336,7 +363,7 @@ export default function HeroSection({ data }: { data?: HeroData }) {
         />
       )}
 
-      {!data?.hideAllText && renderContent()}
+      {renderContent()}
 
       {/* Elegant Scroll Indicator */}
       <Box sx={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', zIndex: 2 }}>

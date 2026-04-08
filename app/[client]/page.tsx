@@ -50,6 +50,7 @@ export default async function ClientWeddingECard({
     heroImage: heroSection.heroImage || '',
     heroPoster: heroSection.heroPoster || '',
     heroBackgroundColor: heroSection.heroBackgroundColor || '#ffffff',
+    hideAllText: !!heroSection.hideAllText,
   };
 
   const clientData = {

@@ -34,7 +34,15 @@ export async function POST(req: NextRequest) {
 
     // Create directory: public/uploads/{clientId}/
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', clientId);
-    await mkdir(uploadDir, { recursive: true });
+    console.log('[Upload Debug] Base Dir:', process.cwd());
+    console.log('[Upload Debug] Target Dir:', uploadDir);
+
+    try {
+      await mkdir(uploadDir, { recursive: true });
+    } catch (err: any) {
+      console.error('[Upload Debug] MKDIR Error:', err);
+      return NextResponse.json({ error: 'System cannot create directory: ' + err.message }, { status: 500 });
+    }
 
     // Generate filename
     const timestamp = Date.now();
@@ -47,10 +55,18 @@ export async function POST(req: NextRequest) {
     if (isImage) {
       // 🚀 PROCESS IMAGE: Resize & Convert to WebP
       fileName = `${fileType}_${timestamp}.webp`;
-      finalBuffer = await sharp(buffer)
-        .resize({ width: 2000, withoutEnlargement: true }) // Max width 2000px
-        .webp({ quality: 85 }) // High quality webp
-        .toBuffer();
+      try {
+        finalBuffer = await sharp(buffer)
+          .resize({ width: 2000, withoutEnlargement: true }) // Max width 2000px
+          .webp({ quality: 85 }) // High quality webp
+          .toBuffer();
+      } catch (sharpErr: any) {
+        console.error('[Upload Debug] Sharp Processing Error:', sharpErr);
+        // Fallback to original buffer if sharp fails on VPS
+        const ext = path.extname(file.name) || '.jpg';
+        fileName = `${fileType}_${timestamp}${ext}`;
+        finalBuffer = buffer;
+      }
     } else {
       // NOT AN IMAGE (Video or others)
       const ext = path.extname(file.name) || (isVideo ? '.mp4' : '');
@@ -59,10 +75,18 @@ export async function POST(req: NextRequest) {
     }
 
     const filePath = path.join(uploadDir, fileName);
-    await writeFile(filePath, finalBuffer);
+    console.log('[Upload Debug] Writing to:', filePath);
+    
+    try {
+      await writeFile(filePath, finalBuffer);
+      console.log('[Upload Debug] Success!');
+    } catch (writeErr: any) {
+      console.error('[Upload Debug] WriteFile Error:', writeErr);
+      return NextResponse.json({ error: 'System cannot write file: ' + writeErr.message }, { status: 500 });
+    }
 
-    // Return the public URL path
-    const publicUrl = `/uploads/${clientId}/${fileName}`;
+    // Return the public URL path via the media proxy API for VPS stability
+    const publicUrl = `/api/media/${clientId}/${fileName}`;
 
     return NextResponse.json({ 
       success: true, 

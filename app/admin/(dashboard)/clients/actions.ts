@@ -436,6 +436,45 @@ export async function deleteRSVP(id: string, slug: string) {
   }
 }
 
+export async function deleteWish(id: string, slug: string) {
+  try {
+    const wish = await prisma.wish.findUnique({ where: { id } }) as any;
+    if (!wish) return { error: 'ไม่พบคำอวยพรนี้' };
+
+    // Clean up physical files to free up disk space
+    const filesToDelete: string[] = [];
+    if (wish.drawing && typeof wish.drawing === 'string' && wish.drawing.startsWith('/api/media/')) {
+      const relativePath = decodeURIComponent(wish.drawing.replace('/api/media/', ''));
+      filesToDelete.push(path.join(process.cwd(), 'public', 'uploads', ...relativePath.split('/')));
+    }
+    
+    if (Array.isArray(wish.images)) {
+      for (const img of wish.images) {
+        if (typeof img === 'string' && img.startsWith('/api/media/')) {
+          const relativePath = decodeURIComponent(img.replace('/api/media/', ''));
+          filesToDelete.push(path.join(process.cwd(), 'public', 'uploads', ...relativePath.split('/')));
+        }
+      }
+    }
+
+    // Delete the files ignoring errors if missing
+    for (const filePath of filesToDelete) {
+      try {
+        await rm(filePath, { force: true });
+      } catch (err) {
+        console.error('Failed to delete wish file:', filePath, err);
+      }
+    }
+
+    await prisma.wish.delete({ where: { id } });
+    revalidatePath(`/[client]`, 'page');
+    revalidatePath(`/dashboard/[client]`, 'page');
+    return { success: true };
+  } catch (e: any) {
+    return { error: 'ลบไม่สำเร็จ: ' + e.message };
+  }
+}
+
 export async function updateClientMobileNav(id: string, items: any[], slug?: string) {
   try {
     const data = { items };
