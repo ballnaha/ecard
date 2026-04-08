@@ -213,7 +213,7 @@ export default function InvitationCover({
                   textShadow: '1px 1px 2px rgba(0,0,0,0.05)',
                   letterSpacing: '0.02em'
                 }}>
-                  {groomName}
+                  {brideName}
                 </Typography>
                 <Typography sx={{
                   fontSize: { xs: '1rem', md: '1.6rem' },
@@ -232,7 +232,7 @@ export default function InvitationCover({
                   textShadow: '1px 1px 2px rgba(0,0,0,0.05)',
                   letterSpacing: '0.02em'
                 }}>
-                  {brideName}
+                  {groomName}
                 </Typography>
               </Stack>
 
