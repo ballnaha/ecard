@@ -3,7 +3,82 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, alpha } from '@mui/material';
 import { Music } from 'iconsax-react';
-import { motion, AnimatePresence, useMotionValue, useAnimationFrame } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useAnimationFrame, useAnimation } from 'framer-motion';
+
+// Individual floating note – exits naturally upward when playback stops
+function FloatingNote({
+  note, offsetX, dur, delay, size, driftX, primaryColor, isPlaying
+}: {
+  note: string; offsetX: number; dur: number; delay: number;
+  size: number; driftX: number; primaryColor: string; isPlaying: boolean;
+}) {
+  const controls = useAnimation();
+  const motionY = useMotionValue(10);
+  const motionOpacity = useMotionValue(0);
+  const hasMounted = useRef(false);
+
+  useEffect(() => {
+    if (isPlaying) {
+      hasMounted.current = true;
+      controls.start({
+        opacity:  [0, 0, 0.85, 0.7, 0.5, 0],
+        y:        [10, 0, -18, -38, -58, -80],
+        x:        [offsetX, offsetX + driftX*0.2, offsetX + driftX*0.5, offsetX + driftX*0.8, offsetX + driftX, offsetX + driftX*1.1],
+        rotate:   [0, 8, -5, 10, 4, 0],
+        transition: {
+          duration: dur,
+          repeat: Infinity,
+          ease: 'easeInOut',
+          delay,
+          times: [0, 0.1, 0.3, 0.55, 0.8, 1],
+          repeatDelay: 0.2,
+        },
+      });
+    } else {
+      if (!hasMounted.current) return;
+      // Grab current rendered y/opacity from the DOM element via motion values
+      const currentY = motionY.get();
+      const currentOpacity = motionOpacity.get();
+      controls.stop();
+      controls.start({
+        opacity: [currentOpacity, currentOpacity * 0.6, 0],
+        y: [currentY, currentY - 30, currentY - 70],
+        x: offsetX,
+        rotate: 0,
+        transition: {
+          duration: 2.2,
+          ease: [0.1, 0.6, 0.4, 1],
+          times: [0, 0.4, 1],
+        },
+      });
+    }
+  }, [isPlaying]);
+
+  return (
+    <Box
+      component={motion.span}
+      initial={{ opacity: 0, y: 10, x: offsetX }}
+      animate={controls}
+      style={{ y: motionY, opacity: motionOpacity } as any}
+      sx={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        display: 'inline-block',
+        fontSize: size,
+        lineHeight: 1,
+        color: 'rgba(255,255,255,0.92)',
+        textShadow: `0 0 8px rgba(255,255,255,0.7), 0 0 4px ${alpha(primaryColor, 0.5)}`,
+        pointerEvents: 'none',
+        userSelect: 'none',
+        zIndex: 20,
+        fontFamily: 'serif',
+      }}
+    >
+      {note}
+    </Box>
+  );
+}
 
 interface AudioPlayerProps {
   audioUrl?: string; // Will be linked to uploaded file later
@@ -149,6 +224,8 @@ export default function AudioPlayer({
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'flex-end',
+              /* allow notes to float above */
+              overflow: 'visible',
               /* 3D perspective container */
               perspective: '520px',
               perspectiveOrigin: '50% 0%',
@@ -425,50 +502,15 @@ export default function AudioPlayer({
               </Box>
             </Box>
 
-            {/* ── Equalizer bars (left of turntable) ─────────── */}
-            <Box sx={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              gap: '4px',
-              height: 28,
-              mr: 1.5,
-              mb: '6px',
-              alignSelf: 'flex-end',
-            }}>
-              {[
-                { h: 14, dur: 1.8, delay: 0 },
-                { h: 22, dur: 2.2, delay: 0.3 },
-                { h: 17, dur: 1.6, delay: 0.15 },
-                { h: 20, dur: 2.0, delay: 0.45 },
-              ].map(({ h, dur, delay }, i) => (
-                <Box
-                  key={i}
-                  component={motion.div}
-                  animate={isPlaying ? {
-                    height: [4, h, 6, h * 0.6, 4],
-                    opacity: [0.4, 0.85, 0.5, 0.9, 0.4],
-                  } : {
-                    height: 3,
-                    opacity: 0.25,
-                  }}
-                  transition={isPlaying ? {
-                    duration: dur,
-                    repeat: Infinity,
-                    ease: [0.45, 0.05, 0.55, 0.95],
-                    delay,
-                  } : { duration: 0.8, ease: 'easeOut' }}
-                  sx={{
-                    width: 3,
-                    borderRadius: '99px',
-                    background: `linear-gradient(to top, ${primaryColor}, rgba(255,255,255,0.9))`,
-                    transformOrigin: 'bottom',
-                    flexShrink: 0,
-                    boxShadow: isPlaying ? `0 0 6px 1px ${alpha(primaryColor, 0.5)}` : 'none',
-                    transition: 'box-shadow 0.6s ease',
-                  }}
-                />
-              ))}
-            </Box>
+            {/* ── Floating music notes ────────────────────────── */}
+            {[
+              { note: '♪', offsetX: 10,  dur: 3.2, delay: 0,   size: 13, driftX:  8 },
+              { note: '♫', offsetX: 30,  dur: 4.0, delay: 1.1, size: 15, driftX: -7 },
+              { note: '♩', offsetX: 55,  dur: 3.6, delay: 0.5, size: 11, driftX:  5 },
+              { note: '♪', offsetX: 72,  dur: 4.4, delay: 1.8, size: 14, driftX: -9 },
+            ].map((props, i) => (
+              <FloatingNote key={i} {...props} primaryColor={primaryColor} isPlaying={isPlaying} />
+            ))}
           </Box>
         )}
       </AnimatePresence>
