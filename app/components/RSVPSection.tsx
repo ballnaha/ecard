@@ -97,19 +97,17 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
       setIsReturning(true);
 
       setSubmitted(true);
-      // Scroll back to RSVP section title
+      // Collapse form immediately so layout settles before scroll
+      setShowForm(false);
+      setFormData({ name: '', phone: '', attending: 'yes', guestCount: '1', note: '' });
+      // Wait for form exit animation (0.4s) to finish, then scroll to RSVP title
       setTimeout(() => {
         const rsvpEl = document.getElementById('rsvp');
         if (rsvpEl) {
           const topOffset = rsvpEl.getBoundingClientRect().top + window.pageYOffset;
-          window.scrollTo({ top: topOffset - 2, behavior: 'smooth' });
+          window.scrollTo({ top: topOffset - 2, behavior: 'auto' });
         }
-      }, 100);
-      // Delay form collapse so notification appears first (reduces layout jank)
-      setTimeout(() => {
-        setShowForm(false);
-        setFormData({ name: '', phone: '', attending: 'yes', guestCount: '1', note: '' });
-      }, 300);
+      }, 450);
     } catch (error) {
       console.error('RSVP Error:', error);
       setErrorMsg('เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองใหม่อีกครั้ง');
