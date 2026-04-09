@@ -97,6 +97,14 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
       setIsReturning(true);
 
       setSubmitted(true);
+      // Scroll back to RSVP section title
+      setTimeout(() => {
+        const rsvpEl = document.getElementById('rsvp');
+        if (rsvpEl) {
+          const topOffset = rsvpEl.getBoundingClientRect().top + window.pageYOffset;
+          window.scrollTo({ top: topOffset - 2, behavior: 'smooth' });
+        }
+      }, 100);
       // Delay form collapse so notification appears first (reduces layout jank)
       setTimeout(() => {
         setShowForm(false);
