@@ -116,7 +116,7 @@ export default function InvitationCover({
     setPhase('card-rise');
 
     cardControls.start({
-      y: isMobile ? -200 : -260,
+      y: isMobile ? -150 : -200,
       rotateZ: -1.5,
       scale: 1,
       transition: {
@@ -167,7 +167,7 @@ export default function InvitationCover({
               ? `url(${coverBgImage})`
               : coverBgType === 'color'
                 ? 'none'
-                : `radial-gradient(circle at 50% 50%, #ffffff 0%, #fdfbf0 60%, #f5f1e0 100%)`,
+                : `radial-gradient(ellipse at 50% 40%, #fffef7 0%, #fdf9e8 40%, #f0e9d0 80%, #e6ddc0 100%)`,  
             backgroundSize: coverBgType === 'image' ? 'cover' : undefined,
             backgroundPosition: coverBgType === 'image' ? 'center' : undefined,
             backgroundRepeat: coverBgType === 'image' ? 'no-repeat' : undefined,
@@ -197,7 +197,19 @@ export default function InvitationCover({
               position: 'absolute',
               inset: 0,
               backgroundImage: 'url(/images/natural-paper.png)',
-              opacity: 0.3,
+              backgroundSize: '380px 380px',
+              opacity: 0.55,
+              pointerEvents: 'none',
+              zIndex: 1
+            }} />
+          )}
+
+          {/* Vignette corners — depth and luxury frame feel */}
+          {coverBgType !== 'image' && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'radial-gradient(ellipse at 0% 0%, rgba(0,0,0,0.06) 0%, transparent 55%), radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.06) 0%, transparent 55%), radial-gradient(ellipse at 0% 100%, rgba(0,0,0,0.06) 0%, transparent 55%), radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.06) 0%, transparent 55%)',
               pointerEvents: 'none',
               zIndex: 1
             }} />
@@ -233,6 +245,16 @@ export default function InvitationCover({
               }} />
             </>
           )}
+
+          {/* Corner bracket decorations — luxury stationery look */}
+          {coverBgType !== 'image' && [
+            { top: '20px', left: '20px', borderTop: `1px solid ${alpha(primaryColor, 0.28)}`, borderLeft: `1px solid ${alpha(primaryColor, 0.28)}` },
+            { top: '20px', right: '20px', borderTop: `1px solid ${alpha(primaryColor, 0.28)}`, borderRight: `1px solid ${alpha(primaryColor, 0.28)}` },
+            { bottom: '88px', left: '20px', borderBottom: `1px solid ${alpha(primaryColor, 0.28)}`, borderLeft: `1px solid ${alpha(primaryColor, 0.28)}` },
+            { bottom: '88px', right: '20px', borderBottom: `1px solid ${alpha(primaryColor, 0.28)}`, borderRight: `1px solid ${alpha(primaryColor, 0.28)}` },
+          ].map((style, i) => (
+            <div key={i} style={{ position: 'absolute', width: '32px', height: '32px', zIndex: 2, pointerEvents: 'none', ...style }} />
+          ))}
 
           {/* Main Content Area */}
           <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
@@ -406,7 +428,13 @@ export default function InvitationCover({
                     transition: 'box-shadow 0.6s ease',
                     transformStyle: 'preserve-3d',
                   }}
-                >
+                >                {/* Luxury double-rule border frame */}
+                <div style={{ position: 'absolute', inset: '8px', border: `1px solid ${alpha(primaryColor, 0.22)}`, borderRadius: '2px', pointerEvents: 'none', zIndex: 0 }} />
+                <div style={{ position: 'absolute', inset: '13px', border: `0.5px solid ${alpha(primaryColor, 0.13)}`, borderRadius: '1px', pointerEvents: 'none', zIndex: 0 }} />
+                {/* Corner diamond marks */}
+                {[{ top: '12px', left: '12px' }, { top: '12px', right: '12px' }, { bottom: '12px', left: '12px' }, { bottom: '12px', right: '12px' }].map((pos, i) => (
+                  <div key={i} style={{ position: 'absolute', width: '5px', height: '5px', ...pos, border: `0.5px solid ${alpha(primaryColor, 0.35)}`, transform: 'rotate(45deg)', pointerEvents: 'none', zIndex: 1 }} />
+                ))}
                   {/* Inner card content with staggered reveal */}
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -582,13 +610,22 @@ export default function InvitationCover({
                     border: isMobile ? 'none' : '1px solid rgba(0,0,0,0.1)',
                   }}
                 >
-                  {/* Silk sheen highlight for the pocket surface */}
+                  {/* Silk sheen — layered for satin/velvet material feel */}
                   <div style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(160deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.05) 100%)',
+                    background: 'linear-gradient(148deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 30%, transparent 55%, rgba(0,0,0,0.1) 100%)',
                     pointerEvents: 'none',
                     borderRadius: '4px',
+                  }} />
+                  {/* Top-edge specular catch */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0, left: 0, right: 0,
+                    height: '28%',
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.14) 0%, transparent 100%)',
+                    pointerEvents: 'none',
+                    borderRadius: '4px 4px 0 0',
                   }} />
 
                   {/* Subtle pocket shadow highlight on top of the cut */}
@@ -649,8 +686,25 @@ export default function InvitationCover({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.4))',
+                      filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.45))',
                     }}>
+                      {/* Gold outer ring — luxury aura */}
+                      <div style={{
+                        position: 'absolute',
+                        inset: '-10px',
+                        borderRadius: '50%',
+                        border: '1px solid rgba(212,175,55,0.5)',
+                        boxShadow: '0 0 20px rgba(212,175,55,0.2), inset 0 0 10px rgba(212,175,55,0.08)',
+                        pointerEvents: 'none',
+                      }} />
+                      {/* Inner gold ring */}
+                      <div style={{
+                        position: 'absolute',
+                        inset: '-4px',
+                        borderRadius: '50%',
+                        border: '0.5px solid rgba(212,175,55,0.3)',
+                        pointerEvents: 'none',
+                      }} />
                       <img
                         src="/images/wax-seal.png"
                         alt=""
