@@ -153,7 +153,7 @@ export default async function AdminDashboard() {
     { label: 'New Wedding Card', href: '/admin/clients/add', icon: <AddCircle variant="Bulk" size="24" color="#f2a1a1" />, color: '#f2a1a1' },
     { label: 'All Wedding Cards', href: '/admin/clients', icon: <DocumentText variant="Bulk" size="24" color="#4facfe" />, color: '#4facfe' },
     { label: 'Manage Users', href: '/admin/users', icon: <People variant="Bulk" size="24" color="#a18cd1" />, color: '#a18cd1' },
-    { label: 'Settings', href: '/admin/settings', icon: <Setting2 variant="Bulk" size="24" color="#64748b" />, color: '#64748b' },
+    
   ];
 
   return (
