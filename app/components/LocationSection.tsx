@@ -83,8 +83,14 @@ export default function LocationSection({ data }: { data?: LocationData }) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+              style={{ 
+                WebkitBackfaceVisibility: 'hidden',
+                backfaceVisibility: 'hidden',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)'
+              }}
             >
               <Typography sx={{
                 fontFamily: 'Prompt',
@@ -147,8 +153,14 @@ export default function LocationSection({ data }: { data?: LocationData }) {
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1 }}
-              viewport={{ once: true }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+              style={{ 
+                WebkitBackfaceVisibility: 'hidden',
+                backfaceVisibility: 'hidden',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)'
+              }}
             >
               <Paper
                 elevation={0}

@@ -151,22 +151,42 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         transition: 'opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
         display: mounted ? 'block' : 'none',
         bgcolor: clientData.secondaryColor || '#faf9f6',
-        willChange: 'opacity',
+        willChange: 'opacity, transform',
+        WebkitOverflowScrolling: 'touch',
+        position: 'relative',
+        zIndex: 1
       }}>
-        {clientData.hero?.showFallingPetals && isCoverOpen && <FallingPetals />}
-        {isCoverOpen && (
-          <AudioPlayer 
-            primaryColor={clientData.primaryColor} 
-            audioUrl={clientData.musicUrl || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"} 
-          />
-        )}
+        {/* Delay petals until heavy content is ready to show */}
+        {clientData.hero?.showFallingPetals && showContent && <FallingPetals />}
+        
         {layoutOrder.map((section: string) => {
           // Optimization: Only render HeroSection initially
-          if (section === 'hero') return renderSection(section);
+          // and skip mobileNav here as it's now handled at the root level
+          if (section === 'mobileNav') return null;
+          
+          if (section === 'hero') {
+             // HeroSection always renders, but its internal logic handles delays
+             return renderSection(section);
+          }
+          
           if (showContent) return renderSection(section);
           return null;
         })}
       </Box>
+
+      {/* Truly Fixed Elements at Root Level to avoid stacking context issues on mobile */}
+      {isCoverOpen && (
+        <>
+          <AudioPlayer 
+            primaryColor={clientData.primaryColor} 
+            audioUrl={clientData.musicUrl || "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"} 
+          />
+          <MobileNavigation 
+            items={(clientData.mobileNavSection as any)?.items || []} 
+            primaryColor={clientData.primaryColor} 
+          />
+        </>
+      )}
     </Box>
   );
 }

@@ -49,6 +49,8 @@ export default function GuestWishesForm({
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
       setImages((prev) => [...prev, ...newFiles]);
+      // Reset input value to allow selecting the same file again
+      e.target.value = '';
     }
   };
 

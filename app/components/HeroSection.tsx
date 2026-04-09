@@ -314,6 +314,10 @@ export default function HeroSection({ data }: { data?: HeroData }) {
         justifyContent: 'center',
         overflow: 'hidden',
         backgroundColor: mediaType === 'color' ? (data?.heroBackgroundColor || '#ffffff') : '#000',
+        WebkitBackfaceVisibility: 'hidden',
+        backfaceVisibility: 'hidden',
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)',
       }}
     >
       {/* Seamless Video or Image Background System */}

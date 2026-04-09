@@ -133,7 +133,11 @@ export default function AudioPlayer({
               display: 'flex',
               flexDirection: 'row-reverse',
               alignItems: 'center',
-              gap: 1.5
+              gap: 1.5,
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
             }}
           >
             {/* Classic Vintage Turntable Base */}

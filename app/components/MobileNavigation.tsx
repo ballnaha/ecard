@@ -63,39 +63,48 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
       ]);
 
   const scrollToSection = async (id: string, index: number) => {
+    if (isTransitioning) return;
     setValue(index);
-    // Start Fade Out
+    
+    // Lock scroll and show transition
+    document.body.style.overflow = 'hidden';
     setIsTransitioning(true);
 
-    // Wait for fade out animation
+    // Wait for the overlay to become fully opaque (transition duration 0.35s)
     setTimeout(() => {
-      const targetId = (id === 'home' || id === 'hero') ? 'home' : id;
+      let targetId = (id === 'home' || id === 'hero') ? 'home' : id;
+      if (targetId === 'schedule') targetId = 'schedule-anchor';
+      
       const element = document.getElementById(targetId);
+      
       if (element) {
+        // Use a slightly larger offset for better visual alignment
         const topOffset = element.getBoundingClientRect().top + window.pageYOffset;
         window.scrollTo({
-          top: topOffset - 20,
-          behavior: 'auto' // Instant jump
+          top: topOffset - 2,
+          behavior: 'auto'
         });
       }
       
-      // Short delay to ensure scroll finished before fade in
+      // Allow a small window for the browser to paint the new position
+      // before clearing the overlay and unlocking scroll
       setTimeout(() => {
         setIsTransitioning(false);
-      }, 50);
-    }, 400);
+        document.body.style.overflow = 'unset';
+      }, 100);
+    }, 450); // Increased wait slightly to ensure curtain is solid
   };
 
   return (
     <>
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isTransitioning && (
           <Box
             component={motion.div}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
             sx={{
               position: 'fixed',
               top: 0,
@@ -103,17 +112,21 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
               right: 0,
               bottom: 0,
               backgroundColor: '#fff', 
-              zIndex: 9999, 
+              zIndex: 10000, 
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              pointerEvents: 'none' 
+              pointerEvents: 'auto', // Capture events during transition
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
             }}
           >
              <Box
                component={motion.div}
-               animate={{ scale: [1, 1.25, 1] }}
-               transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+               animate={{ scale: [1, 1.1, 1] }}
+               transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
              >
                <Heart size="48" color={primaryColor} variant="Bold" />
              </Box>
@@ -132,6 +145,10 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
         borderTop: '1px solid rgba(142, 125, 93, 0.2)',
         boxShadow: '0 -10px 30px rgba(0,0,0,0.03)',
         pb: 'env(safe-area-inset-bottom)', 
+        WebkitBackfaceVisibility: 'hidden',
+        backfaceVisibility: 'hidden',
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)'
       }}>
         {/* Animated Top Border Accent */}
         <Box sx={{ 

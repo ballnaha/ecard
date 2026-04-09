@@ -122,7 +122,18 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
         </Stack>
 
         <Box sx={{ textAlign: 'center' }}>
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 1.5 }}>
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            whileInView={{ opacity: 1 }} 
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-50px" }}
+            style={{ 
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
+            }}
+          >
             <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '0.75rem', letterSpacing: '0.4em', color: 'rgba(0,0,0,0.5)', textTransform: 'uppercase', fontWeight: 500 }}>
               {eventDate ? dayjs(eventDate).format('MMMM DD, YYYY') : 'MAY 14, 2026'}
             </Typography>

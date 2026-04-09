@@ -210,6 +210,9 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'groomPic') setPreviewGroomPic(url);
     if (fileType === 'giftQrCode') setPreviewGiftQrCode(url);
     if (fileType === 'music') setMusicUrl(url);
+    
+    // Reset input value to allow selecting the same file again
+    e.target.value = '';
   };
 
   const handleFileRemove = async (fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music') => {

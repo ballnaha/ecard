@@ -109,7 +109,18 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
     switch (style) {
       case 'rounded-portrait':
         return (
-          <motion.div variants={staggerContainer} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-100px" }}>
+          <motion.div 
+            variants={staggerContainer} 
+            initial="hidden" 
+            whileInView="show" 
+            viewport={{ once: true, margin: "-100px" }}
+            style={{ 
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
+            }}
+          >
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, py: 4 }}>
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 8, md: 10 }} alignItems="flex-start" justifyContent="center">
                 {/* Bride Avatar */}
@@ -155,7 +166,18 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
       case 'arch-duo':
       default:
         return (
-          <motion.div variants={staggerContainer} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-100px" }}>
+          <motion.div 
+            variants={staggerContainer} 
+            initial="hidden" 
+            whileInView="show" 
+            viewport={{ once: true, margin: "-100px" }}
+            style={{ 
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
+            }}
+          >
             <Box sx={{
               display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', justifyContent: 'center', gap: { xs: 15, md: 4 }, position: 'relative', zIndex: 1
             }}>
@@ -211,7 +233,17 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
   };
 
   return (
-    <Box ref={containerRef} component="section" sx={{ py: { xs: 5, md: 8 }, backgroundColor: '#fff', position: 'relative', overflow: 'hidden' }}>
+    <Box 
+      ref={containerRef} 
+      component="section" 
+      sx={{ 
+        py: { xs: 5, md: 8 }, 
+        backgroundColor: '#fff', 
+        position: 'relative', 
+        overflow: 'hidden',
+        isolation: 'isolate'
+      }}
+    >
       <Typography sx={{
         position: 'absolute', top: '15%', left: '-5%', fontSize: { xs: '8rem', md: '18rem' },
         fontFamily: 'var(--script-font, "Parisienne", cursive)', color: 'rgba(142, 125, 93, 0.03)',
@@ -259,7 +291,18 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
         {renderLayout()}
 
         {/* Cinematic Quote Area */}
-        <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeInUp}>
+        <motion.div 
+          initial="hidden" 
+          whileInView="show" 
+          viewport={{ once: true, margin: "-50px" }} 
+          variants={fadeInUp}
+          style={{ 
+            WebkitBackfaceVisibility: 'hidden',
+            backfaceVisibility: 'hidden',
+            WebkitTransform: 'translateZ(0)',
+            transform: 'translateZ(0)'
+          }}
+        >
           <Box sx={{ textAlign: 'center', mt: { xs: 15, md: 20 }, position: 'relative' }}>
             <Stack direction="row" justifyContent="center" alignItems="center" spacing={4} sx={{ mb: 6 }}>
               <Box sx={{ height: '1.5px', width: '80px', backgroundColor: 'var(--primary-color)', opacity: 0.3 }} />

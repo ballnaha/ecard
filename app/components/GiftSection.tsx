@@ -23,7 +23,8 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
         py: { xs: 4, md: 6 },
         backgroundColor: '#fff',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        isolation: 'isolate'
       }}
     >
       {/* Decorative background text */}
@@ -80,8 +81,14 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-100px" }}
+            style={{ 
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
+            }}
           >
             <Paper elevation={0} sx={{
               p: { xs: 3, md: 5 },

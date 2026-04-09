@@ -234,11 +234,15 @@ export default function ScheduleSection({
         </Box>
 
         {/* Main Content Layout using Box Flex */}
-        <Box sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          gap: { xs: 6, md: 10 }
-        }}>
+        <Box 
+          id="schedule-anchor"
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 6, md: 10 },
+            pt: { xs: 2, md: 0 } // Slight buffer
+          }}
+        >
 
           {/* Left Side: Large Date Display */}
           <Box sx={{
@@ -267,7 +271,19 @@ export default function ScheduleSection({
           <Box sx={{ flex: 1, pl: { xs: 0, md: 2 } }}>
             <Stack spacing={0}>
               {scheduleItems.map((item, index) => (
-                <motion.div key={index} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: index * 0.1 }} viewport={{ once: true }}>
+                <motion.div 
+                  key={index} 
+                  initial={{ opacity: 0, x: 20 }} 
+                  whileInView={{ opacity: 1, x: 0 }} 
+                  transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }} 
+                  viewport={{ once: true, margin: "-20px" }}
+                  style={{ 
+                    WebkitBackfaceVisibility: 'hidden',
+                    backfaceVisibility: 'hidden',
+                    WebkitTransform: 'translateZ(0)',
+                    transform: 'translateZ(0)'
+                  }}
+                >
                   <Box sx={{ display: 'flex', gap: { xs: 3, md: 5 }, py: 4, position: 'relative' }}>
                     {/* Iconsax Icon */}
                     <Box sx={{ width: 60, height: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-color)', opacity: 0.9, flexShrink: 0 }}>

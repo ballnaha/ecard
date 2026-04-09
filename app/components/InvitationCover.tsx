@@ -155,7 +155,12 @@ export default function InvitationCover({
             background: '#fdfcf0',
             backgroundImage: `radial-gradient(circle at 50% 50%, #ffffff 0%, #fdfbf0 60%, #f5f1e0 100%)`,
             padding: '24px',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            willChange: 'opacity, transform',
+            WebkitBackfaceVisibility: 'hidden',
+            backfaceVisibility: 'hidden',
+            WebkitTransform: 'translateZ(0)',
+            transform: 'translateZ(0)'
           }}
         >
           {/* Silky Sheen Highlight */}

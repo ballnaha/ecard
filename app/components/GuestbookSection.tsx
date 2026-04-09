@@ -27,13 +27,25 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
   const handleClose = () => setOpen(false);
 
   return (
-    <Box component="section" sx={{ py: { xs: 8, md: 12 }, textAlign: 'center', backgroundColor: 'transparent' }}>
+    <Box component="section" sx={{ 
+      py: { xs: 8, md: 12 }, 
+      textAlign: 'center', 
+      backgroundColor: 'transparent',
+      isolation: 'isolate', // Create new stacking context
+      position: 'relative'
+    }}>
       <Container maxWidth="md">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          style={{ 
+            WebkitBackfaceVisibility: 'hidden',
+            backfaceVisibility: 'hidden',
+            WebkitTransform: 'translateZ(0)',
+            transform: 'translateZ(0)'
+          }}
         >
 
           <Typography
