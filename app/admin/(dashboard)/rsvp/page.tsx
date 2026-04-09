@@ -41,6 +41,7 @@ interface RSVPData {
   client?: {
     brideName: string;
     groomName: string;
+    slug: string;
   };
   createdAt: string;
 }
@@ -49,6 +50,7 @@ export default function AdminRSVP() {
   const [rsvps, setRsvps] = useState<RSVPData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectedClient, setSelectedClient] = useState<string>('all');
   const searchParams = useSearchParams();
   const slug = searchParams.get('slug');
 
@@ -74,34 +76,59 @@ export default function AdminRSVP() {
     fetchRSVPs();
   }, [slug]);
 
-  const filteredRsvps = rsvps.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    (item.phone && item.phone.includes(searchTerm))
-  );
+  // Build unique client list for filter chips
+  const clientList = React.useMemo(() => {
+    const map = new Map<string, { slug: string; label: string; count: number }>();
+    rsvps.forEach(r => {
+      if (r.client) {
+        const key = r.client.slug;
+        if (map.has(key)) {
+          map.get(key)!.count++;
+        } else {
+          map.set(key, {
+            slug: key,
+            label: `${r.client.brideName} & ${r.client.groomName}`,
+            count: 1
+          });
+        }
+      }
+    });
+    return Array.from(map.values());
+  }, [rsvps]);
+
+  const filteredRsvps = rsvps.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (item.phone && item.phone.includes(searchTerm));
+    const matchesClient = selectedClient === 'all' || item.client?.slug === selectedClient;
+    return matchesSearch && matchesClient;
+  });
 
   const stats = {
-    total: rsvps.length,
-    attending: rsvps.filter(r => r.attending).length,
-    guests: rsvps.reduce((acc, r) => acc + (r.guestCount || 0), 0),
-    notAttending: rsvps.filter(r => !r.attending).length
+    total: filteredRsvps.length,
+    attending: filteredRsvps.filter(r => r.attending).length,
+    guests: filteredRsvps.reduce((acc, r) => acc + (r.guestCount || 0), 0),
+    notAttending: filteredRsvps.filter(r => !r.attending).length
   };
 
   const exportCSV = () => {
-    const headers = ['Name,Attending,Guests,Phone,Notes,Date'];
-    const rows = rsvps.map(r => 
-      `"${r.name}","${r.attending ? 'Yes' : 'No'}",${r.guestCount},"${r.phone}","${r.dietary || ''}","${new Date(r.createdAt).toLocaleDateString()}"`
+    const headers = ['Name,Attending,Guests,Phone,Notes,Client,Date'];
+    const rows = filteredRsvps.map(r => 
+      `"${r.name}","${r.attending ? 'Yes' : 'No'}",${r.guestCount},"${r.phone}","${r.dietary || ''}","${r.client ? `${r.client.brideName} & ${r.client.groomName}` : ''}","${new Date(r.createdAt).toLocaleDateString()}"`
     );
     const csvContent = headers.concat(rows).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'rsvp_list.csv';
+    const filename = selectedClient !== 'all' ? `rsvp_${selectedClient}.csv` : 'rsvp_all.csv';
+    link.download = filename;
     link.click();
   };
 
   const clientNames = slug && rsvps.length > 0 && rsvps[0].client 
     ? `${rsvps[0].client.brideName} & ${rsvps[0].client.groomName}` 
-    : slug ? "Wedding Guest List" : "Global Guest Responses";
+    : selectedClient !== 'all' 
+      ? clientList.find(c => c.slug === selectedClient)?.label || "Guest Responses"
+      : "All Guest Responses";
 
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: '#fafbfc' }}>
@@ -168,6 +195,57 @@ export default function AdminRSVP() {
       </Box>
 
       <Container maxWidth="xl" sx={{ mt: 4, mb: 6 }}>
+        {/* Client Filter Chips - Only show when not filtered by slug */}
+        {!slug && clientList.length > 1 && (
+          <Paper 
+            elevation={0} 
+            sx={{ 
+              borderRadius: '20px', 
+              border: '1px solid rgba(0,0,0,0.04)',
+              mb: 3,
+              p: 2.5,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+            }}
+          >
+            <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700, letterSpacing: '0.1em', mb: 1.5, display: 'block' }}>
+              FILTER BY CLIENT
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ gap: 1 }}>
+              <Chip 
+                label={`ทั้งหมด (${rsvps.length})`}
+                onClick={() => setSelectedClient('all')}
+                sx={{ 
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  fontSize: '0.8rem',
+                  height: 36,
+                  bgcolor: selectedClient === 'all' ? brandColor : alpha(brandColor, 0.08),
+                  color: selectedClient === 'all' ? '#fff' : '#64748b',
+                  '&:hover': { bgcolor: selectedClient === 'all' ? brandColor : alpha(brandColor, 0.15) },
+                  transition: 'all 0.2s ease'
+                }}
+              />
+              {clientList.map((client) => (
+                <Chip 
+                  key={client.slug}
+                  label={`${client.label} (${client.count})`}
+                  onClick={() => setSelectedClient(client.slug)}
+                  sx={{ 
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    height: 36,
+                    bgcolor: selectedClient === client.slug ? brandColor : alpha(brandColor, 0.08),
+                    color: selectedClient === client.slug ? '#fff' : '#64748b',
+                    '&:hover': { bgcolor: selectedClient === client.slug ? brandColor : alpha(brandColor, 0.15) },
+                    transition: 'all 0.2s ease'
+                  }}
+                />
+              ))}
+            </Stack>
+          </Paper>
+        )}
+
         {/* Search Bar */}
         <Paper 
           elevation={0} 
@@ -221,13 +299,9 @@ export default function AdminRSVP() {
           <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
             <Stack direction="row" alignItems="center" spacing={2}>
               <Box sx={{ 
-                width: 48, 
-                height: 48, 
-                borderRadius: '14px', 
+                width: 48, height: 48, borderRadius: '14px', 
                 background: primaryGradient,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
                 <Heart variant="Bulk" size="24" color="#fff" />
               </Box>
@@ -240,13 +314,9 @@ export default function AdminRSVP() {
           <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
             <Stack direction="row" alignItems="center" spacing={2}>
               <Box sx={{ 
-                width: 48, 
-                height: 48, 
-                borderRadius: '14px', 
+                width: 48, height: 48, borderRadius: '14px', 
                 background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
                 <TickCircle variant="Bulk" size="24" color="#fff" />
               </Box>
@@ -259,13 +329,9 @@ export default function AdminRSVP() {
           <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
             <Stack direction="row" alignItems="center" spacing={2}>
               <Box sx={{ 
-                width: 48, 
-                height: 48, 
-                borderRadius: '14px', 
+                width: 48, height: 48, borderRadius: '14px', 
                 background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
                 <People variant="Bulk" size="24" color="#fff" />
               </Box>
@@ -278,13 +344,9 @@ export default function AdminRSVP() {
           <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
             <Stack direction="row" alignItems="center" spacing={2}>
               <Box sx={{ 
-                width: 48, 
-                height: 48, 
-                borderRadius: '14px', 
+                width: 48, height: 48, borderRadius: '14px', 
                 background: 'linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
               }}>
                 <UserMinus variant="Bulk" size="24" color="#fff" />
               </Box>
@@ -315,13 +377,7 @@ export default function AdminRSVP() {
         ) : filteredRsvps.length === 0 ? (
           <Paper 
             elevation={0} 
-            sx={{ 
-              p: 8, 
-              textAlign: 'center', 
-              borderRadius: '24px', 
-              border: '1px dashed #e2e8f0',
-              bgcolor: '#fff'
-            }}
+            sx={{ p: 8, textAlign: 'center', borderRadius: '24px', border: '1px dashed #e2e8f0', bgcolor: '#fff' }}
           >
             <Box sx={{ width: 80, height: 80, borderRadius: '50%', bgcolor: alpha(brandColor, 0.1), display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
               <Calendar variant="Bulk" size="40" color={brandColor} />
@@ -354,8 +410,7 @@ export default function AdminRSVP() {
                   <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
                     {/* Status Avatar */}
                     <Avatar sx={{ 
-                      width: 50, 
-                      height: 50, 
+                      width: 50, height: 50, 
                       bgcolor: rsvp.attending ? alpha('#10b981', 0.1) : alpha('#f43f5e', 0.1),
                       flexShrink: 0
                     }}>
@@ -371,17 +426,33 @@ export default function AdminRSVP() {
                         {rsvp.name}
                       </Typography>
                       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        {/* Client Badge - Show when not filtered by slug */}
+                        {!slug && rsvp.client && (
+                          <Chip 
+                            size="small" 
+                            icon={<Heart size="14" variant="Bulk" color={brandColor} />}
+                            label={`${rsvp.client.brideName} & ${rsvp.client.groomName}`}
+                            onClick={() => setSelectedClient(rsvp.client!.slug)}
+                            sx={{ 
+                              height: 26, 
+                              fontSize: '0.75rem', 
+                              fontWeight: 600,
+                              bgcolor: alpha(brandColor, 0.1), 
+                              color: brandColor,
+                              cursor: 'pointer',
+                              '& .MuiChip-icon': { ml: 0.5 },
+                              '&:hover': { bgcolor: alpha(brandColor, 0.2) }
+                            }}
+                          />
+                        )}
                         {rsvp.phone && (
                           <Chip 
                             size="small" 
                             icon={<Call size="14" variant="Bulk" color="#4facfe" />}
                             label={rsvp.phone}
                             sx={{ 
-                              height: 26, 
-                              fontSize: '0.75rem', 
-                              fontWeight: 600,
-                              bgcolor: alpha('#4facfe', 0.1), 
-                              color: '#4facfe',
+                              height: 26, fontSize: '0.75rem', fontWeight: 600,
+                              bgcolor: alpha('#4facfe', 0.1), color: '#4facfe',
                               '& .MuiChip-icon': { ml: 0.5 }
                             }}
                           />
@@ -391,11 +462,8 @@ export default function AdminRSVP() {
                           icon={<People size="14" variant="Bulk" color="#fbbf24" />}
                           label={`${rsvp.guestCount} Guests`}
                           sx={{ 
-                            height: 26, 
-                            fontSize: '0.75rem', 
-                            fontWeight: 600,
-                            bgcolor: alpha('#fbbf24', 0.1), 
-                            color: '#fbbf24',
+                            height: 26, fontSize: '0.75rem', fontWeight: 600,
+                            bgcolor: alpha('#fbbf24', 0.1), color: '#fbbf24',
                             '& .MuiChip-icon': { ml: 0.5 }
                           }}
                         />
@@ -403,11 +471,8 @@ export default function AdminRSVP() {
                           size="small" 
                           label={new Date(rsvp.createdAt).toLocaleDateString('th-TH')}
                           sx={{ 
-                            height: 26, 
-                            fontSize: '0.75rem', 
-                            fontWeight: 600,
-                            bgcolor: alpha('#94a3b8', 0.1), 
-                            color: '#64748b'
+                            height: 26, fontSize: '0.75rem', fontWeight: 600,
+                            bgcolor: alpha('#94a3b8', 0.1), color: '#64748b'
                           }}
                         />
                       </Stack>
@@ -422,10 +487,7 @@ export default function AdminRSVP() {
                     <Chip 
                       label={rsvp.attending ? "Joining" : "Declined"} 
                       sx={{ 
-                        borderRadius: '14px', 
-                        fontWeight: 800, 
-                        fontSize: '0.8rem',
-                        px: 1,
+                        borderRadius: '14px', fontWeight: 800, fontSize: '0.8rem', px: 1,
                         bgcolor: rsvp.attending ? alpha('#10b981', 0.1) : alpha('#f43f5e', 0.1),
                         color: rsvp.attending ? '#10b981' : '#f43f5e',
                         flexShrink: 0

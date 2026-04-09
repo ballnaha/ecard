@@ -202,7 +202,7 @@ export default function ScheduleSection({
                 lineHeight: 1.1
               }}>
 
-                {brideName || "Bride Name"}
+                {brideName || "กมลรักษ์ ชนะเดช"}
               </Typography>
 
               <Typography sx={{
@@ -222,7 +222,7 @@ export default function ScheduleSection({
                 fontWeight: 600,
                 lineHeight: 1.1
               }}>
-                {groomName || "Groom Name"}
+                {groomName || "ณัฐพล ชื่นชูใจ"}
               </Typography>
             </Box>
 

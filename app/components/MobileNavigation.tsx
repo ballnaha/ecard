@@ -56,9 +56,10 @@ export default function MobileNavigation({ items = [], primaryColor = '#8e7d5d' 
   const displayItems = activeItems.length > 0
     ? activeItems
     : (items.length > 0 ? [] : [
-        { id: 'hero', label: 'Home', isActive: true },
         { id: 'schedule', label: 'ตารางงาน', isActive: true },
         { id: 'rsvp', label: 'RSVP', isActive: true },
+        { id: 'hero', label: '', isActive: true },
+        { id: 'guestbook', label: 'Guestbook', isActive: true },
         { id: 'location', label: 'สถานที่', isActive: true }
       ]);
 

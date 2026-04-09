@@ -11,7 +11,7 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
   const bankDetails = {
     bankName: data?.bankName || 'KASIKORNBANK (KBank)',
     accountNumber: data?.accountNumber || 'xxx-x-x-5678-x',
-    accountName: data?.accountName || 'Kamonluk (Bride)'
+    accountName: data?.accountName || 'กมลรักษ์ ชนะเดช'
   };
 
   const qrPlaceholder = data?.qrCode || "/simple_qr_mockup_wedding_1774067706323.png";

@@ -29,7 +29,16 @@ export default function GuestWishesForm({
   const [message, setMessage] = useState('');
   const [images, setImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    // Check if user has already submitted a wish for this client
+    const submitted = localStorage.getItem(`submitted_wish_${clientId}`);
+    if (submitted) {
+      setHasSubmitted(true);
+    }
+  }, [clientId]);
 
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -107,6 +116,8 @@ export default function GuestWishesForm({
         setName('');
         setMessage('');
         setImages([]);
+        setHasSubmitted(true);
+        localStorage.setItem(`submitted_wish_${clientId}`, 'true');
       } else {
         throw new Error(data.error || 'Failed to submit');
       }
@@ -125,9 +136,20 @@ export default function GuestWishesForm({
     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', p: { xs: 2, md: 4 } }}>
       <Stack direction="row" justifyContent="center" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5" sx={{ textAlign: 'center', fontWeight: 600, color: '#1a1a1a', fontFamily: '"Prompt", sans-serif' }}>
-          เขียนคำอวยพร
+          {hasSubmitted ? 'เขียนคำอวยพรอีกครั้ง' : 'เขียนคำอวยพร'}
         </Typography>
       </Stack>
+
+      {hasSubmitted && (
+        <Box sx={{ mb: 4, p: 2, bgcolor: alpha('#10b981', 0.08), borderRadius: 3, border: '1px solid', borderColor: alpha('#10b981', 0.2), textAlign: 'center' }}>
+          <Typography sx={{ color: '#059669', fontWeight: 600, fontSize: '0.95rem', fontFamily: '"Prompt", sans-serif' }}>
+            ขอบคุณสำหรับคำอวยพรของคุณ!
+          </Typography>
+          <Typography sx={{ color: '#059669', fontSize: '0.8rem', opacity: 0.8, fontFamily: '"Prompt", sans-serif', mt: 0.5 }}>
+            คุณสามารถเขียนอวยพรเพิ่มเติมหรือแนบรูปถ่ายเพิ่มได้อีกครับ
+          </Typography>
+        </Box>
+      )}
 
 
       <TextField
@@ -237,7 +259,7 @@ export default function GuestWishesForm({
           }
         }}
       >
-        {isSubmitting ? <CircularProgress size={28} color="inherit" /> : 'ส่งคำอวยพร (Send Wishes)'}
+        {isSubmitting ? <CircularProgress size={28} color="inherit" /> : (hasSubmitted ? 'ส่งคำอวยพรเพิ่มเติม (Send Another Wish)' : 'ส่งคำอวยพร (Send Wishes)')}
       </Button>
 
       <Snackbar

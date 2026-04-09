@@ -22,6 +22,15 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
   primaryColor?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
+  React.useEffect(() => {
+    // Check if user has already submitted a wish for this client
+    const submitted = localStorage.getItem(`submitted_wish_${clientId}`);
+    if (submitted) {
+      setHasSubmitted(true);
+    }
+  }, [clientId, open]); // Re-check when dialog closes/opens
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -97,8 +106,11 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
               lineHeight: 1.8
             }}
           >
-            ร่วมแสดงความยินดีและเขียนคำอวยพรให้กับคู่บ่าวสาว<br />
-            เพื่อเป็นความทรงจำอันล้ำค่าในวันสำคัญของเรา
+            {hasSubmitted ? (
+              <>ขอบคุณที่เป็นส่วนหนึ่งในความทรงจำของเรา<br />คุณสามารถเขียนคำอวยพรเพิ่มเติมได้ที่นี่ครับ</>
+            ) : (
+              <>ร่วมแสดงความยินดีและเขียนคำอวยพรให้กับคู่บ่าวสาว<br />เพื่อเป็นความทรงจำอันล้ำค่าในวันสำคัญของเรา</>
+            )}
           </Typography>
 
           <Button
@@ -126,7 +138,7 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
               transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
             }}
           >
-            เขียนคำอวยพร (Write a Wish)
+            {hasSubmitted ? 'เขียนคำอวยพรอีกครั้ง (Write Another Wish)' : 'เขียนคำอวยพร (Write a Wish)'}
           </Button>
         </motion.div>
       </Container>

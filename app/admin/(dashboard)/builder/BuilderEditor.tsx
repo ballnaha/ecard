@@ -85,7 +85,12 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [heroStyle, setHeroStyle] = useState<'classic' | 'editorial' | 'minimal'>(() => client?.heroSection?.heroStyle || 'classic');
   const [heroBackgroundColor, setHeroBackgroundColor] = useState<string>(() => client?.heroSection?.heroBackgroundColor || '#ffffff');
 
-  const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null, music: null });
+  // Cover Background settings
+  const [coverBgType, setCoverBgType] = useState<'default' | 'color' | 'image'>(() => client?.heroSection?.coverBgType || 'default');
+  const [coverBgColor, setCoverBgColor] = useState<string>(() => client?.heroSection?.coverBgColor || '#fdfcf0');
+  const [previewCoverBgImage, setPreviewCoverBgImage] = useState<string | null>(client?.heroSection?.coverBgImage || null);
+
+  const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null, music: null, coverBgImage: null });
   const [savedPaths, setSavedPaths] = useState<Record<string, string>>({
     heroImage: client?.heroSection?.heroImage || '',
     heroVideo: client?.heroSection?.heroVideo || '',
@@ -95,6 +100,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     groomPic: client?.coupleSection?.groomPic || '',
     giftQrCode: client?.giftSection?.qrCode || '',
     music: client?.musicUrl || '',
+    coverBgImage: client?.heroSection?.coverBgImage || '',
   });
 
   const [musicUrl, setMusicUrl] = useState<string | null>(client?.musicUrl || null);
@@ -197,7 +203,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     throw new Error(data.error || 'Upload failed');
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music') => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music' | 'coverBgImage') => {
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
     setPendingFiles(prev => ({ ...prev, [fileType]: file }));
@@ -210,12 +216,13 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'groomPic') setPreviewGroomPic(url);
     if (fileType === 'giftQrCode') setPreviewGiftQrCode(url);
     if (fileType === 'music') setMusicUrl(url);
+    if (fileType === 'coverBgImage') setPreviewCoverBgImage(url);
     
     // Reset input value to allow selecting the same file again
     e.target.value = '';
   };
 
-  const handleFileRemove = async (fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music') => {
+  const handleFileRemove = async (fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music' | 'coverBgImage') => {
     setPendingFiles(prev => ({ ...prev, [fileType]: null }));
     if (fileType === 'heroImage') setPreviewImage(null);
     if (fileType === 'heroVideo') setPreviewVideo(null);
@@ -225,6 +232,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'groomPic') setPreviewGroomPic(null);
     if (fileType === 'giftQrCode') setPreviewGiftQrCode(null);
     if (fileType === 'music') setMusicUrl(null);
+    if (fileType === 'coverBgImage') setPreviewCoverBgImage(null);
     const pathToDelete = savedPaths[fileType];
     if (pathToDelete && client) {
       setSavedPaths(prev => ({ ...prev, [fileType]: '' }));
@@ -258,6 +266,10 @@ export default function BuilderEditor({ client }: { client: any }) {
       if (finalPaths.heroNameImage) formData.append('heroNameImage', finalPaths.heroNameImage);
       formData.append('showFallingPetals', String(showPetals));
       formData.append('hideAllText', String(hideAllText));
+      // Cover Background
+      formData.append('coverBgType', coverBgType);
+      formData.append('coverBgColor', coverBgColor);
+      formData.append('coverBgImage', finalPaths.coverBgImage || '');
       const res = await updateClientHero(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
       else {
@@ -716,6 +728,81 @@ export default function BuilderEditor({ client }: { client: any }) {
                 ) : (
                   <Box sx={{ display: 'flex', gap: 1 }}><input type="color" value={heroBackgroundColor} onChange={(e) => setHeroBackgroundColor(e.target.value)} style={{ width: 60, height: 40 }} /><TextField value={heroBackgroundColor} onChange={(e) => setHeroBackgroundColor(e.target.value)} size="small" fullWidth /></Box>
                 )}
+                <Divider sx={{ my: 2 }} />
+                <Box sx={{ p: 2.5, bgcolor: '#fffbeb', borderRadius: '24px', border: '1px solid #fde68a' }}>
+                  <Typography variant="subtitle2" fontWeight={800} color="#92400e" sx={{ mb: 1 }}>🎨 พื้นหลังหน้าเปิด (Invitation Cover)</Typography>
+                  <Typography variant="caption" sx={{ color: '#b45309', display: 'block', mb: 2, lineHeight: 1.5 }}>
+                    เลือกพื้นหลังสำหรับหน้าเปิดซองจดหมาย — สามารถเลือกระหว่างค่าเริ่มต้น, สีพื้น หรืออัปโหลดรูปภาพพื้นหลังได้
+                  </Typography>
+                  <FormControl sx={{ mb: 2 }}>
+                    <RadioGroup row value={coverBgType} onChange={(e) => setCoverBgType(e.target.value as any)}>
+                      <FormControlLabel value="default" control={<Radio size="small" sx={{ '&.Mui-checked': { color: '#d97706' } }} />} label={<Typography variant="body2" fontWeight={600}>ค่าเริ่มต้น</Typography>} />
+                      <FormControlLabel value="color" control={<Radio size="small" sx={{ '&.Mui-checked': { color: '#d97706' } }} />} label={<Typography variant="body2" fontWeight={600}>สีพื้น</Typography>} />
+                      <FormControlLabel value="image" control={<Radio size="small" sx={{ '&.Mui-checked': { color: '#d97706' } }} />} label={<Typography variant="body2" fontWeight={600}>รูปภาพ</Typography>} />
+                    </RadioGroup>
+                  </FormControl>
+
+                  {coverBgType === 'default' && (
+                    <Box sx={{ p: 2, bgcolor: 'white', borderRadius: '16px', border: '1px solid #fde68a' }}>
+                      <Typography variant="caption" sx={{ color: '#92400e', fontWeight: 600 }}>
+                        💡 จะใช้พื้นหลังกระดาษครีมพร้อม Texture เริ่มต้นที่สวยงามแล้ว
+                      </Typography>
+                    </Box>
+                  )}
+
+                  {coverBgType === 'color' && (
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Box sx={{ width: 50, height: 50, borderRadius: '12px', bgcolor: coverBgColor, border: '3px solid #fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', flexShrink: 0 }} />
+                      <TextField
+                        value={coverBgColor}
+                        onChange={(e) => setCoverBgColor(e.target.value)}
+                        size="small"
+                        fullWidth
+                        placeholder="#fdfcf0"
+                        sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                      />
+                    </Stack>
+                  )}
+
+                  {coverBgType === 'image' && (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {previewCoverBgImage && (
+                        <Box sx={{ position: 'relative' }}>
+                          <Box component="img" src={previewCoverBgImage} sx={{ width: '100%', height: 200, objectFit: 'cover', borderRadius: '16px', border: '1px solid #fde68a' }} />
+                          <Tooltip title="ลบรูปพื้นหลัง" arrow>
+                            <IconButton
+                              onClick={() => handleFileRemove('coverBgImage')}
+                              size="small"
+                              sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(0,0,0,0.6)', color: '#fff', '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' } }}
+                            >
+                              <Trash size={16} variant="Bold" color="white" />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      )}
+                      <Button
+                        variant="outlined"
+                        component="label"
+                        fullWidth
+                        sx={{
+                          borderRadius: '16px',
+                          py: 2.5,
+                          borderStyle: 'dashed',
+                          borderColor: '#d97706',
+                          color: '#92400e',
+                          bgcolor: 'rgba(217, 119, 6, 0.05)',
+                          '&:hover': { bgcolor: 'rgba(217, 119, 6, 0.1)', borderColor: '#b45309' }
+                        }}
+                      >
+                        <Stack spacing={0.5} alignItems="center">
+                          <Typography variant="body2" fontWeight={700}>{previewCoverBgImage ? 'เปลี่ยนรูปพื้นหลัง' : '+ เลือกรูปพื้นหลังหน้าเปิด'}</Typography>
+                          <Typography variant="caption">แนะนำขนาด 1080x1920px (แนวตั้ง)</Typography>
+                        </Stack>
+                        <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'coverBgImage')} />
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
                 <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1', py: 1.5, fontWeight: 700 }}>{isSaving ? 'กำลังบันทึก...' : 'บันทึกทั้งหมด'}</Button>
               </Box>
             )}

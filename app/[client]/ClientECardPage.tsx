@@ -138,6 +138,9 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         googleMapsUrl={(clientData.locationSection as any)?.googleMapExternal}
         onOpen={() => setIsCoverOpen(true)}
         primaryColor={clientData.primaryColor}
+        coverBgType={clientData.hero?.coverBgType}
+        coverBgColor={clientData.hero?.coverBgColor}
+        coverBgImage={clientData.hero?.coverBgImage}
       />
       
       {/* 

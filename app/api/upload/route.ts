@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, readdir, unlink } from 'fs/promises';
 import path from 'path';
 import sharp from 'sharp';
 
@@ -42,6 +42,17 @@ export async function POST(req: NextRequest) {
     } catch (err: any) {
       console.error('[Upload Debug] MKDIR Error:', err);
       return NextResponse.json({ error: 'System cannot create directory: ' + err.message }, { status: 500 });
+    }
+
+    // Delete old files with the same fileType prefix in this client's folder
+    try {
+      const existingFiles = await readdir(uploadDir);
+      const oldFiles = existingFiles.filter(f => f.startsWith(`${fileType}_`));
+      await Promise.all(
+        oldFiles.map(f => unlink(path.join(uploadDir, f)).catch(() => {}))
+      );
+    } catch {
+      // Directory may be empty or not exist yet — safe to ignore
     }
 
     // Generate filename

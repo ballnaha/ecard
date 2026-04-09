@@ -122,6 +122,15 @@ export async function updateClientHero(id: string, formData: FormData) {
     heroSection.heroBackgroundColor = heroBackgroundColor;
     heroSection.showFallingPetals = showFallingPetals;
     heroSection.hideAllText = hideAllText;
+
+    // Cover Background settings
+    const coverBgType = formData.get('coverBgType') as string;
+    const coverBgColor = formData.get('coverBgColor') as string;
+    const coverBgImage = formData.get('coverBgImage') as string;
+    if (coverBgType) heroSection.coverBgType = coverBgType;
+    if (coverBgColor) heroSection.coverBgColor = coverBgColor;
+    // Allow empty string to clear the image
+    heroSection.coverBgImage = coverBgImage || '';
     
     await prisma.client.update({
       where: { id },

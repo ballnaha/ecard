@@ -10,6 +10,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    const isAttending = attending === 'yes';
+    const finalGuestCount = isAttending ? (parseInt(guestCount) || 1) : 0;
+
     // Check for existing RSVP by phone for this specific client
     const existingRsvp = await prisma.rSVP.findFirst({
       where: {
@@ -19,10 +22,18 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingRsvp) {
-      return NextResponse.json(
-        { error: 'เบอร์โทรศัพท์นี้ได้ลงทะเบียนไว้แล้ว' }, 
-        { status: 409 }
-      );
+      // Update existing RSVP instead of rejecting
+      const updatedRsvp = await prisma.rSVP.update({
+        where: { id: existingRsvp.id },
+        data: {
+          name,
+          attending: isAttending,
+          guestCount: finalGuestCount,
+          dietary: note,
+        },
+      });
+
+      return NextResponse.json({ ...updatedRsvp, updated: true }, { status: 200 });
     }
 
     const rsvp = await prisma.rSVP.create({
@@ -30,9 +41,9 @@ export async function POST(req: NextRequest) {
         clientId,
         name,
         phone,
-        attending: attending === 'yes',
-        guestCount: parseInt(guestCount) || 1,
-        dietary: note, // We map note to dietary field in DB
+        attending: isAttending,
+        guestCount: finalGuestCount,
+        dietary: note,
       },
     });
 

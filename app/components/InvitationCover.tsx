@@ -12,6 +12,9 @@ interface InvitationCoverProps {
   googleMapsUrl?: string;
   onOpen: () => void;
   primaryColor?: string;
+  coverBgType?: 'default' | 'color' | 'image';
+  coverBgColor?: string;
+  coverBgImage?: string;
 }
 
 // Sparkle particle component for wax seal break
@@ -50,12 +53,15 @@ function SealParticle({ index, primaryColor }: { index: number; primaryColor: st
 }
 
 export default function InvitationCover({
-  brideName = 'Kamonluk',
-  groomName = 'Nattaphon',
+  brideName = 'Pla',
+  groomName = 'Ball',
   eventDate = '07 . 12 . 2026',
   googleMapsUrl,
   onOpen,
-  primaryColor = '#2d4a3e'
+  primaryColor = '#2d4a3e',
+  coverBgType = 'default',
+  coverBgColor = '#fdfcf0',
+  coverBgImage,
 }: InvitationCoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [phase, setPhase] = useState<'idle' | 'seal-break' | 'flap-open' | 'card-rise' | 'done'>('idle');
@@ -66,6 +72,8 @@ export default function InvitationCover({
 
   const cardControls = useAnimation();
   const flapControls = useAnimation();
+
+  const isImageBg = coverBgType === 'image' && !!coverBgImage;
 
   React.useEffect(() => {
     setMounted(true);
@@ -152,8 +160,17 @@ export default function InvitationCover({
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            background: '#fdfcf0',
-            backgroundImage: `radial-gradient(circle at 50% 50%, #ffffff 0%, #fdfbf0 60%, #f5f1e0 100%)`,
+            background: coverBgType === 'color' ? coverBgColor
+              : coverBgType === 'image' && coverBgImage ? 'none'
+              : '#fdfcf0',
+            backgroundImage: coverBgType === 'image' && coverBgImage
+              ? `url(${coverBgImage})`
+              : coverBgType === 'color'
+                ? 'none'
+                : `radial-gradient(circle at 50% 50%, #ffffff 0%, #fdfbf0 60%, #f5f1e0 100%)`,
+            backgroundSize: coverBgType === 'image' ? 'cover' : undefined,
+            backgroundPosition: coverBgType === 'image' ? 'center' : undefined,
+            backgroundRepeat: coverBgType === 'image' ? 'no-repeat' : undefined,
             padding: '24px',
             overflow: 'hidden',
             willChange: 'opacity, transform',
@@ -163,24 +180,59 @@ export default function InvitationCover({
             transform: 'translateZ(0)'
           }}
         >
-          {/* Silky Sheen Highlight */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.05) 100%)',
-            pointerEvents: 'none',
-            zIndex: 1
-          }} />
+          {/* Silky Sheen Highlight — only for default and color modes */}
+          {coverBgType !== 'image' && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.05) 100%)',
+              pointerEvents: 'none',
+              zIndex: 1
+            }} />
+          )}
 
-          {/* Paper Texture Overlay */}
-          <div style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/images/natural-paper.png)',
-            opacity: 0.3,
-            pointerEvents: 'none',
-            zIndex: 1
-          }} />
+          {/* Paper Texture Overlay — for default and color modes */}
+          {(coverBgType === 'default' || coverBgType === 'color') && (
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: 'url(/images/natural-paper.png)',
+              opacity: 0.3,
+              pointerEvents: 'none',
+              zIndex: 1
+            }} />
+          )}
+
+          {/* Dark vignette overlay for image backgrounds — ensures text readability */}
+          {coverBgType === 'image' && coverBgImage && (
+            <>
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.55) 100%)',
+                pointerEvents: 'none',
+                zIndex: 1
+              }} />
+              {/* Top gradient band for header text */}
+              <div style={{
+                position: 'absolute',
+                top: 0, left: 0, right: 0,
+                height: '45%',
+                background: 'linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 100%)',
+                pointerEvents: 'none',
+                zIndex: 1
+              }} />
+              {/* Bottom gradient band for CTA text */}
+              <div style={{
+                position: 'absolute',
+                bottom: 0, left: 0, right: 0,
+                height: '30%',
+                background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%)',
+                pointerEvents: 'none',
+                zIndex: 1
+              }} />
+            </>
+          )}
 
           {/* Main Content Area */}
           <Box sx={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
@@ -195,10 +247,11 @@ export default function InvitationCover({
               <Typography sx={{
                 fontSize: { xs: '0.7rem', md: '0.85rem' },
                 letterSpacing: '0.4em',
-                color: '#94a3b8',
+                color: isImageBg ? 'rgba(255,255,255,0.85)' : '#94a3b8',
                 mb: 1.5,
                 fontWeight: 400,
-                textTransform: 'uppercase'
+                textTransform: 'uppercase',
+                textShadow: isImageBg ? '0 1px 6px rgba(0,0,0,0.7)' : 'none',
               }}>
                 The Wedding Of
               </Typography>
@@ -213,9 +266,9 @@ export default function InvitationCover({
                 <Typography sx={{
                   fontFamily: 'var(--script-font)',
                   fontSize: { xs: '3rem', md: '4rem' },
-                  color: primaryColor,
+                  color: isImageBg ? '#ffffff' : primaryColor,
                   lineHeight: 1,
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.05)',
+                  textShadow: isImageBg ? '0 2px 12px rgba(0,0,0,0.6)' : '1px 1px 2px rgba(0,0,0,0.05)',
                   letterSpacing: '0.02em'
                 }}>
                   {brideName}
@@ -224,17 +277,18 @@ export default function InvitationCover({
                   fontSize: { xs: '1rem', md: '1.6rem' },
                   fontFamily: 'serif',
                   fontStyle: 'italic',
-                  color: '#cbd5e1',
-                  mx: 1
+                  color: isImageBg ? 'rgba(255,255,255,0.7)' : '#cbd5e1',
+                  mx: 1,
+                  textShadow: isImageBg ? '0 1px 6px rgba(0,0,0,0.6)' : 'none',
                 }}>
                   &amp;
                 </Typography>
                 <Typography sx={{
                   fontFamily: 'var(--script-font)',
                   fontSize: { xs: '2.8rem', md: '4rem' },
-                  color: primaryColor,
+                  color: isImageBg ? '#ffffff' : primaryColor,
                   lineHeight: 1,
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.05)',
+                  textShadow: isImageBg ? '0 2px 12px rgba(0,0,0,0.6)' : '1px 1px 2px rgba(0,0,0,0.05)',
                   letterSpacing: '0.02em'
                 }}>
                   {groomName}
@@ -242,12 +296,13 @@ export default function InvitationCover({
               </Stack>
 
               <Typography sx={{
-                fontSize: { xs: '0.85rem', md: '1.3rem' },
+                fontSize: { xs: '1rem', md: '1.3rem' },
                 letterSpacing: '0.2em',
-                color: '#64748b',
+                color: isImageBg ? 'rgba(255,255,255,0.9)' : '#64748b',
                 fontFamily: 'serif',
                 mt: 1,
-                fontWeight: 300
+                fontWeight: 300,
+                textShadow: isImageBg ? '0 1px 8px rgba(0,0,0,0.6)' : 'none',
               }}>
                 {eventDate}
               </Typography>
@@ -633,14 +688,15 @@ export default function InvitationCover({
               <Stack spacing={4} sx={{ mt: 6, alignItems: 'center' }}>
                 <Typography 
                   sx={{
-                    color: '#94a3b8',
+                    color: isImageBg ? 'rgba(255,255,255,0.85)' : '#94a3b8',
                     fontSize: { xs: '0.65rem', md: '0.75rem' },
                     mb: -3, // Offset the stack spacing
                     fontFamily: 'Prompt',
                     fontWeight: 400,
                     letterSpacing: '0.05em',
                     opacity: 0.8,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    textShadow: isImageBg ? '0 1px 6px rgba(0,0,0,0.7)' : 'none',
                   }}
                 >
                   ขออภัยหากมิได้เรียนเชิญด้วยตัวเอง
@@ -648,7 +704,7 @@ export default function InvitationCover({
                 <Typography
                   onClick={handleOpen}
                   sx={{
-                    color: '#334155',
+                    color: isImageBg ? 'rgba(255,255,255,0.9)' : '#334155',
                     fontFamily: 'serif',
                     fontSize: { xs: '0.9rem', md: '1.1rem' },
                     letterSpacing: '0.3em',
@@ -657,7 +713,8 @@ export default function InvitationCover({
                     opacity: 0.6,
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
-                    '&:hover': { opacity: 1, color: primaryColor, letterSpacing: '0.4em' },
+                    textShadow: isImageBg ? '0 1px 8px rgba(0,0,0,0.7)' : 'none',
+                    '&:hover': { opacity: 1, color: isImageBg ? '#ffffff' : primaryColor, letterSpacing: '0.4em' },
                     animation: 'pulse 2s infinite ease-in-out',
                     '@keyframes pulse': { '0%, 100%': { opacity: 0.4 }, '50%': { opacity: 0.8 } }
                   }}
