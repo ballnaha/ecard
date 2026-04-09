@@ -97,8 +97,11 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
       setIsReturning(true);
 
       setSubmitted(true);
-      setShowForm(false);
-      setFormData({ name: '', phone: '', attending: 'yes', guestCount: '1', note: '' });
+      // Delay form collapse so notification appears first (reduces layout jank)
+      setTimeout(() => {
+        setShowForm(false);
+        setFormData({ name: '', phone: '', attending: 'yes', guestCount: '1', note: '' });
+      }, 300);
     } catch (error) {
       console.error('RSVP Error:', error);
       setErrorMsg('เกิดข้อผิดพลาดในการลงทะเบียน กรุณาลองใหม่อีกครั้ง');
@@ -515,10 +518,10 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
           {submitted && (
             <motion.div
               key="rsvp-success"
-              initial={{ opacity: 0, y: -50 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
               style={{
                 position: 'fixed',
                 top: 24,
@@ -558,10 +561,10 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
           {errorOpen && (
             <motion.div
               key="rsvp-error"
-              initial={{ opacity: 0, y: -50 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -50 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
               style={{
                 position: 'fixed',
                 top: 24,
