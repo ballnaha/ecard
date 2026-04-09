@@ -146,6 +146,9 @@ export default function AudioPlayer({
               top: { xs: 18, md: 28 },
               right: { xs: 16, md: 28 },
               zIndex: 1100,
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'flex-end',
               /* 3D perspective container */
               perspective: '520px',
               perspectiveOrigin: '50% 0%',
@@ -227,6 +230,17 @@ export default function AudioPlayer({
 
               {/* ── Metal Platter Rim ─────────────────────────── */}
               <Box
+                component={motion.div}
+                animate={isPlaying ? {
+                  boxShadow: [
+                    `0 5px 14px rgba(0,0,0,0.7), 0 0 8px 2px ${alpha(primaryColor, 0.25)}`,
+                    `0 5px 14px rgba(0,0,0,0.7), 0 0 18px 6px ${alpha(primaryColor, 0.5)}`,
+                    `0 5px 14px rgba(0,0,0,0.7), 0 0 8px 2px ${alpha(primaryColor, 0.25)}`,
+                  ]
+                } : {
+                  boxShadow: '0 5px 14px rgba(0,0,0,0.7), inset 0 1px 3px rgba(255,255,255,0.08), inset 0 -2px 4px rgba(0,0,0,0.5)'
+                }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
                 sx={{
                   position: 'absolute',
                   top: '50%',
@@ -236,11 +250,6 @@ export default function AudioPlayer({
                   height: { xs: 54, md: 65 },
                   borderRadius: '50%',
                   background: 'linear-gradient(145deg, #4a4a4a 0%, #1e1e1e 60%, #333 100%)',
-                  boxShadow: [
-                    '0 5px 14px rgba(0,0,0,0.7)',
-                    'inset 0 1px 3px rgba(255,255,255,0.08)',
-                    'inset 0 -2px 4px rgba(0,0,0,0.5)',
-                  ].join(', '),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -400,47 +409,65 @@ export default function AudioPlayer({
                 />
               </Box>
 
-              {/* ── LED indicator ─────────────────────────────── */}
-              <Box
-                component={motion.div}
-                animate={isPlaying ? {
-                  boxShadow: [
-                    '0 0 6px 2px rgba(76,175,80,0.7), inset 0 1px 1px rgba(255,255,255,0.4)',
-                    '0 0 14px 5px rgba(76,175,80,0.95), inset 0 1px 1px rgba(255,255,255,0.5)',
-                    '0 0 6px 2px rgba(76,175,80,0.7), inset 0 1px 1px rgba(255,255,255,0.4)',
-                  ]
-                } : { boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)' }}
-                transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-                sx={{
-                  position: 'absolute',
-                  bottom: { xs: 5, md: 6 },
-                  right: { xs: 7, md: 9 },
-                  width: { xs: 8, md: 9 },
-                  height: { xs: 8, md: 9 },
-                  borderRadius: '50%',
-                  bgcolor: isPlaying ? '#4caf50' : '#1a3020',
-                  border: isPlaying ? '1px solid rgba(120,230,120,0.5)' : '1px solid rgba(0,0,0,0.3)',
-                  transition: 'background-color 0.4s ease',
-                  zIndex: 5,
-                }}
-              />
-
-              {/* ── RPM label ─────────────────────────────────── */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: { xs: 7, md: 9 },
-                  left: { xs: 7, md: 9 },
-                  fontSize: '6px',
-                  color: 'rgba(255,255,255,0.18)',
-                  fontFamily: 'monospace',
-                  letterSpacing: '0.05em',
-                  userSelect: 'none',
-                  zIndex: 5,
-                }}
-              >
+              {/* ── RPM label ──────────────────────────────── */}
+              <Box sx={{
+                position: 'absolute',
+                bottom: { xs: 6, md: 8 },
+                left: { xs: 7, md: 9 },
+                fontSize: '6px',
+                color: 'rgba(255,255,255,0.15)',
+                fontFamily: 'monospace',
+                letterSpacing: '0.05em',
+                userSelect: 'none',
+                zIndex: 5,
+              }}>
                 33 RPM
               </Box>
+            </Box>
+
+            {/* ── Equalizer bars (left of turntable) ─────────── */}
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: '4px',
+              height: 28,
+              mr: 1.5,
+              mb: '6px',
+              alignSelf: 'flex-end',
+            }}>
+              {[
+                { h: 14, dur: 1.8, delay: 0 },
+                { h: 22, dur: 2.2, delay: 0.3 },
+                { h: 17, dur: 1.6, delay: 0.15 },
+                { h: 20, dur: 2.0, delay: 0.45 },
+              ].map(({ h, dur, delay }, i) => (
+                <Box
+                  key={i}
+                  component={motion.div}
+                  animate={isPlaying ? {
+                    height: [4, h, 6, h * 0.6, 4],
+                    opacity: [0.4, 0.85, 0.5, 0.9, 0.4],
+                  } : {
+                    height: 3,
+                    opacity: 0.25,
+                  }}
+                  transition={isPlaying ? {
+                    duration: dur,
+                    repeat: Infinity,
+                    ease: [0.45, 0.05, 0.55, 0.95],
+                    delay,
+                  } : { duration: 0.8, ease: 'easeOut' }}
+                  sx={{
+                    width: 3,
+                    borderRadius: '99px',
+                    background: `linear-gradient(to top, ${primaryColor}, rgba(255,255,255,0.9))`,
+                    transformOrigin: 'bottom',
+                    flexShrink: 0,
+                    boxShadow: isPlaying ? `0 0 6px 1px ${alpha(primaryColor, 0.5)}` : 'none',
+                    transition: 'box-shadow 0.6s ease',
+                  }}
+                />
+              ))}
             </Box>
           </Box>
         )}
