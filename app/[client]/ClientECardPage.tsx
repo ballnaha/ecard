@@ -87,8 +87,6 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
                 father: (clientData.coupleSection as any)?.groomFather,
                 mother: (clientData.coupleSection as any)?.groomMother
               }}
-              brideParentImage={(clientData.coupleSection as any)?.brideParentImage || '/images/bride_parent.png'}
-              groomParentImage={(clientData.coupleSection as any)?.groomParentImage || '/images/groom_parent.png'}
               dressCode={clientData.dressCodeSection as any}
               brideName={(clientData.coupleSection as any)?.brideName}
               groomName={(clientData.coupleSection as any)?.groomName}
