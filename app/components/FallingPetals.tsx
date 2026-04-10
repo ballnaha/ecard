@@ -50,7 +50,7 @@ const Petal = ({ left, duration, delay, size, rotation }: PetalProps) => (
       height: size,
       backgroundColor: '#f8d7da', // Soft pink rose color
       borderRadius: '50% 0 50% 50%',
-      zIndex: 9999,
+      zIndex: 50,
       pointerEvents: 'none',
       opacity: 0,
       animation: `${fall} ${duration} linear ${delay} infinite`,
@@ -88,7 +88,7 @@ export default function FallingPetals() {
   }, []);
 
   return (
-    <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999, overflow: 'hidden' }}>
+    <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 50, overflow: 'hidden' }}>
       {petals.map((props, i) => (
         <Petal key={i} {...props} />
       ))}

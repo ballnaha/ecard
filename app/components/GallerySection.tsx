@@ -256,9 +256,21 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
       {/* Lightbox / Image Preview */}
       <Dialog
         fullScreen open={!!selectedImg} onClose={() => setSelectedImg(null)}
-        TransitionComponent={Fade} TransitionProps={{ timeout: 500 }}
+        TransitionComponent={Fade} TransitionProps={{ timeout: 300 }}
         disableScrollLock
-        PaperProps={{ sx: { bgcolor: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0 } }}
+        keepMounted={false}
+        PaperProps={{
+          sx: {
+            bgcolor: 'rgba(0,0,0,0.95)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 0,
+            willChange: 'opacity',
+            WebkitTransform: 'translateZ(0)',
+            transform: 'translateZ(0)'
+          }
+        }}
       >
         <IconButton onClick={() => setSelectedImg(null)} sx={{ position: 'fixed', top: 20, right: 20, color: '#fff', zIndex: 10 }}>
           <CloseSquare variant="Bold" size={40} color="currentColor" />

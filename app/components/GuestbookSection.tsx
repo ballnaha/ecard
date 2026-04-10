@@ -150,7 +150,13 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
         onClose={handleClose}
         TransitionComponent={Transition}
         disableScrollLock
+        keepMounted={false}
         sx={{
+          '& .MuiDialog-container': {
+            willChange: 'transform',
+            WebkitTransform: 'translateZ(0)',
+            transform: 'translateZ(0)',
+          },
           '& .MuiDialog-paper': {
             backgroundColor: '#fdfcf0',
             backgroundImage: `radial-gradient(circle at 2px 2px, rgba(0,0,0,0.02) 1px, transparent 0)`,
