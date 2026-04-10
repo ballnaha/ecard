@@ -16,7 +16,7 @@ export async function generateMetadata({
   const { client: slug } = await params;
   const client = await prisma.client.findUnique({
     where: { slug },
-    select: { brideName: true, groomName: true, eventDate: true },
+    select: { brideName: true, groomName: true, eventDate: true, heroSection: true },
   });
 
   if (!client) return {};
@@ -25,6 +25,17 @@ export async function generateMetadata({
   const date = dayjs(client.eventDate).utc().utcOffset(7).format('DD MMM YYYY');
   const description = `ขอเรียนเชิญร่วมแสดงความยินดีในงานแต่งงานของ ${client.brideName} และ ${client.groomName} วันที่ ${date}`;
 
+  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:4003';
+  const hero = (client.heroSection as any) || {};
+  // Prefer heroPoster (video thumbnail) → heroImage → default OG image
+  const rawImage = hero.heroPoster || hero.heroImage || '';
+  // Convert relative /uploads/ paths and /api/media/ paths to absolute URL
+  const ogImage = rawImage.startsWith('http')
+    ? rawImage
+    : rawImage
+      ? `${baseUrl}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`
+      : `${baseUrl}/images/og-default.jpg`;
+
   return {
     title,
     description,
@@ -32,6 +43,7 @@ export async function generateMetadata({
       title,
       description,
       type: 'website',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
   };
 }
