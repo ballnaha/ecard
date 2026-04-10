@@ -27,8 +27,8 @@ export async function generateMetadata({
 
   const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:4003';
   const hero = (client.heroSection as any) || {};
-  // Prefer heroPoster (video thumbnail) → heroImage → default OG image
-  const rawImage = hero.heroPoster || hero.heroImage || '';
+  // Prefer heroPoster (video thumbnail) → heroImage → heroNameImage → default OG image
+  const rawImage = hero.heroPoster || hero.heroImage || hero.heroNameImage || '';
   // Convert relative /uploads/ paths and /api/media/ paths to absolute URL
   const ogImage = rawImage.startsWith('http')
     ? rawImage

@@ -19,6 +19,7 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
 // ... existing metadata
+  metadataBase: new URL(process.env.NEXTAUTH_URL || 'https://e-card.seteventthailand.com'),
   title: "E-Card Wedding | seteventthailand การ์ดงานแต่งออนไลน์",
   description: "สร้างสรรค์การ์ดงานแต่งงานออนไลน์ระดับพรีเมียม ดีไซน์หรูหรา ทันสมัย พร้อมระบบลงทะเบียน RSVP และแผนที่นำทาง ครบจบในลิงก์เดียว โดย seteventthailand.com",
   keywords: ["e-card wedding", "seteventthailand", "การ์ดงานแต่งออนไลน์", "การ์ดแต่งงานดิจิทัล", "Digital Wedding Card", "Wedding Invitation", "ลงทะเบียนงานแต่ง", "RSVP ออนไลน์", "การ์ดงานแต่งพรีเมียม", "Mobile Wedding Card", "Wedding Card Link", "การ์ดเชิญออนไลน์"],
