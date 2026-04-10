@@ -23,7 +23,7 @@ export async function generateMetadata({
 
   const title = `งานแต่งงาน ${client.brideName} & ${client.groomName}`;
   const date = dayjs(client.eventDate).utc().utcOffset(7).format('DD MMM YYYY');
-  const description = `ร่วมแสดงความยินดีในงานแต่งงานของ ${client.brideName} และ ${client.groomName} วันที่ ${date}`;
+  const description = `ขอเรียนเชิญร่วมแสดงความยินดีในงานแต่งงานของ ${client.brideName} และ ${client.groomName} วันที่ ${date}`;
 
   return {
     title,
