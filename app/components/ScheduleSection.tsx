@@ -103,21 +103,21 @@ export default function ScheduleSection({
 
         {/* Section Header */}
         <Box sx={{ mb: { xs: 6, md: 8 }, textAlign: 'center' }}>
-          <Typography 
-            variant="overline" 
-            sx={{ 
-              letterSpacing: '0.6em', 
-              color: 'var(--primary-color)', 
-              opacity: 0.6, 
+          <Typography
+            variant="overline"
+            sx={{
+              letterSpacing: '0.6em',
+              color: 'var(--primary-color)',
+              opacity: 0.6,
               fontWeight: 600,
               fontSize: { xs: '0.65rem', md: '0.8rem' }
             }}
           >
             THE CELEBRATION
           </Typography>
-          <Typography 
-            sx={{ 
-              fontFamily: 'var(--script-font, "Parisienne", cursive)', 
+          <Typography
+            sx={{
+              fontFamily: 'var(--script-font, "Parisienne", cursive)',
               fontSize: { xs: '2.8rem', md: '4rem' },
               color: 'var(--primary-color)',
               mt: 1,
@@ -126,13 +126,13 @@ export default function ScheduleSection({
           >
             Wedding Schedule
           </Typography>
-          <Box sx={{ 
-            width: '60px', 
-            height: '1px', 
-            bgcolor: '#8e7d5d', 
-            opacity: 0.5, 
-            mx: 'auto', 
-            mt: 3 
+          <Box sx={{
+            width: '60px',
+            height: '1px',
+            bgcolor: '#8e7d5d',
+            opacity: 0.5,
+            mx: 'auto',
+            mt: 3
           }} />
         </Box>
 
@@ -145,7 +145,7 @@ export default function ScheduleSection({
                 <Box
                   component="img"
                   src="/images/bride_parent.png"
-                  sx={{ width: 75, height: 75, objectFit: 'cover', borderRadius: '50%', mb: 1 }}
+                  sx={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '50%', mb: 1 }}
                 />
                 {brideParents?.father && (
                   <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1.05rem', color: '#1a1a1a', fontWeight: 500 }}>
@@ -176,7 +176,7 @@ export default function ScheduleSection({
                 <Box
                   component="img"
                   src="/images/groom_parent.png"
-                  sx={{ width: 100, height: 100, objectFit: 'cover', borderRadius: '50%', mb: 1 }}
+                  sx={{ width: 50, height: 50, objectFit: 'cover', borderRadius: '50%', mb: 1 }}
                 />
                 {groomParents?.father && (
                   <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1.05rem', color: '#1a1a1a', fontWeight: 500 }}>
@@ -244,7 +244,7 @@ export default function ScheduleSection({
         </Box>
 
         {/* Main Content Layout using Box Flex */}
-        <Box 
+        <Box
           id="schedule-anchor"
           sx={{
             display: 'flex',
@@ -281,13 +281,13 @@ export default function ScheduleSection({
           <Box sx={{ flex: 1, pl: { xs: 0, md: 2 } }}>
             <Stack spacing={0}>
               {scheduleItems.map((item, index) => (
-                <motion.div 
-                  key={index} 
-                  initial={{ opacity: 0, x: 20 }} 
-                  whileInView={{ opacity: 1, x: 0 }} 
-                  transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }} 
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
                   viewport={{ once: true, margin: "-20px" }}
-                  style={{ 
+                  style={{
                     WebkitBackfaceVisibility: 'hidden',
                     backfaceVisibility: 'hidden',
                     WebkitTransform: 'translateZ(0)',
