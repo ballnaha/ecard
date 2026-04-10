@@ -50,7 +50,7 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               paddingBottom: '40px'
             },
             '.swiper-slide': {
-              backgroundColor: '#fff',
+              backgroundColor: 'transparent',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -85,30 +85,35 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
                 <SwiperSlide key={index}>
                     <Box 
                       component={motion.div} 
-                      whileHover={{ scale: 1.02 }} 
-                      whileTap={{ scale: 0.98 }} 
                       onClick={() => setSelectedImg(src)}
                       sx={{ 
                         width: '100%', 
                         height: '100%', 
                         position: 'relative',
                         cursor: 'zoom-in',
-                        border: '6px solid #fff', // Moved Border inside for 100% click area
                         borderRadius: '24px',
                         overflow: 'hidden',
-                        // Link clickability directly to the active slide
                         '.swiper-slide:not(.swiper-slide-active) &': {
-                          pointerEvents: 'none'
+                          pointerEvents: 'none',
                         },
                         '.swiper-slide-active &': {
-                          pointerEvents: 'auto'
+                          pointerEvents: 'auto',
                         },
                         willChange: 'transform',
                         backfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)' // Force GPU acceleration
+                        transform: 'translateZ(0)'
                       }}
                     >
                         <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
+                        {/* Border overlay — renders on top of the image */}
+                        <Box sx={{
+                          position: 'absolute',
+                          inset: 0,
+                          borderRadius: '20px',
+                          border: '6px solid #fff',
+                          zIndex: 2,
+                          pointerEvents: 'none',
+                        }} />
                     </Box>
                 </SwiperSlide>
               ))}
@@ -125,14 +130,15 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               width: { xs: '75%', md: '45.0%' },
               borderRadius: '24px',
               overflow: 'hidden',
-              transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+              transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
               transform: 'scale(0.85)',
               opacity: 0.4,
+              willChange: 'transform, opacity',
+              backfaceVisibility: 'hidden',
               '&.swiper-slide-active': {
                 opacity: 1,
+                transform: 'scale(1) translateZ(0)',
                 boxShadow: '0 25px 60px rgba(142, 125, 93, 0.25)',
-                willChange: 'transform',
-                backfaceVisibility: 'hidden'
               }
             }
           }}>
@@ -162,9 +168,9 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               backgroundPosition: 'center', backgroundSize: 'cover',
               width: { xs: '320px', md: '550px' }, height: { xs: '450px', md: '750px' },
               borderRadius: '24px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,0.2)',
-              transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)', opacity: 0.3, filter: 'blur(3px)',
+              transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)', opacity: 0.35,
               willChange: 'transform', backfaceVisibility: 'hidden',
-              '&.swiper-slide-active': { opacity: 1, filter: 'blur(0px)', transform: 'scale(1.1) translateZ(0)' }
+              '&.swiper-slide-active': { opacity: 1, transform: 'scale(1.08) translateZ(0)' }
             }
           }}>
             <Swiper

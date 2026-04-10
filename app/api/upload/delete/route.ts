@@ -73,9 +73,18 @@ export async function POST(req: NextRequest) {
         if (fileType === 'groomPic') delete coupleSection.groomPic;
       }
 
+      // 3. Remove from galleryImages if applicable
+      let galleryImages = existing.galleryImages;
+      if (fileType === 'gallery' && galleryImages) {
+        const gallery = galleryImages as any;
+        const items: string[] = Array.isArray(gallery) ? gallery : (gallery.items || []);
+        const newItems = items.filter((u: string) => u !== filePath && u !== normalizedPath);
+        galleryImages = Array.isArray(gallery) ? newItems : { ...gallery, items: newItems };
+      }
+
       await prisma.client.update({
         where: { id: clientId },
-        data: { heroSection, coupleSection }
+        data: { heroSection, coupleSection, ...(fileType === 'gallery' ? { galleryImages } : {}) }
       });
     }
 

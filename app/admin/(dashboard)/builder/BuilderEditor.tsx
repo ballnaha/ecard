@@ -394,6 +394,22 @@ export default function BuilderEditor({ client }: { client: any }) {
     }
   };
 
+  const handleGalleryDelete = async (imgUrl: string) => {
+    if (!client) return;
+    setGalleryItems(prev => prev.filter(i => i !== imgUrl));
+    try {
+      await fetch('/api/upload/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: client.id, fileType: 'gallery', filePath: imgUrl }),
+      });
+      showSnackbar('ลบรูปภาพเรียบร้อยแล้ว', 'success');
+    } catch (err) {
+      console.error('Gallery delete error:', err);
+      showSnackbar('ลบรูปภาพไม่สำเร็จ', 'error');
+    }
+  };
+
   const handleGallerySave = async () => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
     setIsSaving(true);
@@ -1066,7 +1082,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                       />
                       <Tooltip title="ลบรูปนี้" arrow>
                         <IconButton
-                          onClick={() => setGalleryItems(prev => prev.filter(i => i !== img))}
+                          onClick={() => handleGalleryDelete(img)}
                           size="small"
                           sx={{
                             position: 'absolute',
