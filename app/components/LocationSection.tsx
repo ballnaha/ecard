@@ -20,6 +20,7 @@ export default function LocationSection({ data }: { data?: LocationData }) {
   return (
     <Box
       component="section"
+      className="embossed-paper"
       sx={{
         py: { xs: 5, md: 8 }, // Decreased padding for more compact layout
         backgroundColor: '#ffffff', // Changed to white for contrast

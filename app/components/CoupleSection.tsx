@@ -235,7 +235,8 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
   return (
     <Box 
       ref={containerRef} 
-      component="section" 
+      component="section"
+      className="embossed-paper"
       sx={{ 
         py: { xs: 5, md: 8 }, 
         backgroundColor: '#fff', 

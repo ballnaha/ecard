@@ -193,7 +193,7 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
   };
 
   return (
-    <Box component="section" sx={{ 
+    <Box component="section" className="embossed-paper" sx={{ 
       py: { xs: 6, md: 10 }, 
       backgroundColor: '#fff', 
       position: 'relative', 
@@ -257,6 +257,7 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
       <Dialog
         fullScreen open={!!selectedImg} onClose={() => setSelectedImg(null)}
         TransitionComponent={Fade} TransitionProps={{ timeout: 500 }}
+        disableScrollLock
         PaperProps={{ sx: { bgcolor: 'rgba(0,0,0,0.95)', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 0 } }}
       >
         <IconButton onClick={() => setSelectedImg(null)} sx={{ position: 'fixed', top: 20, right: 20, color: '#fff', zIndex: 10 }}>

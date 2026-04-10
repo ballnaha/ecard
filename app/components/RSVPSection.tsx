@@ -136,6 +136,7 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
     <>
     <Box
       component="section"
+      className="embossed-paper"
       sx={{
         py: { xs: 4, md: 6 },
         backgroundColor: '#fafaf9',

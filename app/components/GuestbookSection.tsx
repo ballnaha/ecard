@@ -149,6 +149,7 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
         open={open}
         onClose={handleClose}
         TransitionComponent={Transition}
+        disableScrollLock
         sx={{
           '& .MuiDialog-paper': {
             backgroundColor: '#fdfcf0',

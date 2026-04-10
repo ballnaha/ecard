@@ -57,6 +57,22 @@ body::before {
   z-index: 1;
 }
 
+/* Vellum paper texture — soft vignette edges + warm centre glow, like translucent parchment */
+.embossed-paper {
+  background-image:
+    /* Corner vignettes */
+    radial-gradient(ellipse at top left,     rgba(142, 125, 93, 0.055) 0%, transparent 55%),
+    radial-gradient(ellipse at top right,    rgba(142, 125, 93, 0.055) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom left,  rgba(142, 125, 93, 0.055) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(142, 125, 93, 0.055) 0%, transparent 55%),
+    /* Warm centre bloom */
+    radial-gradient(ellipse at center, rgba(255, 252, 245, 0.6) 0%, transparent 70%),
+    /* Ultra-fine grain */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='vellum'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23vellum)' opacity='0.032'/%3E%3C/svg%3E");
+  background-size: auto, auto, auto, auto, auto, 160px 160px;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+}
+
 * {
   margin: 0;
   padding: 0;

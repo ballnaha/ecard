@@ -90,7 +90,7 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
   );
 
   return (
-    <Box component="section" sx={{ py: { xs: 5, md: 8 }, backgroundColor: '#ffffff', position: 'relative', overflow: 'hidden' }}>
+    <Box component="section" className="embossed-paper" sx={{ py: { xs: 5, md: 8 }, backgroundColor: '#ffffff', position: 'relative', overflow: 'hidden' }}>
       {/* Subtle Background Pattern */}
       <Box sx={{ position: 'absolute', inset: 0, opacity: 0.03, backgroundImage: 'radial-gradient(#8e7d5d 1px, transparent 1px)', backgroundSize: '40px 40px', zIndex: 0 }} />
 

@@ -17,7 +17,7 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
   const subtitle = data?.subtitle || 'WE WOULD LOVE TO SEE YOU IN OUR WEDDING THEME';
 
   return (
-    <Box component="section" sx={{ py: { xs: 8, md: 10 }, backgroundColor: '#fff', textAlign: 'center' }}>
+    <Box component="section" className="embossed-paper" sx={{ py: { xs: 8, md: 10 }, backgroundColor: '#fff', textAlign: 'center' }}>
       <Container maxWidth="md">
         <motion.div 
           initial={{ opacity: 0, y: 20 }} 

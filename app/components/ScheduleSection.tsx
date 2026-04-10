@@ -98,7 +98,7 @@ export default function ScheduleSection({
   const hasGroomParents = groomParents?.father || groomParents?.mother;
 
   return (
-    <Box component="section" sx={{ py: { xs: 6, md: 10 }, backgroundColor: '#ffffff', position: 'relative', overflow: 'hidden' }}>
+    <Box component="section" className="embossed-paper" sx={{ py: { xs: 6, md: 10 }, backgroundColor: '#ffffff', position: 'relative', overflow: 'hidden' }}>
       <Container maxWidth="lg">
 
         {/* Section Header */}

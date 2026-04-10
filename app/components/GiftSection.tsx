@@ -19,6 +19,7 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
   return (
     <Box
       component="section"
+      className="embossed-paper"
       sx={{
         py: { xs: 4, md: 6 },
         backgroundColor: '#fff',
