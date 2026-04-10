@@ -146,6 +146,10 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         coverFloralBottomLeftShow={clientData.hero?.coverFloralBottomLeftShow !== false}
         coverFloralTopRight={clientData.hero?.coverFloralTopRight}
         coverFloralBottomLeft={clientData.hero?.coverFloralBottomLeft}
+        coverFloralTROffsetX={clientData.hero?.coverFloralTROffsetX ?? 0}
+        coverFloralTROffsetY={clientData.hero?.coverFloralTROffsetY ?? 0}
+        coverFloralBLOffsetX={clientData.hero?.coverFloralBLOffsetX ?? 0}
+        coverFloralBLOffsetY={clientData.hero?.coverFloralBLOffsetY ?? 0}
       />
       
       {/* 

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack, alpha, Checkbox, List, ListItem, ListItemText, ListItemIcon, Paper, Tooltip } from '@mui/material';
+import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack, alpha, Checkbox, List, ListItem, ListItemText, ListItemIcon, Paper, Tooltip, Slider } from '@mui/material';
 import { Reorder } from 'framer-motion';
 import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash, EyeSlash, Layer, Home, Calendar, Gallery, Location, PresentionChart, Heart, People, Gift, MessageText1, Link1, Music, CloseCircle, Copy } from 'iconsax-react';
 import { useSnackbar } from '../../components/SnackbarProvider';
@@ -96,6 +96,10 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [coverFloralBottomLeftShow, setCoverFloralBottomLeftShow] = useState<boolean>(() => client?.heroSection?.coverFloralBottomLeftShow !== false);
   const [previewFloralTopRight, setPreviewFloralTopRight] = useState<string | null>(client?.heroSection?.coverFloralTopRight || null);
   const [previewFloralBottomLeft, setPreviewFloralBottomLeft] = useState<string | null>(client?.heroSection?.coverFloralBottomLeft || null);
+  const [coverFloralTROffsetX, setCoverFloralTROffsetX] = useState<number>(() => client?.heroSection?.coverFloralTROffsetX ?? 0);
+  const [coverFloralTROffsetY, setCoverFloralTROffsetY] = useState<number>(() => client?.heroSection?.coverFloralTROffsetY ?? 0);
+  const [coverFloralBLOffsetX, setCoverFloralBLOffsetX] = useState<number>(() => client?.heroSection?.coverFloralBLOffsetX ?? 0);
+  const [coverFloralBLOffsetY, setCoverFloralBLOffsetY] = useState<number>(() => client?.heroSection?.coverFloralBLOffsetY ?? 0);
 
   const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null, music: null, coverBgImage: null, floralTopRight: null, floralBottomLeft: null });
   const [savedPaths, setSavedPaths] = useState<Record<string, string>>({
@@ -296,6 +300,10 @@ export default function BuilderEditor({ client }: { client: any }) {
       formData.append('coverFloralBottomLeftShow', String(coverFloralBottomLeftShow));
       formData.append('coverFloralTopRight', finalPaths.floralTopRight || '');
       formData.append('coverFloralBottomLeft', finalPaths.floralBottomLeft || '');
+      formData.append('coverFloralTROffsetX', String(coverFloralTROffsetX));
+      formData.append('coverFloralTROffsetY', String(coverFloralTROffsetY));
+      formData.append('coverFloralBLOffsetX', String(coverFloralBLOffsetX));
+      formData.append('coverFloralBLOffsetY', String(coverFloralBLOffsetY));
       const res = await updateClientHero(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
       else {
@@ -835,6 +843,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                 </Box>
                 <Divider sx={{ my: 2 }} />
                 {/* Floral Decoration Settings */}
+
                 <Box sx={{ p: 2.5, bgcolor: '#f0fdf4', borderRadius: '24px', border: '1px solid #bbf7d0' }}>
                   <Typography variant="subtitle2" fontWeight={800} color="#166534" sx={{ mb: 1 }}>🌸 ช่อดอกไม้ประดับ (Floral Decorations)</Typography>
                   <Typography variant="caption" sx={{ color: '#15803d', display: 'block', mb: 2, lineHeight: 1.5 }}>
@@ -850,6 +859,62 @@ export default function BuilderEditor({ client }: { client: any }) {
                   </Stack>
                   {coverFloralShow && (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {/* ── Mini Envelope Preview ── */}
+                      <Box sx={{ p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #bbf7d0' }}>
+                        <Typography variant="caption" fontWeight={700} sx={{ color: '#166534', display: 'block', mb: 1 }}>👁 Preview ตำแหน่งบนซอง</Typography>
+                        <Box sx={{
+                          position: 'relative',
+                          width: '100%',
+                          maxWidth: 260,
+                          mx: 'auto',
+                          aspectRatio: '4/3',
+                          bgcolor: client?.primaryColor || '#2d4a3e',
+                          borderRadius: '4px',
+                          overflow: 'visible',
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                        }}>
+                          {/* Envelope V-fold lines */}
+                          <Box sx={{ position: 'absolute', inset: 0, opacity: 0.25, pointerEvents: 'none' }}>
+                            <svg width="100%" height="100%" viewBox="0 0 4 3" preserveAspectRatio="none">
+                              <line x1="0" y1="0" x2="2" y2="1.5" stroke="white" strokeWidth="0.04" />
+                              <line x1="4" y1="0" x2="2" y2="1.5" stroke="white" strokeWidth="0.04" />
+                            </svg>
+                          </Box>
+                          {/* TR floral preview */}
+                          {coverFloralTopRightShow && (
+                            <Box
+                              component="img"
+                              src={previewFloralTopRight || '/images/floral_tr1.png'}
+                              sx={{
+                                position: 'absolute',
+                                top: `${-18 + coverFloralTROffsetY}%`,
+                                right: `${-14 + (-coverFloralTROffsetX)}%`,
+                                width: '50%',
+                                height: 'auto',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          )}
+                          {/* BL floral preview */}
+                          {coverFloralBottomLeftShow && (
+                            <Box
+                              component="img"
+                              src={previewFloralBottomLeft || '/images/floral_bl1.png'}
+                              sx={{
+                                position: 'absolute',
+                                bottom: `${-12 + (-coverFloralBLOffsetY)}%`,
+                                left: `${-14 + coverFloralBLOffsetX}%`,
+                                width: '46%',
+                                height: 'auto',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          )}
+                        </Box>
+                        <Typography variant="caption" sx={{ color: '#6b7280', display: 'block', textAlign: 'center', mt: 1 }}>
+                          preview อัปเดต real-time ตาม slider ด้านล่าง
+                        </Typography>
+                      </Box>
                       {/* Top Right Floral */}
                       <Box sx={{ p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #bbf7d0' }}>
                         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
@@ -884,6 +949,19 @@ export default function BuilderEditor({ client }: { client: any }) {
                               {previewFloralTopRight ? 'เปลี่ยนรูป' : '+ อัปโหลดรูปช่อดอกไม้'}
                               <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'floralTopRight')} />
                             </Button>
+                            {/* Position controls — TR */}
+                            <Box sx={{ mt: 2 }}>
+                              <Typography variant="caption" fontWeight={700} sx={{ color: '#166534', display: 'block', mb: 0.5 }}>ตำแหน่ง X (ซ้าย/ขวา) % — 0 = ค่าเริ่มต้น</Typography>
+                              <Stack direction="row" alignItems="center" spacing={1.5}>
+                                <Slider size="small" min={-50} max={50} value={coverFloralTROffsetX} onChange={(_, v) => setCoverFloralTROffsetX(v as number)} sx={{ color: '#16a34a', flex: 1 }} />
+                                <TextField size="small" type="number" value={coverFloralTROffsetX} onChange={(e) => setCoverFloralTROffsetX(Number(e.target.value))} inputProps={{ min: -50, max: 50 }} sx={{ width: 68 }} />
+                              </Stack>
+                              <Typography variant="caption" fontWeight={700} sx={{ color: '#166534', display: 'block', mb: 0.5, mt: 1 }}>ตำแหน่ง Y (บน/ล่าง) % — 0 = ค่าเริ่มต้น</Typography>
+                              <Stack direction="row" alignItems="center" spacing={1.5}>
+                                <Slider size="small" min={-50} max={50} value={coverFloralTROffsetY} onChange={(_, v) => setCoverFloralTROffsetY(v as number)} sx={{ color: '#16a34a', flex: 1 }} />
+                                <TextField size="small" type="number" value={coverFloralTROffsetY} onChange={(e) => setCoverFloralTROffsetY(Number(e.target.value))} inputProps={{ min: -50, max: 50 }} sx={{ width: 68 }} />
+                              </Stack>
+                            </Box>
                           </>
                         )}
                       </Box>
@@ -921,6 +999,19 @@ export default function BuilderEditor({ client }: { client: any }) {
                               {previewFloralBottomLeft ? 'เปลี่ยนรูป' : '+ อัปโหลดรูปช่อดอกไม้'}
                               <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'floralBottomLeft')} />
                             </Button>
+                            {/* Position controls — BL */}
+                            <Box sx={{ mt: 2 }}>
+                              <Typography variant="caption" fontWeight={700} sx={{ color: '#166534', display: 'block', mb: 0.5 }}>ตำแหน่ง X (ซ้าย/ขวา) % — 0 = ค่าเริ่มต้น</Typography>
+                              <Stack direction="row" alignItems="center" spacing={1.5}>
+                                <Slider size="small" min={-50} max={50} value={coverFloralBLOffsetX} onChange={(_, v) => setCoverFloralBLOffsetX(v as number)} sx={{ color: '#16a34a', flex: 1 }} />
+                                <TextField size="small" type="number" value={coverFloralBLOffsetX} onChange={(e) => setCoverFloralBLOffsetX(Number(e.target.value))} inputProps={{ min: -50, max: 50 }} sx={{ width: 68 }} />
+                              </Stack>
+                              <Typography variant="caption" fontWeight={700} sx={{ color: '#166534', display: 'block', mb: 0.5, mt: 1 }}>ตำแหน่ง Y (บน/ล่าง) % — 0 = ค่าเริ่มต้น</Typography>
+                              <Stack direction="row" alignItems="center" spacing={1.5}>
+                                <Slider size="small" min={-50} max={50} value={coverFloralBLOffsetY} onChange={(_, v) => setCoverFloralBLOffsetY(v as number)} sx={{ color: '#16a34a', flex: 1 }} />
+                                <TextField size="small" type="number" value={coverFloralBLOffsetY} onChange={(e) => setCoverFloralBLOffsetY(Number(e.target.value))} inputProps={{ min: -50, max: 50 }} sx={{ width: 68 }} />
+                              </Stack>
+                            </Box>
                           </>
                         )}
                       </Box>

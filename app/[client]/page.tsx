@@ -102,6 +102,10 @@ export default async function ClientWeddingECard({
     coverFloralBottomLeftShow: heroSection.coverFloralBottomLeftShow !== false,
     coverFloralTopRight: heroSection.coverFloralTopRight || '',
     coverFloralBottomLeft: heroSection.coverFloralBottomLeft || '',
+    coverFloralTROffsetX: heroSection.coverFloralTROffsetX ?? 0,
+    coverFloralTROffsetY: heroSection.coverFloralTROffsetY ?? 0,
+    coverFloralBLOffsetX: heroSection.coverFloralBLOffsetX ?? 0,
+    coverFloralBLOffsetY: heroSection.coverFloralBLOffsetY ?? 0,
   };
 
   const clientData = {

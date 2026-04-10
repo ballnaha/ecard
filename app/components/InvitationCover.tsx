@@ -20,6 +20,10 @@ interface InvitationCoverProps {
   coverFloralBottomLeftShow?: boolean;
   coverFloralTopRight?: string;
   coverFloralBottomLeft?: string;
+  coverFloralTROffsetX?: number;
+  coverFloralTROffsetY?: number;
+  coverFloralBLOffsetX?: number;
+  coverFloralBLOffsetY?: number;
 }
 
 // Sparkle particle component for wax seal break
@@ -120,6 +124,10 @@ export default function InvitationCover({
   coverFloralBottomLeftShow = true,
   coverFloralTopRight,
   coverFloralBottomLeft,
+  coverFloralTROffsetX = 0,
+  coverFloralTROffsetY = 0,
+  coverFloralBLOffsetX = 0,
+  coverFloralBLOffsetY = 0,
 }: InvitationCoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [phase, setPhase] = useState<'idle' | 'seal-break' | 'flap-open' | 'card-rise' | 'done'>('idle');
@@ -452,7 +460,7 @@ export default function InvitationCover({
                     initial={{ opacity: 1 }}
                     animate={phase !== 'idle' ? { opacity: 0, scale: 0.9, y: -20 } : {}}
                     transition={{ duration: 0.5, ease: 'easeOut' }}
-                    style={{ position: 'absolute', top: isMobile ? -40 : -60, right: isMobile ? -40 : -60, width: isMobile ? '140px' : '220px', height: isMobile ? '140px' : '220px', zIndex: 10, pointerEvents: 'none' }}
+                    style={{ position: 'absolute', top: `${-18 + coverFloralTROffsetY}%`, right: `${-14 + (-coverFloralTROffsetX)}%`, width: '50%', height: 'auto', zIndex: 10, pointerEvents: 'none' }}
                   >
                     <img src={coverFloralTopRight || '/images/floral_tr1.png'} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </motion.div>
@@ -462,7 +470,7 @@ export default function InvitationCover({
                     initial={{ opacity: 1 }}
                     animate={phase !== 'idle' ? { opacity: 0, scale: 0.9, y: 20 } : {}}
                     transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-                    style={{ position: 'absolute', bottom: isMobile ? -25 : -40, left: isMobile ? -40 : -60, width: isMobile ? '130px' : '200px', height: isMobile ? '130px' : '200px', zIndex: 10, pointerEvents: 'none' }}
+                    style={{ position: 'absolute', bottom: `${-12 + (-coverFloralBLOffsetY)}%`, left: `${-14 + coverFloralBLOffsetX}%`, width: '46%', height: 'auto', zIndex: 10, pointerEvents: 'none' }}
                   >
                     <img src={coverFloralBottomLeft || '/images/floral_bl1.png'} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   </motion.div>

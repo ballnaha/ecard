@@ -143,6 +143,15 @@ export async function updateClientHero(id: string, formData: FormData) {
     const coverFloralBottomLeft = formData.get('coverFloralBottomLeft') as string;
     heroSection.coverFloralTopRight = coverFloralTopRight || '';
     heroSection.coverFloralBottomLeft = coverFloralBottomLeft || '';
+
+    const coverFloralTROffsetX = formData.get('coverFloralTROffsetX');
+    if (coverFloralTROffsetX !== null) heroSection.coverFloralTROffsetX = Number(coverFloralTROffsetX) || 0;
+    const coverFloralTROffsetY = formData.get('coverFloralTROffsetY');
+    if (coverFloralTROffsetY !== null) heroSection.coverFloralTROffsetY = Number(coverFloralTROffsetY) || 0;
+    const coverFloralBLOffsetX = formData.get('coverFloralBLOffsetX');
+    if (coverFloralBLOffsetX !== null) heroSection.coverFloralBLOffsetX = Number(coverFloralBLOffsetX) || 0;
+    const coverFloralBLOffsetY = formData.get('coverFloralBLOffsetY');
+    if (coverFloralBLOffsetY !== null) heroSection.coverFloralBLOffsetY = Number(coverFloralBLOffsetY) || 0;
     
     await prisma.client.update({
       where: { id },
