@@ -62,50 +62,73 @@ function SealParticle({ index, primaryColor }: { index: number; primaryColor: st
 }
 
 // Pre-calculated stable dust particle data (avoids Math.random on re-renders)
-const DUST_PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+const DUST_PARTICLES = Array.from({ length: 22 }, (_, i) => ({
   id: i,
-  startX: 3 + ((i / 19) * 94) + Math.sin(i * 2.1) * 6,  // % from left, spread across screen
-  size: 2 + Math.abs(Math.sin(i * 1.7)) * 3.5,
-  duration: 32 + (i % 7) * 5,
-  delay: -(i * 0.72),  // stagger start so they're already mid-flight on load
-  driftX: Math.sin(i * 1.4) * 55,
-  colorType: i % 3,  // 0=gold, 1=primary, 2=ivory
-  opacityPeak: 0.45 + Math.abs(Math.sin(i * 0.9)) * 0.35,
+  startX: 2 + ((i / 21) * 96) + Math.sin(i * 2.1) * 5,
+  coreSize: 2 + (i % 3),           // 2–4px tiny bright core
+  glowSize: 12 + (i % 5) * 4,      // 12–28px soft glow spread
+  duration: 28 + (i % 8) * 4,
+  delay: -(i * 0.65),
+  driftX: Math.sin(i * 1.4) * 50,
+  colorType: i % 4,
 }));
 
-function DustParticle({ data, primaryColor }: { data: typeof DUST_PARTICLES[0]; primaryColor: string }) {
-  const glowColor = data.colorType === 0 ? '#d4af37'
-    : data.colorType === 1 ? primaryColor
-    : '#f5e6c8';
+function DustParticle({ data }: { data: typeof DUST_PARTICLES[0] }) {
+  // Warm yellow-green palette — classic firefly colors
+  const core = data.colorType === 0 ? '#f0ff70'
+    : data.colorType === 1 ? '#d8ff50'
+    : data.colorType === 2 ? '#ffe566'
+    : '#b8f060';
+  const glow = data.colorType === 0 ? '#aadd00'
+    : data.colorType === 1 ? '#99cc00'
+    : data.colorType === 2 ? '#ddaa00'
+    : '#88cc44';
 
   return (
     <motion.div
       style={{
         position: 'absolute',
         left: `${data.startX}%`,
-        bottom: '-8px',
-        width: data.size,
-        height: data.size,
-        borderRadius: '50%',
-        backgroundColor: glowColor,
-        boxShadow: `0 0 ${data.size * 3}px ${data.size * 1.5}px ${alpha(glowColor, 0.3)}`,
+        bottom: '-4px',
         pointerEvents: 'none',
         zIndex: 3,
+        willChange: 'transform, opacity',
       }}
       animate={{
-        y: [0, -1200],
+        y: [0, -1100],
         x: [0, data.driftX],
-        opacity: [0, data.opacityPeak, data.opacityPeak * 0.6, 0],
-        scale: [0.4, 1.1, 0.9, 0.2],
+        opacity: [0, 0, 1, 0.08, 0.95, 0.05, 1, 0.12, 0.9, 0.04, 0],
       }}
       transition={{
         duration: data.duration,
         delay: data.delay,
         repeat: Infinity,
-        ease: 'easeInOut',
-        times: [0, 0.25, 0.7, 1],
+        ease: 'linear',
+        times: [0, 0.04, 0.14, 0.24, 0.38, 0.5, 0.6, 0.72, 0.82, 0.92, 1],
       }}
-    />
+    >
+      {/* Outer soft glow — large diffuse halo */}
+      <div style={{
+        position: 'absolute',
+        top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: data.glowSize * 2,
+        height: data.glowSize * 2,
+        borderRadius: '50%',
+        background: `radial-gradient(circle, ${alpha(glow, 0.55)} 0%, ${alpha(glow, 0.15)} 50%, transparent 75%)`,
+      }} />
+      {/* Inner bright core — tiny sharp point of light */}
+      <div style={{
+        position: 'absolute',
+        top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: data.coreSize,
+        height: data.coreSize,
+        borderRadius: '50%',
+        background: core,
+        boxShadow: `0 0 ${data.coreSize * 3}px ${data.coreSize * 1.5}px ${alpha(core, 0.9)}`,
+      }} />
+    </motion.div>
   );
 }
 
@@ -324,7 +347,7 @@ export default function InvitationCover({
 
           {/* ✨ Magical Dust Particles — ambient fairy-tale floating lights */}
           {(isMobile ? DUST_PARTICLES.slice(0, 12) : DUST_PARTICLES).map((data) => (
-            <DustParticle key={data.id} data={data} primaryColor={primaryColor} />
+            <DustParticle key={data.id} data={data} />
           ))}
 
           {/* Main Content Area */}
