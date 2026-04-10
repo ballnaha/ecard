@@ -65,10 +65,11 @@ function SealParticle({ index, primaryColor }: { index: number; primaryColor: st
 const DUST_PARTICLES = Array.from({ length: 22 }, (_, i) => ({
   id: i,
   startX: 2 + ((i / 21) * 96) + Math.sin(i * 2.1) * 5,
-  coreSize: 2 + (i % 3),           // 2–4px tiny bright core
-  glowSize: 12 + (i % 5) * 4,      // 12–28px soft glow spread
+  coreSize: 2 + (i % 3),
+  glowSize: 12 + (i % 5) * 4,
   duration: 28 + (i % 8) * 4,
-  delay: -(i * 0.65),
+  // Use prime-based offsets to break regularity — no two fireflies sync up
+  delay: -((i * 7.3 + Math.sin(i * 1.9) * 11) % (28 + (i % 8) * 4)),
   driftX: Math.sin(i * 1.4) * 50,
   colorType: i % 4,
 }));
