@@ -57,6 +57,54 @@ function SealParticle({ index, primaryColor }: { index: number; primaryColor: st
   );
 }
 
+// Pre-calculated stable dust particle data (avoids Math.random on re-renders)
+const DUST_PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  startX: 3 + ((i / 19) * 94) + Math.sin(i * 2.1) * 6,  // % from left, spread across screen
+  size: 2 + Math.abs(Math.sin(i * 1.7)) * 3.5,
+  duration: 32 + (i % 7) * 5,
+  delay: -(i * 0.72),  // stagger start so they're already mid-flight on load
+  driftX: Math.sin(i * 1.4) * 55,
+  colorType: i % 3,  // 0=gold, 1=primary, 2=ivory
+  opacityPeak: 0.45 + Math.abs(Math.sin(i * 0.9)) * 0.35,
+}));
+
+function DustParticle({ data, primaryColor }: { data: typeof DUST_PARTICLES[0]; primaryColor: string }) {
+  const glowColor = data.colorType === 0 ? '#d4af37'
+    : data.colorType === 1 ? primaryColor
+    : '#f5e6c8';
+
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        left: `${data.startX}%`,
+        bottom: '-8px',
+        width: data.size,
+        height: data.size,
+        borderRadius: '50%',
+        backgroundColor: glowColor,
+        boxShadow: `0 0 ${data.size * 3}px ${data.size * 1.5}px ${alpha(glowColor, 0.3)}`,
+        pointerEvents: 'none',
+        zIndex: 3,
+      }}
+      animate={{
+        y: [0, -1200],
+        x: [0, data.driftX],
+        opacity: [0, data.opacityPeak, data.opacityPeak * 0.6, 0],
+        scale: [0.4, 1.1, 0.9, 0.2],
+      }}
+      transition={{
+        duration: data.duration,
+        delay: data.delay,
+        repeat: Infinity,
+        ease: 'easeInOut',
+        times: [0, 0.25, 0.7, 1],
+      }}
+    />
+  );
+}
+
 export default function InvitationCover({
   brideName = 'Pla',
   groomName = 'Ball',
@@ -264,6 +312,11 @@ export default function InvitationCover({
             { bottom: '88px', right: '20px', borderBottom: `1px solid ${alpha(primaryColor, 0.28)}`, borderRight: `1px solid ${alpha(primaryColor, 0.28)}` },
           ].map((style, i) => (
             <div key={i} style={{ position: 'absolute', width: '32px', height: '32px', zIndex: 2, pointerEvents: 'none', ...style }} />
+          ))}
+
+          {/* ✨ Magical Dust Particles — ambient fairy-tale floating lights */}
+          {(isMobile ? DUST_PARTICLES.slice(0, 12) : DUST_PARTICLES).map((data) => (
+            <DustParticle key={data.id} data={data} primaryColor={primaryColor} />
           ))}
 
           {/* Main Content Area */}
