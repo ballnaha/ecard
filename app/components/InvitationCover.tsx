@@ -15,6 +15,11 @@ interface InvitationCoverProps {
   coverBgType?: 'default' | 'color' | 'image';
   coverBgColor?: string;
   coverBgImage?: string;
+  coverFloralShow?: boolean;
+  coverFloralTopRightShow?: boolean;
+  coverFloralBottomLeftShow?: boolean;
+  coverFloralTopRight?: string;
+  coverFloralBottomLeft?: string;
 }
 
 // Sparkle particle component for wax seal break
@@ -62,6 +67,11 @@ export default function InvitationCover({
   coverBgType = 'default',
   coverBgColor = '#fdfcf0',
   coverBgImage,
+  coverFloralShow = true,
+  coverFloralTopRightShow = true,
+  coverFloralBottomLeftShow = true,
+  coverFloralTopRight,
+  coverFloralBottomLeft,
 }: InvitationCoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [phase, setPhase] = useState<'idle' | 'seal-break' | 'flap-open' | 'card-rise' | 'done'>('idle');
@@ -384,22 +394,26 @@ export default function InvitationCover({
                 transformStyle: 'preserve-3d'
               }}>
                 {/* White Flowers — fade out first when opening */}
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  animate={phase !== 'idle' ? { opacity: 0, scale: 0.9, y: -20 } : {}}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                  style={{ position: 'absolute', top: -60, right: -60, width: '220px', height: '220px', zIndex: 10, pointerEvents: 'none' }}
-                >
-                  <img src="/images/floral_tr1.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  animate={phase !== 'idle' ? { opacity: 0, scale: 0.9, y: 20 } : {}}
-                  transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
-                  style={{ position: 'absolute', bottom: -40, left: -60, width: '200px', height: '200px', zIndex: 10, pointerEvents: 'none' }}
-                >
-                  <img src="/images/floral_bl1.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                </motion.div>
+                {coverFloralShow !== false && coverFloralTopRightShow !== false && (
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={phase !== 'idle' ? { opacity: 0, scale: 0.9, y: -20 } : {}}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                    style={{ position: 'absolute', top: -60, right: -60, width: '220px', height: '220px', zIndex: 10, pointerEvents: 'none' }}
+                  >
+                    <img src={coverFloralTopRight || '/images/floral_tr1.png'} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  </motion.div>
+                )}
+                {coverFloralShow !== false && coverFloralBottomLeftShow !== false && (
+                  <motion.div
+                    initial={{ opacity: 1 }}
+                    animate={phase !== 'idle' ? { opacity: 0, scale: 0.9, y: 20 } : {}}
+                    transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
+                    style={{ position: 'absolute', bottom: -40, left: -60, width: '200px', height: '200px', zIndex: 10, pointerEvents: 'none' }}
+                  >
+                    <img src={coverFloralBottomLeft || '/images/floral_bl1.png'} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  </motion.div>
+                )}
 
                 {/* THE INVITATION CARD — sits inside envelope, rises up */}
                 <motion.div

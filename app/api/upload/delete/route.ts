@@ -18,18 +18,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Normalise path: accept both /uploads/{clientId}/... and /api/media/{clientId}/...
+    // Upload API returns /api/media/{clientId}/{fileName}, map it back to /uploads/{clientId}/{fileName}
+    let normalizedPath = filePath;
+    if (filePath.startsWith(`/api/media/${clientId}/`)) {
+      const fileName = filePath.replace(`/api/media/${clientId}/`, '');
+      normalizedPath = `/uploads/${clientId}/${fileName}`;
+    }
+
     // Security: only allow deleting from /uploads/{clientId}/
-    if (!filePath.startsWith(`/uploads/${clientId}/`)) {
+    if (!normalizedPath.startsWith(`/uploads/${clientId}/`)) {
       return NextResponse.json({ error: 'Invalid file path' }, { status: 403 });
     }
 
     // Delete file from disk
-    const absolutePath = path.join(process.cwd(), 'public', filePath);
+    const absolutePath = path.join(process.cwd(), 'public', normalizedPath);
     try {
       await unlink(absolutePath);
-    } catch (e) {
-      // File might already be deleted, continue to clean DB
-      console.warn('File not found on disk:', absolutePath);
+    } catch (e: any) {
+      if (e.code !== 'ENOENT') {
+        // File exists but couldn't be deleted (permissions etc.) — report it
+        console.error('Failed to delete file from disk:', absolutePath, e);
+        return NextResponse.json({ error: 'ลบไฟล์จาก disk ไม่สำเร็จ: ' + e.message }, { status: 500 });
+      }
+      // ENOENT = file already gone, continue to clean DB
+      console.warn('File not found on disk (already deleted):', absolutePath);
     }
 
     // Remove path from DB
@@ -40,11 +53,14 @@ export async function POST(req: NextRequest) {
         ? existing.heroSection as any
         : {};
 
-      if (['heroImage', 'heroVideo', 'heroPoster', 'heroNameImage'].includes(fileType)) {
+      if (['heroImage', 'heroVideo', 'heroPoster', 'heroNameImage', 'coverBgImage', 'floralTopRight', 'floralBottomLeft'].includes(fileType)) {
         if (fileType === 'heroImage') delete heroSection.heroImage;
         if (fileType === 'heroVideo') delete heroSection.heroVideo;
         if (fileType === 'heroPoster') delete heroSection.heroPoster;
         if (fileType === 'heroNameImage') delete heroSection.heroNameImage;
+        if (fileType === 'coverBgImage') delete heroSection.coverBgImage;
+        if (fileType === 'floralTopRight') delete heroSection.coverFloralTopRight;
+        if (fileType === 'floralBottomLeft') delete heroSection.coverFloralBottomLeft;
       }
 
       // 2. Remove from coupleSection if applicable

@@ -90,7 +90,14 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [coverBgColor, setCoverBgColor] = useState<string>(() => client?.heroSection?.coverBgColor || '#fdfcf0');
   const [previewCoverBgImage, setPreviewCoverBgImage] = useState<string | null>(client?.heroSection?.coverBgImage || null);
 
-  const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null, music: null, coverBgImage: null });
+  // Cover Floral settings
+  const [coverFloralShow, setCoverFloralShow] = useState<boolean>(() => client?.heroSection?.coverFloralShow !== false);
+  const [coverFloralTopRightShow, setCoverFloralTopRightShow] = useState<boolean>(() => client?.heroSection?.coverFloralTopRightShow !== false);
+  const [coverFloralBottomLeftShow, setCoverFloralBottomLeftShow] = useState<boolean>(() => client?.heroSection?.coverFloralBottomLeftShow !== false);
+  const [previewFloralTopRight, setPreviewFloralTopRight] = useState<string | null>(client?.heroSection?.coverFloralTopRight || null);
+  const [previewFloralBottomLeft, setPreviewFloralBottomLeft] = useState<string | null>(client?.heroSection?.coverFloralBottomLeft || null);
+
+  const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null, music: null, coverBgImage: null, floralTopRight: null, floralBottomLeft: null });
   const [savedPaths, setSavedPaths] = useState<Record<string, string>>({
     heroImage: client?.heroSection?.heroImage || '',
     heroVideo: client?.heroSection?.heroVideo || '',
@@ -101,6 +108,8 @@ export default function BuilderEditor({ client }: { client: any }) {
     giftQrCode: client?.giftSection?.qrCode || '',
     music: client?.musicUrl || '',
     coverBgImage: client?.heroSection?.coverBgImage || '',
+    floralTopRight: client?.heroSection?.coverFloralTopRight || '',
+    floralBottomLeft: client?.heroSection?.coverFloralBottomLeft || '',
   });
 
   const [musicUrl, setMusicUrl] = useState<string | null>(client?.musicUrl || null);
@@ -203,7 +212,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     throw new Error(data.error || 'Upload failed');
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music' | 'coverBgImage') => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music' | 'coverBgImage' | 'floralTopRight' | 'floralBottomLeft') => {
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
     setPendingFiles(prev => ({ ...prev, [fileType]: file }));
@@ -217,12 +226,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'giftQrCode') setPreviewGiftQrCode(url);
     if (fileType === 'music') setMusicUrl(url);
     if (fileType === 'coverBgImage') setPreviewCoverBgImage(url);
+    if (fileType === 'floralTopRight') setPreviewFloralTopRight(url);
+    if (fileType === 'floralBottomLeft') setPreviewFloralBottomLeft(url);
     
     // Reset input value to allow selecting the same file again
     e.target.value = '';
   };
 
-  const handleFileRemove = async (fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music' | 'coverBgImage') => {
+  const handleFileRemove = async (fileType: 'heroImage' | 'heroVideo' | 'heroPoster' | 'heroNameImage' | 'bridePic' | 'groomPic' | 'giftQrCode' | 'music' | 'coverBgImage' | 'floralTopRight' | 'floralBottomLeft') => {
     setPendingFiles(prev => ({ ...prev, [fileType]: null }));
     if (fileType === 'heroImage') setPreviewImage(null);
     if (fileType === 'heroVideo') setPreviewVideo(null);
@@ -233,18 +244,27 @@ export default function BuilderEditor({ client }: { client: any }) {
     if (fileType === 'giftQrCode') setPreviewGiftQrCode(null);
     if (fileType === 'music') setMusicUrl(null);
     if (fileType === 'coverBgImage') setPreviewCoverBgImage(null);
+    if (fileType === 'floralTopRight') setPreviewFloralTopRight(null);
+    if (fileType === 'floralBottomLeft') setPreviewFloralBottomLeft(null);
     const pathToDelete = savedPaths[fileType];
     if (pathToDelete && client) {
       setSavedPaths(prev => ({ ...prev, [fileType]: '' }));
       try {
-        await fetch('/api/upload/delete', {
+        const res = await fetch('/api/upload/delete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ clientId: client.id, fileType, filePath: pathToDelete })
         });
-        showSnackbar('ลบไฟล์เรียบร้อย', 'success');
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          showSnackbar(data.error || 'ลบไฟล์ไม่สำเร็จ', 'error');
+          setSavedPaths(prev => ({ ...prev, [fileType]: pathToDelete })); // restore on failure
+        } else {
+          showSnackbar('ลบไฟล์เรียบร้อย', 'success');
+        }
       } catch {
         showSnackbar('ลบไฟล์ไม่สำเร็จ', 'error');
+        setSavedPaths(prev => ({ ...prev, [fileType]: pathToDelete })); // restore on failure
       }
     }
   };
@@ -270,12 +290,22 @@ export default function BuilderEditor({ client }: { client: any }) {
       formData.append('coverBgType', coverBgType);
       formData.append('coverBgColor', coverBgColor);
       formData.append('coverBgImage', finalPaths.coverBgImage || '');
+      // Cover Floral
+      formData.append('coverFloralShow', String(coverFloralShow));
+      formData.append('coverFloralTopRightShow', String(coverFloralTopRightShow));
+      formData.append('coverFloralBottomLeftShow', String(coverFloralBottomLeftShow));
+      formData.append('coverFloralTopRight', finalPaths.floralTopRight || '');
+      formData.append('coverFloralBottomLeft', finalPaths.floralBottomLeft || '');
       const res = await updateClientHero(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
       else {
         showSnackbar('บันทึกข้อมูลหน้าปกเรียบร้อย!', 'success');
         setSavedPaths(finalPaths);
-        setPendingFiles({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null });
+        setPendingFiles({ heroImage: null, heroVideo: null, heroPoster: null, heroNameImage: null, bridePic: null, groomPic: null, music: null, coverBgImage: null, floralTopRight: null, floralBottomLeft: null });
+        // Update previews to server URLs so savedPaths stays in sync for future deletes
+        if (finalPaths.floralTopRight) setPreviewFloralTopRight(finalPaths.floralTopRight);
+        if (finalPaths.floralBottomLeft) setPreviewFloralBottomLeft(finalPaths.floralBottomLeft);
+        if (finalPaths.coverBgImage) setPreviewCoverBgImage(finalPaths.coverBgImage);
         setEditingItem(null);
       }
     } catch (err: any) {
@@ -800,6 +830,100 @@ export default function BuilderEditor({ client }: { client: any }) {
                         </Stack>
                         <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'coverBgImage')} />
                       </Button>
+                    </Box>
+                  )}
+                </Box>
+                <Divider sx={{ my: 2 }} />
+                {/* Floral Decoration Settings */}
+                <Box sx={{ p: 2.5, bgcolor: '#f0fdf4', borderRadius: '24px', border: '1px solid #bbf7d0' }}>
+                  <Typography variant="subtitle2" fontWeight={800} color="#166534" sx={{ mb: 1 }}>🌸 ช่อดอกไม้ประดับ (Floral Decorations)</Typography>
+                  <Typography variant="caption" sx={{ color: '#15803d', display: 'block', mb: 2, lineHeight: 1.5 }}>
+                    ช่อดอกไม้มุมขวาบนและซ้ายล่างของหน้าเปิด — สามารถซ่อนหรืออัปโหลดรูปช่อดอกไม้ custom ได้
+                  </Typography>
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+                    <Typography variant="body2" fontWeight={600}>แสดงช่อดอกไม้ทั้งหมด</Typography>
+                    <Switch
+                      checked={coverFloralShow}
+                      onChange={(e) => setCoverFloralShow(e.target.checked)}
+                      sx={{ '& .MuiSwitch-thumb': { bgcolor: coverFloralShow ? '#16a34a' : undefined } }}
+                    />
+                  </Stack>
+                  {coverFloralShow && (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {/* Top Right Floral */}
+                      <Box sx={{ p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #bbf7d0' }}>
+                        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
+                          <Typography variant="caption" fontWeight={700} sx={{ color: '#166534' }}>
+                            🌸 มุมขวาบน (Top Right)
+                          </Typography>
+                          <Switch
+                            size="small"
+                            checked={coverFloralTopRightShow}
+                            onChange={(e) => setCoverFloralTopRightShow(e.target.checked)}
+                            sx={{ '& .MuiSwitch-thumb': { bgcolor: coverFloralTopRightShow ? '#16a34a' : undefined } }}
+                          />
+                        </Stack>
+                        {coverFloralTopRightShow && (
+                          <>
+                            {previewFloralTopRight ? (
+                              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                                <Box component="img" src={previewFloralTopRight} sx={{ width: 120, height: 120, objectFit: 'contain', borderRadius: '12px', border: '1px solid #bbf7d0', bgcolor: '#f9fafb' }} />
+                                <Tooltip title="ลบ / ใช้รูปเริ่มต้น" arrow>
+                                  <IconButton onClick={() => handleFileRemove('floralTopRight')} size="small" sx={{ position: 'absolute', top: -8, right: -8, bgcolor: '#ef4444', color: '#fff', width: 24, height: 24, '&:hover': { bgcolor: '#b91c1c' } }}>
+                                    <Trash size={12} variant="Bold" color="#fff" />
+                                  </IconButton>
+                                </Tooltip>
+                              </Box>
+                            ) : (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box component="img" src="/images/floral_tr1.png" sx={{ width: 60, height: 60, objectFit: 'contain', opacity: 0.5 }} />
+                                <Typography variant="caption" sx={{ color: '#6b7280' }}>ใช้รูปเริ่มต้น</Typography>
+                              </Box>
+                            )}
+                            <Button variant="outlined" component="label" size="small" sx={{ mt: 1, borderStyle: 'dashed', borderColor: '#16a34a', color: '#166534', borderRadius: '12px' }}>
+                              {previewFloralTopRight ? 'เปลี่ยนรูป' : '+ อัปโหลดรูปช่อดอกไม้'}
+                              <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'floralTopRight')} />
+                            </Button>
+                          </>
+                        )}
+                      </Box>
+                      {/* Bottom Left Floral */}
+                      <Box sx={{ p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #bbf7d0' }}>
+                        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
+                          <Typography variant="caption" fontWeight={700} sx={{ color: '#166534' }}>
+                            🌸 มุมซ้ายล่าง (Bottom Left)
+                          </Typography>
+                          <Switch
+                            size="small"
+                            checked={coverFloralBottomLeftShow}
+                            onChange={(e) => setCoverFloralBottomLeftShow(e.target.checked)}
+                            sx={{ '& .MuiSwitch-thumb': { bgcolor: coverFloralBottomLeftShow ? '#16a34a' : undefined } }}
+                          />
+                        </Stack>
+                        {coverFloralBottomLeftShow && (
+                          <>
+                            {previewFloralBottomLeft ? (
+                              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                                <Box component="img" src={previewFloralBottomLeft} sx={{ width: 120, height: 120, objectFit: 'contain', borderRadius: '12px', border: '1px solid #bbf7d0', bgcolor: '#f9fafb' }} />
+                                <Tooltip title="ลบ / ใช้รูปเริ่มต้น" arrow>
+                                  <IconButton onClick={() => handleFileRemove('floralBottomLeft')} size="small" sx={{ position: 'absolute', top: -8, right: -8, bgcolor: '#ef4444', color: '#fff', width: 24, height: 24, '&:hover': { bgcolor: '#b91c1c' } }}>
+                                    <Trash size={12} variant="Bold" color="#fff" />
+                                  </IconButton>
+                                </Tooltip>
+                              </Box>
+                            ) : (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Box component="img" src="/images/floral_bl1.png" sx={{ width: 60, height: 60, objectFit: 'contain', opacity: 0.5 }} />
+                                <Typography variant="caption" sx={{ color: '#6b7280' }}>ใช้รูปเริ่มต้น</Typography>
+                              </Box>
+                            )}
+                            <Button variant="outlined" component="label" size="small" sx={{ mt: 1, borderStyle: 'dashed', borderColor: '#16a34a', color: '#166534', borderRadius: '12px' }}>
+                              {previewFloralBottomLeft ? 'เปลี่ยนรูป' : '+ อัปโหลดรูปช่อดอกไม้'}
+                              <input hidden accept="image/*" type="file" onChange={(e) => handleFileSelect(e, 'floralBottomLeft')} />
+                            </Button>
+                          </>
+                        )}
+                      </Box>
                     </Box>
                   )}
                 </Box>

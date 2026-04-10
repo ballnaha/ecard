@@ -57,6 +57,11 @@ export default async function ClientWeddingECard({
     coverBgType: heroSection.coverBgType || 'default',
     coverBgColor: heroSection.coverBgColor || '#fdfcf0',
     coverBgImage: heroSection.coverBgImage || '',
+    coverFloralShow: heroSection.coverFloralShow !== false,
+    coverFloralTopRightShow: heroSection.coverFloralTopRightShow !== false,
+    coverFloralBottomLeftShow: heroSection.coverFloralBottomLeftShow !== false,
+    coverFloralTopRight: heroSection.coverFloralTopRight || '',
+    coverFloralBottomLeft: heroSection.coverFloralBottomLeft || '',
   };
 
   const clientData = {

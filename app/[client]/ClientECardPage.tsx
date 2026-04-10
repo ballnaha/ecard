@@ -141,6 +141,11 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         coverBgType={clientData.hero?.coverBgType}
         coverBgColor={clientData.hero?.coverBgColor}
         coverBgImage={clientData.hero?.coverBgImage}
+        coverFloralShow={clientData.hero?.coverFloralShow !== false}
+        coverFloralTopRightShow={clientData.hero?.coverFloralTopRightShow !== false}
+        coverFloralBottomLeftShow={clientData.hero?.coverFloralBottomLeftShow !== false}
+        coverFloralTopRight={clientData.hero?.coverFloralTopRight}
+        coverFloralBottomLeft={clientData.hero?.coverFloralBottomLeft}
       />
       
       {/* 

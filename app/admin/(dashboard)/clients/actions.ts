@@ -131,6 +131,18 @@ export async function updateClientHero(id: string, formData: FormData) {
     if (coverBgColor) heroSection.coverBgColor = coverBgColor;
     // Allow empty string to clear the image
     heroSection.coverBgImage = coverBgImage || '';
+
+    // Cover Floral settings
+    const coverFloralShow = formData.get('coverFloralShow');
+    if (coverFloralShow !== null) heroSection.coverFloralShow = coverFloralShow === 'true';
+    const coverFloralTopRightShow = formData.get('coverFloralTopRightShow');
+    if (coverFloralTopRightShow !== null) heroSection.coverFloralTopRightShow = coverFloralTopRightShow === 'true';
+    const coverFloralBottomLeftShow = formData.get('coverFloralBottomLeftShow');
+    if (coverFloralBottomLeftShow !== null) heroSection.coverFloralBottomLeftShow = coverFloralBottomLeftShow === 'true';
+    const coverFloralTopRight = formData.get('coverFloralTopRight') as string;
+    const coverFloralBottomLeft = formData.get('coverFloralBottomLeft') as string;
+    heroSection.coverFloralTopRight = coverFloralTopRight || '';
+    heroSection.coverFloralBottomLeft = coverFloralBottomLeft || '';
     
     await prisma.client.update({
       where: { id },
