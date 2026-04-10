@@ -8,6 +8,34 @@ dayjs.extend(utc);
 import ClientECardPage from './ClientECardPage';
 import { notFound } from 'next/navigation';
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ client: string }>;
+}) {
+  const { client: slug } = await params;
+  const client = await prisma.client.findUnique({
+    where: { slug },
+    select: { brideName: true, groomName: true, eventDate: true },
+  });
+
+  if (!client) return {};
+
+  const title = `งานแต่งงาน ${client.brideName} & ${client.groomName}`;
+  const date = dayjs(client.eventDate).utc().utcOffset(7).format('DD MMM YYYY');
+  const description = `ร่วมแสดงความยินดีในงานแต่งงานของ ${client.brideName} และ ${client.groomName} วันที่ ${date}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+    },
+  };
+}
+
 export default async function ClientWeddingECard({
   params,
 }: {
