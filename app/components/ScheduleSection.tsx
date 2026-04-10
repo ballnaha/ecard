@@ -34,6 +34,8 @@ export default function ScheduleSection({
   eventDate,
   brideParents,
   groomParents,
+  brideParentImage,
+  groomParentImage,
   dressCode,
   brideName,
   groomName
@@ -42,6 +44,8 @@ export default function ScheduleSection({
   eventDate?: Date;
   brideParents?: ParentInfo;
   groomParents?: ParentInfo;
+  brideParentImage?: string;
+  groomParentImage?: string;
   dressCode?: DressCodeInfo;
   brideName?: string;
   groomName?: string;
@@ -142,6 +146,14 @@ export default function ScheduleSection({
             {/* Parents Group - Show if available */}
             {hasBrideParents && (
               <Stack spacing={0.5} alignItems="center">
+                {brideParentImage && (
+                  <Box
+                    component="img"
+                    src={brideParentImage}
+                    alt="bride parents"
+                    sx={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', mb: 1, border: '3px solid var(--primary-color)', opacity: 0.85 }}
+                  />
+                )}
                 {brideParents?.father && (
                   <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1.05rem', color: '#1a1a1a', fontWeight: 500 }}>
                     {brideParents.father}
@@ -168,6 +180,14 @@ export default function ScheduleSection({
 
             {hasGroomParents && (
               <Stack spacing={0.5} alignItems="center">
+                {groomParentImage && (
+                  <Box
+                    component="img"
+                    src={groomParentImage}
+                    alt="groom parents"
+                    sx={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover', mb: 1, border: '3px solid var(--primary-color)', opacity: 0.85 }}
+                  />
+                )}
                 {groomParents?.father && (
                   <Typography sx={{ fontFamily: '"Prompt", sans-serif', fontSize: '1.05rem', color: '#1a1a1a', fontWeight: 500 }}>
                     {groomParents.father}

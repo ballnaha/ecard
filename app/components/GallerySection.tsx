@@ -11,11 +11,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay, EffectCoverflow, EffectCreative, Navigation } from 'swiper/modules';
 
 // Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/effect-creative';
+import 'swiper/swiper-bundle.css';
 
 const demoImages = [
   "/images/demo/gallery/1.jpg",
