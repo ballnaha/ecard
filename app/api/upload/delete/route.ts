@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { unlink } from 'fs/promises';
 import path from 'path';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -84,7 +85,11 @@ export async function POST(req: NextRequest) {
 
       await prisma.client.update({
         where: { id: clientId },
-        data: { heroSection, coupleSection, ...(fileType === 'gallery' ? { galleryImages } : {}) }
+        data: {
+          heroSection,
+          coupleSection,
+          ...(fileType === 'gallery' ? { galleryImages: galleryImages ?? Prisma.JsonNull } : {})
+        }
       });
     }
 
