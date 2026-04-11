@@ -100,7 +100,6 @@ export async function updateClientHero(id: string, formData: FormData) {
     const heroPoster = formData.get('heroPoster') as string;
     const heroNameImage = formData.get('heroNameImage') as string;
     const heroBackgroundColor = formData.get('heroBackgroundColor') as string;
-    const showFallingPetals = formData.get('showFallingPetals') === 'true';
     const hideAllText = formData.get('hideAllText') === 'true';
     
     // Check if client exists
@@ -120,7 +119,6 @@ export async function updateClientHero(id: string, formData: FormData) {
     if (heroPoster) heroSection.heroPoster = heroPoster;
     if (heroNameImage) heroSection.heroNameImage = heroNameImage;
     heroSection.heroBackgroundColor = heroBackgroundColor;
-    heroSection.showFallingPetals = showFallingPetals;
     heroSection.hideAllText = hideAllText;
 
     // Cover Background settings
@@ -131,6 +129,17 @@ export async function updateClientHero(id: string, formData: FormData) {
     if (coverBgColor) heroSection.coverBgColor = coverBgColor;
     // Allow empty string to clear the image
     heroSection.coverBgImage = coverBgImage || '';
+    const coverStyle = formData.get('coverStyle') as string | null;
+    if (coverStyle === 'envelope' || coverStyle === 'scroll') {
+      heroSection.coverStyle = coverStyle;
+      heroSection.coverEnvelopeShow = coverStyle === 'envelope';
+    }
+    const coverEnvelopeShow = formData.get('coverEnvelopeShow');
+    if (coverEnvelopeShow !== null) heroSection.coverEnvelopeShow = coverEnvelopeShow === 'true';
+    const coverFirefliesShow = formData.get('coverFirefliesShow');
+    if (coverFirefliesShow !== null) heroSection.coverFirefliesShow = coverFirefliesShow === 'true';
+    const coverSnowShow = formData.get('coverSnowShow');
+    if (coverSnowShow !== null) heroSection.coverSnowShow = coverSnowShow === 'true';
 
     // Cover Floral settings
     const coverFloralShow = formData.get('coverFloralShow');

@@ -31,6 +31,10 @@ export async function GET(
       heroImage: heroSection.heroImage || '',
       heroPoster: heroSection.heroPoster || '',
       heroBackgroundColor: heroSection.heroBackgroundColor || '#ffffff',
+      coverStyle: heroSection.coverStyle || (heroSection.coverEnvelopeShow === false ? 'scroll' : 'envelope'),
+      coverEnvelopeShow: heroSection.coverEnvelopeShow !== false,
+      coverFirefliesShow: heroSection.coverFirefliesShow !== false,
+      coverSnowShow: !!heroSection.coverSnowShow,
     };
 
     const data = {

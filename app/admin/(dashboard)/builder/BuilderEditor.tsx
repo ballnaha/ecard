@@ -89,6 +89,13 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [coverBgType, setCoverBgType] = useState<'default' | 'color' | 'image'>(() => client?.heroSection?.coverBgType || 'default');
   const [coverBgColor, setCoverBgColor] = useState<string>(() => client?.heroSection?.coverBgColor || '#fdfcf0');
   const [previewCoverBgImage, setPreviewCoverBgImage] = useState<string | null>(client?.heroSection?.coverBgImage || null);
+  const [coverStyle, setCoverStyle] = useState<'envelope' | 'scroll'>(() => {
+    if (client?.heroSection?.coverStyle === 'scroll') return 'scroll';
+    if (client?.heroSection?.coverStyle === 'envelope') return 'envelope';
+    return client?.heroSection?.coverEnvelopeShow === false ? 'scroll' : 'envelope';
+  });
+  const [coverFirefliesShow, setCoverFirefliesShow] = useState<boolean>(() => client?.heroSection?.coverFirefliesShow !== false);
+  const [coverSnowShow, setCoverSnowShow] = useState<boolean>(() => !!client?.heroSection?.coverSnowShow);
 
   // Cover Floral settings
   const [coverFloralShow, setCoverFloralShow] = useState<boolean>(() => client?.heroSection?.coverFloralShow !== false);
@@ -124,7 +131,6 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [coupleStyle, setCoupleStyle] = useState<string>(() => client?.coupleSection?.coupleStyle || 'arch-duo');
   const [introText, setIntroText] = useState<string>(() => client?.coupleSection?.introText || 'Two paths that led to one beautiful journey...');
 
-  const [showPetals, setShowPetals] = useState<boolean>(() => !!client?.heroSection?.showFallingPetals);
   const [hideAllText, setHideAllText] = useState<boolean>(() => !!client?.heroSection?.hideAllText);
 
   const [primaryColor, setPrimaryColor] = useState<string>(client?.primaryColor || '#8e7d5d');
@@ -288,12 +294,14 @@ export default function BuilderEditor({ client }: { client: any }) {
       if (finalPaths.heroVideo) formData.append('heroVideo', finalPaths.heroVideo);
       if (finalPaths.heroPoster) formData.append('heroPoster', finalPaths.heroPoster);
       if (finalPaths.heroNameImage) formData.append('heroNameImage', finalPaths.heroNameImage);
-      formData.append('showFallingPetals', String(showPetals));
       formData.append('hideAllText', String(hideAllText));
       // Cover Background
       formData.append('coverBgType', coverBgType);
       formData.append('coverBgColor', coverBgColor);
       formData.append('coverBgImage', finalPaths.coverBgImage || '');
+      formData.append('coverStyle', coverStyle);
+      formData.append('coverFirefliesShow', String(coverFirefliesShow));
+      formData.append('coverSnowShow', String(coverSnowShow));
       // Cover Floral
       formData.append('coverFloralShow', String(coverFloralShow));
       formData.append('coverFloralTopRightShow', String(coverFloralTopRightShow));
@@ -748,7 +756,6 @@ export default function BuilderEditor({ client }: { client: any }) {
                   <MenuItem value="editorial">Editorial Left (นิตยสาร - ชิดซ้าย)</MenuItem>
                   <MenuItem value="minimal">Minimal Vertical (มินิมอล - แนวตั้ง)</MenuItem>
                 </TextField>
-                <FormControlLabel control={<Switch checked={showPetals} onChange={(e) => setShowPetals(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#22c55e' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#22c55e' } }} />} label={<Typography variant="body2" fontWeight={600}>แสดงกลีบดอกไม้ร่วง ✨</Typography>} />
                 <FormControlLabel control={<Switch checked={hideAllText} onChange={(e) => setHideAllText(e.target.checked)} sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#f2a1a1' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#f2a1a1' } }} />} label={<Typography variant="body2" fontWeight={600}>Full Card Mode (ซ่อนข้อความทั้งหมด) 🧧</Typography>} />
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="subtitle2" fontWeight={700} color="#475569">รูปภาพชื่อบ่าวสาว (Calligraphy/Logo)</Typography>
@@ -856,6 +863,52 @@ export default function BuilderEditor({ client }: { client: any }) {
                       </Button>
                     </Box>
                   )}
+
+                  <Box sx={{ mt: 2, p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #fde68a' }}>
+                    <Typography variant="body2" fontWeight={700} color="#92400e">รูปแบบ Invitation Cover</Typography>
+                    <Typography variant="caption" sx={{ color: '#b45309', display: 'block', mb: 1.25 }}>
+                      เลือกหน้าตา cover ได้ และรองรับการเพิ่มแบบใหม่ในอนาคต
+                    </Typography>
+                    <TextField
+                      select
+                      value={coverStyle}
+                      onChange={(e) => setCoverStyle(e.target.value as 'envelope' | 'scroll')}
+                      size="small"
+                      fullWidth
+                      sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+                    >
+                      <MenuItem value="envelope">ซองจดหมาย</MenuItem>
+                      <MenuItem value="scroll">ม้วนคัมภีร์จีน</MenuItem>
+                    </TextField>
+                  </Box>
+
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 2, p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #fde68a' }}>
+                    <Box>
+                      <Typography variant="body2" fontWeight={700} color="#92400e">แสดงไฟหิ่งห้อย</Typography>
+                      <Typography variant="caption" sx={{ color: '#b45309' }}>
+                        เอฟเฟกต์แสงลอยบนหน้า Invitation Cover
+                      </Typography>
+                    </Box>
+                    <Switch
+                      checked={coverFirefliesShow}
+                      onChange={(e) => setCoverFirefliesShow(e.target.checked)}
+                      sx={{ '& .MuiSwitch-thumb': { bgcolor: coverFirefliesShow ? '#d97706' : undefined } }}
+                    />
+                  </Stack>
+
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5, p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #fde68a' }}>
+                    <Box>
+                      <Typography variant="body2" fontWeight={700} color="#92400e">แสดงหิมะตก</Typography>
+                      <Typography variant="caption" sx={{ color: '#b45309' }}>
+                        เอฟเฟกต์หิมะโปรยบนหน้า Invitation Cover
+                      </Typography>
+                    </Box>
+                    <Switch
+                      checked={coverSnowShow}
+                      onChange={(e) => setCoverSnowShow(e.target.checked)}
+                      sx={{ '& .MuiSwitch-thumb': { bgcolor: coverSnowShow ? '#d97706' : undefined } }}
+                    />
+                  </Stack>
                 </Box>
                 <Divider sx={{ my: 2 }} />
                 {/* Floral Decoration Settings */}

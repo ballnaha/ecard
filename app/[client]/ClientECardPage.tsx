@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Box } from '@mui/material';
+import React, { useState, useCallback } from 'react';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import HeroSection from '@/app/components/HeroSection';
 import CoupleSection from '@/app/components/CoupleSection';
 import DressCodeSection from '@/app/components/DressCodeSection';
@@ -26,10 +28,26 @@ interface ClientECardPageProps {
 export default function ClientECardPage({ clientData }: ClientECardPageProps) {
   console.log('--- ClientECardPage Debug ---');
   console.log('Mobile Nav Items Target:', clientData.mobileNavSection?.items);
+  const coverStyle = clientData.hero?.coverStyle || (clientData.hero?.coverEnvelopeShow === false ? 'scroll' : 'envelope');
   
   const [isCoverOpen, setIsCoverOpen] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [mounted, setMounted] = React.useState(false);
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const onFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
+  }, []);
 
   React.useEffect(() => {
     setMounted(true);
@@ -131,6 +149,28 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
       boxShadow: { lg: '0 0 80px rgba(0,0,0,0.08)' },
       position: 'relative'
     }}>
+      {/* Fullscreen toggle — show only while cover is active */}
+      {!isCoverOpen && (
+        <Tooltip title={isFullscreen ? 'ออกจากเต็มหน้าจอ' : 'เต็มหน้าจอ'} placement="left" enterDelay={0} enterTouchDelay={0}>
+          <IconButton
+            onClick={toggleFullscreen}
+            size="small"
+            sx={{
+              position: 'fixed',
+              bottom: 16,
+              right: 16,
+              zIndex: 10000,
+              bgcolor: 'rgba(0,0,0,0.38)',
+              color: '#fff',
+              backdropFilter: 'blur(4px)',
+              '&:hover': { bgcolor: 'rgba(0,0,0,0.6)' },
+            }}
+          >
+            {isFullscreen ? <FullscreenExitIcon fontSize="small" /> : <FullscreenIcon fontSize="small" />}
+          </IconButton>
+        </Tooltip>
+      )}
+
       <InvitationCover 
         brideName={clientData.brideName} 
         groomName={clientData.groomName} 
@@ -141,6 +181,9 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         coverBgType={clientData.hero?.coverBgType}
         coverBgColor={clientData.hero?.coverBgColor}
         coverBgImage={clientData.hero?.coverBgImage}
+        coverStyle={coverStyle}
+        coverFirefliesShow={clientData.hero?.coverFirefliesShow !== false}
+        coverSnowShow={!!clientData.hero?.coverSnowShow}
         coverFloralShow={clientData.hero?.coverFloralShow !== false}
         coverFloralTopRightShow={clientData.hero?.coverFloralTopRightShow !== false}
         coverFloralBottomLeftShow={clientData.hero?.coverFloralBottomLeftShow !== false}
