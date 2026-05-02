@@ -96,6 +96,28 @@ export default function ScheduleSection({
 
   const hasBrideParents = brideParents?.father || brideParents?.mother;
   const hasGroomParents = groomParents?.father || groomParents?.mother;
+  const splitTrailingNickname = (name: string) => {
+    const nicknameMatch = name.match(/\s*([([][^()[\]]+[\])])\s*$/);
+    return {
+      fullName: nicknameMatch ? name.slice(0, nicknameMatch.index).trim() : name,
+      nickname: nicknameMatch?.[1] || ''
+    };
+  };
+
+  const ScheduleCoupleName = ({ name }: { name: string }) => {
+    const { fullName, nickname } = splitTrailingNickname(name);
+
+    return (
+      <>
+        <span>{fullName}</span>
+        {nickname && (
+          <Box component="span" sx={{ display: 'block', fontSize: '0.76em', opacity: 0.72, mt: 0.7 }}>
+            {nickname}
+          </Box>
+        )}
+      </>
+    );
+  };
 
   return (
     <Box component="section" className="embossed-paper" sx={{ py: { xs: 6, md: 10 }, backgroundColor: '#ffffff', position: 'relative', overflow: 'hidden' }}>
@@ -212,7 +234,7 @@ export default function ScheduleSection({
                 lineHeight: 1.1
               }}>
 
-                {brideName || "กมลรักษ์ ชนะเดช"}
+                <ScheduleCoupleName name={brideName || "กมลรักษ์ ชนะเดช"} />
               </Typography>
 
               <Typography sx={{
@@ -232,7 +254,7 @@ export default function ScheduleSection({
                 fontWeight: 600,
                 lineHeight: 1.1
               }}>
-                {groomName || "ณัฐพล ชื่นชูใจ"}
+                <ScheduleCoupleName name={groomName || "ณัฐพล ชื่นชูใจ"} />
               </Typography>
             </Box>
 

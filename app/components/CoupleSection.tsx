@@ -9,6 +9,8 @@ export interface CoupleData {
   introText?: string;
   bridePic?: string;
   groomPic?: string;
+  showBridePic?: boolean;
+  showGroomPic?: boolean;
   coupleStyle?: 'arch-duo' | 'rounded-avatar' | 'storybook-polaroids' | string;
   brideName?: string;
   groomName?: string;
@@ -48,14 +50,19 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
 
   const bridePic = data?.bridePic || "images/demo/bride.png";
   const groomPic = data?.groomPic || "images/demo/groom.png";
+  const showBridePic = data?.showBridePic !== false;
+  const showGroomPic = data?.showGroomPic !== false;
   const intro = data?.introText || "Two paths that led to one beautiful journey. Together, we are creating a story that will last a lifetime, filled with love and endless joy.";
   const style = data?.coupleStyle || 'arch-duo';
 
   const NameDisplay = ({ name, role, align = 'center' }: { name: string, role: string, align?: 'center' | 'left' | 'right' }) => {
-    const parts = name.split(' ');
+    const nicknameMatch = name.match(/\s*([([][^()[\]]+[\])])\s*$/);
+    const nickname = nicknameMatch?.[1] || '';
+    const displayName = nickname ? name.slice(0, nicknameMatch?.index).trim() : name;
+    const parts = displayName.split(' ');
     const firstName = parts[0];
     const lastName = parts.slice(1).join(' ');
-    const thai = isThai(name);
+    const thai = isThai(displayName);
 
     return (
       <Box sx={{ textAlign: align }}>
@@ -87,6 +94,23 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
             letterSpacing: thai ? '0.02em' : 'normal'
           }}>
             {lastName}
+          </Typography>
+        )}
+        {nickname && (
+          <Typography sx={{
+            fontFamily: getFontFamily(nickname),
+            fontWeight: isThai(nickname) ? 300 : 400,
+            fontSize: {
+              xs: isThai(nickname) ? '1.2rem' : '1.7rem',
+              md: isThai(nickname) ? '1.5rem' : '2.1rem'
+            },
+            color: 'var(--primary-color)',
+            opacity: 0.62,
+            lineHeight: 1.1,
+            mb: 2,
+            letterSpacing: isThai(nickname) ? '0.02em' : 'normal'
+          }}>
+            {nickname}
           </Typography>
         )}
         <Typography sx={{
@@ -126,17 +150,19 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
                 {/* Bride Avatar */}
                 <motion.div variants={fadeInUp}>
                   <Box>
-                    <Box sx={{
-                      width: { xs: 300, md: 400 },
-                      height: { xs: 300, md: 400 },
-                      borderRadius: '50%',
-                      overflow: 'hidden',
-                      border: '8px solid #fff',
-                      boxShadow: '0 20px 60px rgba(142, 125, 93, 0.25)',
-                      mb: { xs: 4, md: 5 }
-                    }}>
-                      <img src={bridePic} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </Box>
+                    {showBridePic && (
+                      <Box sx={{
+                        width: { xs: 300, md: 400 },
+                        height: { xs: 300, md: 400 },
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: '8px solid #fff',
+                        boxShadow: '0 20px 60px rgba(142, 125, 93, 0.25)',
+                        mb: { xs: 4, md: 5 }
+                      }}>
+                        <img src={bridePic} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </Box>
+                    )}
                     <NameDisplay name={data?.brideName || "กมลรักษ์ ชนะเดช"} role="The Bride" />
                   </Box>
                 </motion.div>
@@ -144,17 +170,19 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
                 {/* Groom Avatar */}
                 <motion.div variants={fadeInUp}>
                   <Box sx={{ mt: { xs: 4, md: 0 } }}>
-                    <Box sx={{
-                      width: { xs: 300, md: 400 },
-                      height: { xs: 300, md: 400 },
-                      borderRadius: '50%',
-                      overflow: 'hidden',
-                      border: '8px solid #fff',
-                      boxShadow: '0 20px 60px rgba(142, 125, 93, 0.25)',
-                      mb: { xs: 4, md: 5 }
-                    }}>
-                      <img src={groomPic} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </Box>
+                    {showGroomPic && (
+                      <Box sx={{
+                        width: { xs: 300, md: 400 },
+                        height: { xs: 300, md: 400 },
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        border: '8px solid #fff',
+                        boxShadow: '0 20px 60px rgba(142, 125, 93, 0.25)',
+                        mb: { xs: 4, md: 5 }
+                      }}>
+                        <img src={groomPic} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </Box>
+                    )}
                     <NameDisplay name={data?.groomName || "ณัฐพล ชื่นชูใจ"} role="The Groom" />
                   </Box>
                 </motion.div>
@@ -179,26 +207,34 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
             }}
           >
             <Box sx={{
-              display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', justifyContent: 'center', gap: { xs: 15, md: 4 }, position: 'relative', zIndex: 1
+              display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', justifyContent: 'center', gap: { xs: showBridePic || showGroomPic ? 15 : 8, md: 4 }, position: 'relative', zIndex: 1
             }}>
               {/* Bride Section */}
               <motion.div variants={fadeInUp} style={{ flex: 1, width: '100%', maxWidth: '450px' }}>
                 <Box sx={{ position: 'relative' }}>
-                  <motion.div style={{ y: y1 }}>
-                    <Box sx={{
-                      position: 'relative', zIndex: 2, mx: 'auto', width: { xs: '280px', md: '380px' }, height: { xs: '420px', md: '560px' },
-                      borderRadius: '200px 200px 0 0', overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.08)', border: '1px solid rgba(142, 125, 93, 0.1)'
-                    }}>
-                      <img src={bridePic} alt="Bride" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {showBridePic ? (
+                    <>
+                      <motion.div style={{ y: y1 }}>
+                        <Box sx={{
+                          position: 'relative', zIndex: 2, mx: 'auto', width: { xs: '280px', md: '380px' }, height: { xs: '420px', md: '560px' },
+                          borderRadius: '200px 200px 0 0', overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.08)', border: '1px solid rgba(142, 125, 93, 0.1)'
+                        }}>
+                          <img src={bridePic} alt="Bride" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </Box>
+                      </motion.div>
+                      <Box sx={{
+                        position: 'absolute', top: '30px', left: '30px', right: '30px', bottom: '-30px',
+                        border: '1px solid rgba(142, 125, 93, 0.15)', borderRadius: '200px 200px 0 0', zIndex: 1
+                      }} />
+                      <Box sx={{ position: 'absolute', bottom: { xs: -80, md: -100 }, right: { xs: 0, md: -60 }, zIndex: 3, maxWidth: { xs: '250px', md: '450px' } }}>
+                        <NameDisplay name={data?.brideName || "กมลรักษ์ ชนะเดช"} role="The Bride" align="right" />
+                      </Box>
+                    </>
+                  ) : (
+                    <Box sx={{ minHeight: { xs: 150, md: 220 }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <NameDisplay name={data?.brideName || "กมลรักษ์ ชนะเดช"} role="The Bride" />
                     </Box>
-                  </motion.div>
-                  <Box sx={{
-                    position: 'absolute', top: '30px', left: '30px', right: '30px', bottom: '-30px',
-                    border: '1px solid rgba(142, 125, 93, 0.15)', borderRadius: '200px 200px 0 0', zIndex: 1
-                  }} />
-                  <Box sx={{ position: 'absolute', bottom: { xs: -80, md: -100 }, right: { xs: 0, md: -60 }, zIndex: 3, maxWidth: { xs: '250px', md: '450px' } }}>
-                    <NameDisplay name={data?.brideName || "กมลรักษ์ ชนะเดช"} role="The Bride" align="right" />
-                  </Box>
+                  )}
                 </Box>
               </motion.div>
 
@@ -207,23 +243,31 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
               </Box>
 
               {/* Groom Section */}
-              <motion.div variants={fadeInUp} style={{ flex: 1, width: '100%', maxWidth: '450px', marginTop: '80px' }}>
+              <motion.div variants={fadeInUp} style={{ flex: 1, width: '100%', maxWidth: '450px', marginTop: showGroomPic ? '80px' : '0' }}>
                 <Box sx={{ position: 'relative' }}>
-                  <motion.div style={{ y: y2 }}>
-                    <Box sx={{
-                      position: 'relative', zIndex: 2, mx: 'auto', width: { xs: '280px', md: '380px' }, height: { xs: '420px', md: '560px' },
-                      borderRadius: '200px 200px 0 0', overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.08)', border: '1px solid rgba(142, 125, 93, 0.1)'
-                    }}>
-                      <img src={groomPic} alt="Groom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {showGroomPic ? (
+                    <>
+                      <motion.div style={{ y: y2 }}>
+                        <Box sx={{
+                          position: 'relative', zIndex: 2, mx: 'auto', width: { xs: '280px', md: '380px' }, height: { xs: '420px', md: '560px' },
+                          borderRadius: '200px 200px 0 0', overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,0.08)', border: '1px solid rgba(142, 125, 93, 0.1)'
+                        }}>
+                          <img src={groomPic} alt="Groom" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        </Box>
+                      </motion.div>
+                      <Box sx={{
+                        position: 'absolute', top: '-30px', left: '30px', right: '30px', bottom: '30px',
+                        border: '1px solid rgba(142, 125, 93, 0.15)', borderRadius: '200px 200px 0 0', zIndex: 1
+                      }} />
+                      <Box sx={{ position: 'absolute', top: { xs: -80, md: -120 }, left: { xs: 0, md: -60 }, zIndex: 3, maxWidth: { xs: '250px', md: '450px' } }}>
+                        <NameDisplay name={data?.groomName || "ณัฐพล ชื่นชูใจ"} role="The Groom" align="left" />
+                      </Box>
+                    </>
+                  ) : (
+                    <Box sx={{ minHeight: { xs: 150, md: 220 }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <NameDisplay name={data?.groomName || "ณัฐพล ชื่นชูใจ"} role="The Groom" />
                     </Box>
-                  </motion.div>
-                  <Box sx={{
-                    position: 'absolute', top: '-30px', left: '30px', right: '30px', bottom: '30px',
-                    border: '1px solid rgba(142, 125, 93, 0.15)', borderRadius: '200px 200px 0 0', zIndex: 1
-                  }} />
-                  <Box sx={{ position: 'absolute', top: { xs: -80, md: -120 }, left: { xs: 0, md: -60 }, zIndex: 3, maxWidth: { xs: '250px', md: '450px' } }}>
-                    <NameDisplay name={data?.groomName || "ณัฐพล ชื่นชูใจ"} role="The Groom" align="left" />
-                  </Box>
+                  )}
                 </Box>
               </motion.div>
             </Box>

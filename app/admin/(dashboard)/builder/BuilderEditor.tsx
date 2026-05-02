@@ -131,6 +131,8 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [previewGiftQrCode, setPreviewGiftQrCode] = useState<string | null>(client?.giftSection?.qrCode || null);
   const [coupleStyle, setCoupleStyle] = useState<string>(() => client?.coupleSection?.coupleStyle || 'arch-duo');
   const [introText, setIntroText] = useState<string>(() => client?.coupleSection?.introText || 'Two paths that led to one beautiful journey...');
+  const [showBridePic, setShowBridePic] = useState<boolean>(() => client?.coupleSection?.showBridePic !== false);
+  const [showGroomPic, setShowGroomPic] = useState<boolean>(() => client?.coupleSection?.showGroomPic !== false);
 
   const [hideAllText, setHideAllText] = useState<boolean>(() => !!client?.heroSection?.hideAllText);
 
@@ -367,6 +369,8 @@ export default function BuilderEditor({ client }: { client: any }) {
       if (finalPaths.bridePic) formData.append('bridePic', finalPaths.bridePic);
       if (finalPaths.groomPic) formData.append('groomPic', finalPaths.groomPic);
       formData.append('coupleStyle', coupleStyle);
+      formData.append('showBridePic', String(showBridePic));
+      formData.append('showGroomPic', String(showGroomPic));
       const res = await updateClientCouple(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
       else {
@@ -1160,6 +1164,29 @@ export default function BuilderEditor({ client }: { client: any }) {
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}><TextField name="brideFather" label="คุณพ่อ (เจ้าสาว)" defaultValue={client?.coupleSection?.brideFather || ''} size="small" /><TextField name="brideMother" label="คุณแม่ (เจ้าสาว)" defaultValue={client?.coupleSection?.brideMother || ''} size="small" /></Box>
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}><TextField name="groomFather" label="คุณพ่อ (เจ้าบ่าว)" defaultValue={client?.coupleSection?.groomFather || ''} size="small" /><TextField name="groomMother" label="คุณแม่ (เจ้าบ่าว)" defaultValue={client?.coupleSection?.groomMother || ''} size="small" /></Box>
                 <TextField select value={coupleStyle} onChange={(e) => setCoupleStyle(e.target.value)} size="small" fullWidth><MenuItem value="arch-duo">Arch Duo</MenuItem><MenuItem value="rounded-portrait">Rounded Portrait</MenuItem></TextField>
+                <Box sx={{ p: 2, bgcolor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '16px' }}>
+                  <Typography variant="subtitle2" fontWeight={800} color="#334155" sx={{ mb: 1 }}>
+                    การแสดงรูปบ่าวสาว
+                  </Typography>
+                  <Stack spacing={1}>
+                    <Stack direction="row" alignItems="center" justifyContent="space-between">
+                      <Typography variant="body2" fontWeight={600}>แสดงรูปเจ้าสาว</Typography>
+                      <Switch
+                        checked={showBridePic}
+                        onChange={(e) => setShowBridePic(e.target.checked)}
+                        sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#f2a1a1' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#f2a1a1' } }}
+                      />
+                    </Stack>
+                    <Stack direction="row" alignItems="center" justifyContent="space-between">
+                      <Typography variant="body2" fontWeight={600}>แสดงรูปเจ้าบ่าว</Typography>
+                      <Switch
+                        checked={showGroomPic}
+                        onChange={(e) => setShowGroomPic(e.target.checked)}
+                        sx={{ '& .MuiSwitch-switchBase.Mui-checked': { color: '#f2a1a1' }, '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#f2a1a1' } }}
+                      />
+                    </Stack>
+                  </Stack>
+                </Box>
                 <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                   <Box>
                     <Box sx={{ position: 'relative', pt: '140%', bgcolor: '#f1f5f9' }}>{previewBridePic && <img src={previewBridePic} style={{ position: 'absolute', top: 0, width: '100%', height: '100%', objectFit: 'cover' }} />}</Box>

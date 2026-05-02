@@ -219,6 +219,8 @@ export async function updateClientCouple(id: string, formData: FormData) {
     const brideMother = formData.get('brideMother') as string;
     const groomFather = formData.get('groomFather') as string;
     const groomMother = formData.get('groomMother') as string;
+    const showBridePic = formData.get('showBridePic');
+    const showGroomPic = formData.get('showGroomPic');
     
     // Check if client exists
     const existing = await prisma.client.findUnique({ where: { id } });
@@ -265,6 +267,8 @@ export async function updateClientCouple(id: string, formData: FormData) {
     coupleSection.brideMother = brideMother;
     coupleSection.groomFather = groomFather;
     coupleSection.groomMother = groomMother;
+    if (showBridePic !== null) coupleSection.showBridePic = showBridePic === 'true';
+    if (showGroomPic !== null) coupleSection.showGroomPic = showGroomPic === 'true';
     
     await prisma.client.update({
       where: { id },
