@@ -140,6 +140,8 @@ export async function updateClientHero(id: string, formData: FormData) {
     if (coverFirefliesShow !== null) heroSection.coverFirefliesShow = coverFirefliesShow === 'true';
     const coverSnowShow = formData.get('coverSnowShow');
     if (coverSnowShow !== null) heroSection.coverSnowShow = coverSnowShow === 'true';
+    const coverStarsShow = formData.get('coverStarsShow');
+    if (coverStarsShow !== null) heroSection.coverStarsShow = coverStarsShow === 'true';
 
     // Cover Floral settings
     const coverFloralShow = formData.get('coverFloralShow');

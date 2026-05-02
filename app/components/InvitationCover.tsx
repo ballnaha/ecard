@@ -19,6 +19,7 @@ interface InvitationCoverProps {
   coverEnvelopeShow?: boolean;
   coverFirefliesShow?: boolean;
   coverSnowShow?: boolean;
+  coverStarsShow?: boolean;
   coverFloralShow?: boolean;
   coverFloralTopRightShow?: boolean;
   coverFloralBottomLeftShow?: boolean;
@@ -92,6 +93,17 @@ const SNOW_PARTICLES = Array.from({ length: 26 }, (_, i) => ({
   depth: i % 3,
   rotate: (i * 37) % 360,
   twinkle: 0.84 + (i % 4) * 0.08,
+}));
+
+const STAR_PARTICLES = Array.from({ length: 34 }, (_, i) => ({
+  id: i,
+  x: 4 + ((i * 37) % 92) + Math.sin(i * 1.8) * 2.8,
+  y: 5 + ((i * 23) % 82) + Math.cos(i * 1.4) * 2.2,
+  size: 1.6 + (i % 5) * 0.65,
+  duration: 1.8 + (i % 6) * 0.42,
+  delay: -((i * 0.73) % 3.2),
+  warm: i % 3 !== 0,
+  drift: Math.sin(i * 2.2) * 8,
 }));
 
 function DustParticle({ data }: { data: typeof DUST_PARTICLES[0] }) {
@@ -231,6 +243,81 @@ function SnowParticle({ data }: { data: typeof SNOW_PARTICLES[0] }) {
   );
 }
 
+function TwinkleStar({ data }: { data: typeof STAR_PARTICLES[0] }) {
+  const color = data.warm ? '255,224,130' : '232,242,255';
+
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        left: `${data.x}%`,
+        top: `${data.y}%`,
+        width: data.size,
+        height: data.size,
+        pointerEvents: 'none',
+        zIndex: 2,
+        willChange: 'transform, opacity, filter',
+      }}
+      animate={{
+        opacity: [0.12, 1, 0.28, 0.9, 0.16],
+        scale: [0.75, 1.55, 0.95, 1.25, 0.72],
+        x: [0, data.drift * 0.25, data.drift, data.drift * 0.15, 0],
+        filter: [
+          `drop-shadow(0 0 2px rgba(${color}, 0.35))`,
+          `drop-shadow(0 0 9px rgba(${color}, 0.95))`,
+          `drop-shadow(0 0 4px rgba(${color}, 0.5))`,
+          `drop-shadow(0 0 7px rgba(${color}, 0.8))`,
+          `drop-shadow(0 0 2px rgba(${color}, 0.3))`,
+        ],
+      }}
+      transition={{
+        duration: data.duration,
+        delay: data.delay,
+        repeat: Infinity,
+        ease: 'easeInOut',
+        times: [0, 0.24, 0.48, 0.72, 1],
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: '100%',
+          height: '100%',
+          transform: 'translate(-50%, -50%) rotate(45deg)',
+          background: `rgba(${color}, 0.96)`,
+          borderRadius: 1,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: data.size * 6,
+          height: 1,
+          transform: 'translate(-50%, -50%)',
+          background: `linear-gradient(90deg, rgba(${color},0), rgba(${color},0.9), rgba(${color},0))`,
+          borderRadius: 999,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          width: 1,
+          height: data.size * 6,
+          transform: 'translate(-50%, -50%)',
+          background: `linear-gradient(180deg, rgba(${color},0), rgba(${color},0.9), rgba(${color},0))`,
+          borderRadius: 999,
+        }}
+      />
+    </motion.div>
+  );
+}
+
 export default function InvitationCover({
   brideName = 'Pla',
   groomName = 'Ball',
@@ -245,6 +332,7 @@ export default function InvitationCover({
   coverEnvelopeShow = true,
   coverFirefliesShow = true,
   coverSnowShow = false,
+  coverStarsShow = false,
   coverFloralShow = true,
   coverFloralTopRightShow = true,
   coverFloralBottomLeftShow = true,
@@ -466,6 +554,10 @@ export default function InvitationCover({
 
           {coverSnowShow !== false && (isMobile ? SNOW_PARTICLES.slice(0, 16) : SNOW_PARTICLES).map((data) => (
             <SnowParticle key={data.id} data={data} />
+          ))}
+
+          {coverStarsShow !== false && (isMobile ? STAR_PARTICLES.slice(0, 22) : STAR_PARTICLES).map((data) => (
+            <TwinkleStar key={data.id} data={data} />
           ))}
 
           {/* ✨ Magical Dust Particles — ambient fairy-tale floating lights */}

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box, Card, Typography, Button, IconButton, Drawer, TextField, Divider, MenuItem, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CircularProgress, Switch, Stack, alpha, Checkbox, List, ListItem, ListItemText, ListItemIcon, Paper, Tooltip, Slider } from '@mui/material';
 import { Reorder } from 'framer-motion';
 import { Menu, Eye, Save2, ColorSwatch, CloseSquare, Trash, EyeSlash, Layer, Home, Calendar, Gallery, Location, PresentionChart, Heart, People, Gift, MessageText1, Link1, Music, CloseCircle, Copy } from 'iconsax-react';
@@ -96,6 +96,7 @@ export default function BuilderEditor({ client }: { client: any }) {
   });
   const [coverFirefliesShow, setCoverFirefliesShow] = useState<boolean>(() => client?.heroSection?.coverFirefliesShow !== false);
   const [coverSnowShow, setCoverSnowShow] = useState<boolean>(() => !!client?.heroSection?.coverSnowShow);
+  const [coverStarsShow, setCoverStarsShow] = useState<boolean>(() => !!client?.heroSection?.coverStarsShow);
 
   // Cover Floral settings
   const [coverFloralShow, setCoverFloralShow] = useState<boolean>(() => client?.heroSection?.coverFloralShow !== false);
@@ -183,6 +184,24 @@ export default function BuilderEditor({ client }: { client: any }) {
   const [giftAccountName, setGiftAccountName] = useState(client?.giftSection?.accountName || '');
   const [eventDate, setEventDate] = useState<Dayjs | null>(client?.eventDate ? dayjs(client.eventDate).utc().utcOffset(7) : dayjs('2026-10-10').utc().utcOffset(7));
   const { showSnackbar } = useSnackbar();
+  const savingLockRef = useRef(false);
+
+  const beginSaving = () => {
+    if (savingLockRef.current) return null;
+    savingLockRef.current = true;
+    setIsSaving(true);
+    return Date.now();
+  };
+
+  const finishSaving = async (startedAt: number | null) => {
+    if (startedAt === null) return;
+    const elapsed = Date.now() - startedAt;
+    if (elapsed < 650) {
+      await new Promise(resolve => setTimeout(resolve, 650 - elapsed));
+    }
+    savingLockRef.current = false;
+    setIsSaving(false);
+  };
 
   const handleToggleActive = (id: string) => {
     setItems(prev => prev.map(item =>
@@ -192,12 +211,16 @@ export default function BuilderEditor({ client }: { client: any }) {
 
   const handleSave = async () => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
-    const layoutData = items.map(i => ({ id: i.id, isActive: i.isActive }));
-    const res = await updateClientLayout(client.id, layoutData, client.slug);
-    setIsSaving(false);
-    if (res?.error) showSnackbar(res.error, 'error');
-    else showSnackbar('บันทึกการจัดเรียงและสถานะการแสดงผลสำเร็จ!', 'success');
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
+    try {
+      const layoutData = items.map(i => ({ id: i.id, isActive: i.isActive }));
+      const res = await updateClientLayout(client.id, layoutData, client.slug);
+      if (res?.error) showSnackbar(res.error, 'error');
+      else showSnackbar('บันทึกการจัดเรียงและสถานะการแสดงผลสำเร็จ!', 'success');
+    } finally {
+      await finishSaving(savingStartedAt);
+    }
   };
 
   const handleResetOrder = () => {
@@ -281,7 +304,8 @@ export default function BuilderEditor({ client }: { client: any }) {
 
   const handleHeroSave = async (formData: FormData) => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const finalPaths = { ...savedPaths };
       for (const [key, file] of Object.entries(pendingFiles)) {
@@ -302,6 +326,7 @@ export default function BuilderEditor({ client }: { client: any }) {
       formData.append('coverStyle', coverStyle);
       formData.append('coverFirefliesShow', String(coverFirefliesShow));
       formData.append('coverSnowShow', String(coverSnowShow));
+      formData.append('coverStarsShow', String(coverStarsShow));
       // Cover Floral
       formData.append('coverFloralShow', String(coverFloralShow));
       formData.append('coverFloralTopRightShow', String(coverFloralTopRightShow));
@@ -327,13 +352,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleCoupleSave = async (formData: FormData) => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const finalPaths = { ...savedPaths };
       if (pendingFiles.bridePic) finalPaths.bridePic = await uploadOneFile(pendingFiles.bridePic, 'bridePic');
@@ -352,13 +378,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleThemeSave = async (formData: FormData) => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const finalPaths = { ...savedPaths };
       if (pendingFiles.music) finalPaths.music = await uploadOneFile(pendingFiles.music, 'music');
@@ -373,13 +400,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0 || !client) return;
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const files = Array.from(e.target.files);
       const newUrls: string[] = [];
@@ -397,7 +425,7 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('อัปโหลดล้มเหลว: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
       e.target.value = '';
     }
   };
@@ -420,7 +448,8 @@ export default function BuilderEditor({ client }: { client: any }) {
 
   const handleGallerySave = async () => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const res = await updateClientGallery(client.id, galleryItems, galleryLayout);
       if (res?.error) showSnackbar(res.error, 'error');
@@ -431,13 +460,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleCountdownSave = async (formData: FormData) => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const res = await updateClientCountdown(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
@@ -448,13 +478,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleDressCodeSave = async () => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const res = await updateClientDressCode(client.id, dressCodeTitle, dressCodeSubtitle, dressCodeColors);
       if (res?.error) showSnackbar(res.error, 'error');
@@ -465,13 +496,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleScheduleSave = async () => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const res = await updateClientSchedule(client.id, scheduleItems);
       if (res?.error) showSnackbar(res.error, 'error');
@@ -482,13 +514,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleLocationSave = async (formData: FormData) => {
     if (!client) { showSnackbar('โหมด Demo ไม่สามารถบันทึกได้', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       const res = await updateClientLocation(client.id, formData);
       if (res?.error) showSnackbar(res.error, 'error');
@@ -499,13 +532,14 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (err: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + err.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleGiftSave = async (formData: FormData) => {
     if (!client) { showSnackbar('ไม่พบข้อมูลลูกค้า', 'error'); return; }
-    setIsSaving(true);
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
     try {
       let finalQrCode = savedPaths.giftQrCode;
       if (pendingFiles.giftQrCode) finalQrCode = await uploadOneFile(pendingFiles.giftQrCode, 'giftQrCode');
@@ -522,24 +556,36 @@ export default function BuilderEditor({ client }: { client: any }) {
     } catch (e: any) {
       showSnackbar('เกิดข้อผิดพลาด: ' + e.message, 'error');
     } finally {
-      setIsSaving(false);
+      await finishSaving(savingStartedAt);
     }
   };
 
   const handleMobileNavSave = async () => {
     if (!client) return;
-    setIsSaving(true);
-    const res = await updateClientMobileNav(client.id, mobileNavItems, client.slug);
-    setIsSaving(false);
-    if (res.success) {
-      showSnackbar('บันทึกเมนูนำทางเรียบร้อย!', 'success');
-      setEditingItem(null);
-    } else {
-      showSnackbar(res.error || 'ล้มเหลว', 'error');
+    const savingStartedAt = beginSaving();
+    if (savingStartedAt === null) return;
+    try {
+      const res = await updateClientMobileNav(client.id, mobileNavItems, client.slug);
+      if (res.success) {
+        showSnackbar('บันทึกเมนูนำทางเรียบร้อย!', 'success');
+        setEditingItem(null);
+      } else {
+        showSnackbar(res.error || 'ล้มเหลว', 'error');
+      }
+    } finally {
+      await finishSaving(savingStartedAt);
     }
   };
 
   const activeBuilderSections = items.filter(i => i.isActive && i.id !== 'mobileNav' && i.id !== 'poweredBy');
+  const renderSaveLabel = (label: string) => (
+    isSaving ? (
+      <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+        <CircularProgress size={18} color="inherit" />
+        <span>กำลังบันทึก...</span>
+      </Stack>
+    ) : label
+  );
 
   return (
     <Box sx={{ maxWidth: 'auto', mx: 'auto', px: { xs: 0, sm: 2 } }}>
@@ -648,7 +694,9 @@ export default function BuilderEditor({ client }: { client: any }) {
       <Drawer
         anchor="right"
         open={!!editingItem}
-        onClose={() => setEditingItem(null)}
+        onClose={() => {
+          if (!isSaving) setEditingItem(null);
+        }}
         sx={{ zIndex: 1250 }}
         PaperProps={{
           sx: {
@@ -665,7 +713,7 @@ export default function BuilderEditor({ client }: { client: any }) {
           <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h6" fontWeight="800" color="#0f172a">ปรับแต่ง: {editingItem.title}</Typography>
-              <IconButton onClick={() => setEditingItem(null)}><CloseSquare variant="Outline" size={24} color="#64748b" /></IconButton>
+              <IconButton disabled={isSaving} onClick={() => setEditingItem(null)}><CloseSquare variant="Outline" size={24} color="#64748b" /></IconButton>
             </Box>
             <Divider sx={{ mb: 4 }} />
 
@@ -733,8 +781,8 @@ export default function BuilderEditor({ client }: { client: any }) {
                 <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic' }}>
                   * รายการเมนูจะแสดงเมื่อคุณเลือก "เปิด (Check)" และ Section นั้นๆ เปิดใช้งานอยู่ในหน้าเลย์เอาต์หลักครับ
                 </Typography>
-                <Button onClick={handleMobileNavSave} fullWidth variant="contained" sx={{ bgcolor: '#f2a1a1', py: 1.5, fontWeight: 700 }}>
-                  บันทึกเมนู Footer Bar
+                <Button onClick={handleMobileNavSave} disabled={isSaving} fullWidth variant="contained" sx={{ bgcolor: '#f2a1a1', py: 1.5, fontWeight: 700 }}>
+                  {renderSaveLabel('บันทึกเมนู Footer Bar')}
                 </Button>
               </Box>
             )}
@@ -907,6 +955,20 @@ export default function BuilderEditor({ client }: { client: any }) {
                       checked={coverSnowShow}
                       onChange={(e) => setCoverSnowShow(e.target.checked)}
                       sx={{ '& .MuiSwitch-thumb': { bgcolor: coverSnowShow ? '#d97706' : undefined } }}
+                    />
+                  </Stack>
+
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5, p: 1.5, bgcolor: 'white', borderRadius: '16px', border: '1px solid #fde68a' }}>
+                    <Box>
+                      <Typography variant="body2" fontWeight={700} color="#92400e">แสดงดวงดาวกระพริบ</Typography>
+                      <Typography variant="caption" sx={{ color: '#b45309' }}>
+                        เอฟเฟกต์ดาววิบวับบนหน้า Invitation Cover
+                      </Typography>
+                    </Box>
+                    <Switch
+                      checked={coverStarsShow}
+                      onChange={(e) => setCoverStarsShow(e.target.checked)}
+                      sx={{ '& .MuiSwitch-thumb': { bgcolor: coverStarsShow ? '#d97706' : undefined } }}
                     />
                   </Stack>
                 </Box>
@@ -1087,7 +1149,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                     </Box>
                   )}
                 </Box>
-                <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1', py: 1.5, fontWeight: 700 }}>{isSaving ? 'กำลังบันทึก...' : 'บันทึกทั้งหมด'}</Button>
+                <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1', py: 1.5, fontWeight: 700 }}>{renderSaveLabel('บันทึกทั้งหมด')}</Button>
               </Box>
             )}
 
@@ -1108,15 +1170,15 @@ export default function BuilderEditor({ client }: { client: any }) {
                     <Button variant="outlined" component="label" fullWidth sx={{ mt: 1 }}>รูปเจ้าบ่าว<input hidden type="file" onChange={(e) => handleFileSelect(e, 'groomPic')} /></Button>
                   </Box>
                 </Box>
-                <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกบ่าวสาว</Button>
+                <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>{renderSaveLabel('บันทึกบ่าวสาว')}</Button>
               </Box>
             )}
 
             {editingItem.id === 'gallery' && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, height: 'calc(100dvh - 170px)', minHeight: 420 }}>
                 <TextField select value={galleryLayout} onChange={(e) => setGalleryLayout(e.target.value as any)} size="small" fullWidth><MenuItem value="coverflow">Coverflow</MenuItem><MenuItem value="cards">Stacked Cards</MenuItem><MenuItem value="slide">Slide</MenuItem></TextField>
                 <Button component="label" fullWidth variant="outlined" sx={{ borderStyle: 'dashed' }}>+ เพิ่มรูปภาพ<input type="file" hidden multiple onChange={handleGalleryUpload} /></Button>
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2.5, maxHeight: 400, overflowY: 'auto', p: 1 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2.5, flex: 1, minHeight: 0, overflowY: 'auto', alignContent: 'start', p: 1, pr: 1.5 }}>
                   {galleryItems.map((img, idx) => (
                     <Box key={idx} sx={{ position: 'relative', pt: '100%', mb: 1 }}>
                       <Box
@@ -1157,7 +1219,25 @@ export default function BuilderEditor({ client }: { client: any }) {
                     </Box>
                   ))}
                 </Box>
-                <Button onClick={handleGallerySave} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกแกลเลอรี</Button>
+                <Button
+                  onClick={handleGallerySave}
+                  disabled={isSaving}
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    bgcolor: '#f2a1a1',
+                    mt: 'auto',
+                    py: 1.5,
+                    fontWeight: 700,
+                    position: 'sticky',
+                    bottom: 0,
+                    zIndex: 2,
+                    boxShadow: '0 -12px 24px rgba(248,250,252,0.92)',
+                    '&:hover': { bgcolor: '#e89191' },
+                  }}
+                >
+                  {renderSaveLabel('บันทึกแกลเลอรี')}
+                </Button>
               </Box>
             )}
 
@@ -1165,7 +1245,7 @@ export default function BuilderEditor({ client }: { client: any }) {
               <Box component="form" action={handleCountdownSave} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <TextField name="title" label="หัวข้อหลัก" defaultValue={client?.countdownSection?.title || 'Countdown'} size="small" />
                 <TextField name="subtitle" label="หัวข้อรอง" defaultValue={client?.countdownSection?.subtitle || 'See You Soon'} size="small" />
-                <Button fullWidth variant="contained" type="submit" sx={{ bgcolor: '#f2a1a1' }}>บันทึก</Button>
+                <Button fullWidth variant="contained" type="submit" disabled={isSaving} sx={{ bgcolor: '#f2a1a1' }}>{renderSaveLabel('บันทึก')}</Button>
               </Box>
             )}
 
@@ -1206,7 +1286,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                   </Box>
                 ))}
                 <Button variant="outlined" sx={{ borderStyle: 'dashed' }} onClick={() => setScheduleItems([...scheduleItems, { time: '', title: '', titleTh: '', icon: 'ceremonial' }])}>+ เพิ่มขบวนพิธี</Button>
-                <Button onClick={handleScheduleSave} variant="contained" sx={{ bgcolor: '#f2a1a1' }}>บันทึก</Button>
+                <Button onClick={handleScheduleSave} disabled={isSaving} variant="contained" sx={{ bgcolor: '#f2a1a1' }}>{renderSaveLabel('บันทึก')}</Button>
               </Box>
             )}
 
@@ -1216,7 +1296,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                 <TextField name="venueAddress" label="ที่อยู่" multiline rows={2} defaultValue={venueAddress} onChange={e => setVenueAddress(e.target.value)} size="small" fullWidth />
                 <TextField name="googleMapExternal" label="ลิงก์ Google Maps (ภายนอก)" defaultValue={googleMapExternal} onChange={e => setGoogleMapExternal(e.target.value)} size="small" fullWidth />
                 <TextField name="googleMapEmbed" label="ลิงก์ Embed Map (iframe src)" defaultValue={googleMapEmbed} onChange={e => setGoogleMapEmbed(e.target.value)} size="small" fullWidth />
-                <Button type="submit" variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกสถานที่</Button>
+                <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>{renderSaveLabel('บันทึกสถานที่')}</Button>
               </Box>
             )}
 
@@ -1282,7 +1362,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                   )}
                   <Button variant="outlined" component="label" fullWidth sx={{ borderStyle: 'dashed' }}>เลือกไฟล์ QR Code<input hidden type="file" accept="image/*" onChange={e => handleFileSelect(e, 'giftQrCode')} /></Button>
                 </Box>
-                <Button type="submit" variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>บันทึกข้อมูลของขวัญ</Button>
+                <Button type="submit" disabled={isSaving} variant="contained" fullWidth sx={{ bgcolor: '#f2a1a1' }}>{renderSaveLabel('บันทึกข้อมูลของขวัญ')}</Button>
               </Box>
             )}
 
@@ -1421,7 +1501,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                   disabled={isSaving}
                   sx={{ py: 2, bgcolor: '#f2a1a1', borderRadius: '50px', fontWeight: 800 }}
                 >
-                  {isSaving ? <CircularProgress size={24} color="inherit" /> : 'บันทึก Dress Code'}
+                  {renderSaveLabel('บันทึก Dress Code')}
                 </Button>
               </Box>
             )}
@@ -1605,7 +1685,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                   disabled={isSaving}
                   sx={{ py: 2, bgcolor: primaryColor, borderRadius: '50px', fontWeight: 800, fontSize: '1rem', color: 'white', boxShadow: `0 8px 25px ${alpha(primaryColor, 0.3)}`, '&:hover': { bgcolor: primaryColor, opacity: 0.9, transform: 'translateY(-2px)' }, transition: 'all 0.3s ease' }}
                 >
-                  {isSaving ? <CircularProgress size={24} color="inherit" /> : 'บันทึกการตั้งค่าธีม'}
+                  {renderSaveLabel('บันทึกการตั้งค่าธีม')}
                 </Button>
 
                 <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'center', mt: 1 }}>

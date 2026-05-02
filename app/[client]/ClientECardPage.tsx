@@ -184,6 +184,7 @@ export default function ClientECardPage({ clientData }: ClientECardPageProps) {
         coverStyle={coverStyle}
         coverFirefliesShow={clientData.hero?.coverFirefliesShow !== false}
         coverSnowShow={!!clientData.hero?.coverSnowShow}
+        coverStarsShow={!!clientData.hero?.coverStarsShow}
         coverFloralShow={clientData.hero?.coverFloralShow !== false}
         coverFloralTopRightShow={clientData.hero?.coverFloralTopRightShow !== false}
         coverFloralBottomLeftShow={clientData.hero?.coverFloralBottomLeftShow !== false}

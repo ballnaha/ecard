@@ -35,6 +35,7 @@ export async function GET(
       coverEnvelopeShow: heroSection.coverEnvelopeShow !== false,
       coverFirefliesShow: heroSection.coverFirefliesShow !== false,
       coverSnowShow: !!heroSection.coverSnowShow,
+      coverStarsShow: !!heroSection.coverStarsShow,
     };
 
     const data = {

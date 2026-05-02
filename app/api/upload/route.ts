@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
       fileName = `${fileType}_${timestamp}.webp`;
       try {
         finalBuffer = await sharp(buffer)
+          .rotate() // Apply EXIF orientation before stripping metadata during WebP conversion
           .resize({ width: 2000, withoutEnlargement: true }) // Max width 2000px
           .webp({ quality: 85 }) // High quality webp
           .toBuffer();

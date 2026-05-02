@@ -101,6 +101,7 @@ export default async function ClientWeddingECard({
     coverEnvelopeShow: heroSection.coverEnvelopeShow !== false,
     coverFirefliesShow: heroSection.coverFirefliesShow !== false,
     coverSnowShow: !!heroSection.coverSnowShow,
+    coverStarsShow: !!heroSection.coverStarsShow,
     coverFloralShow: heroSection.coverFloralShow !== false,
     coverFloralTopRightShow: heroSection.coverFloralTopRightShow !== false,
     coverFloralBottomLeftShow: heroSection.coverFloralBottomLeftShow !== false,
