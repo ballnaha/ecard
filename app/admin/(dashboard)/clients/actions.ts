@@ -453,7 +453,7 @@ export async function updateClientGift(id: string, formData: FormData) {
       data: {
         giftSection: {
           title: title || 'Gifts & Blessings',
-          subtitle: subtitle || 'ของขวัญและคำอวยพร',
+          subtitle: subtitle ?? '',
           message: message || '',
           bankName,
           accountNumber,

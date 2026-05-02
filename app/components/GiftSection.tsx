@@ -15,6 +15,10 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
   };
 
   const qrPlaceholder = data?.qrCode || "/simple_qr_mockup_wedding_1774067706323.png";
+  const customMessage = typeof data?.message === 'string' ? data.message.trim() : '';
+  const subtitle = data && Object.prototype.hasOwnProperty.call(data, 'subtitle')
+    ? (data.subtitle || '')
+    : 'ของขวัญและคำอวยพร';
 
   return (
     <Box
@@ -67,15 +71,17 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
             {data?.title || 'Gifts & Blessings'}
           </Typography>
           <Box sx={{ height: '1px', width: '60px', bgcolor: '#8e7d5d', opacity: 0.5, mx: 'auto', mt: 3 }} />
-          <Typography sx={{
-            fontFamily: '"Prompt", sans-serif',
-            fontSize: '0.8rem',
-            letterSpacing: '0.2em',
-            color: 'rgba(0,0,0,0.5)',
-            mt: 2
-          }}>
-            {data?.subtitle || 'ของขวัญและคำอวยพร'}
-          </Typography>
+          {subtitle && (
+            <Typography sx={{
+              fontFamily: '"Prompt", sans-serif',
+              fontSize: '0.8rem',
+              letterSpacing: '0.2em',
+              color: 'rgba(0,0,0,0.5)',
+              mt: 2
+            }}>
+              {subtitle}
+            </Typography>
+          )}
         </Box>
 
         <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
@@ -99,27 +105,42 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
               textAlign: 'center',
               boxShadow: '0 15px 50px rgba(0,0,0,0.02)'
             }}>
-              <Typography sx={{
-                fontFamily: '"Cormorant Garamond", serif',
-                fontSize: { xs: '1.2rem', md: '1.4rem' },
-                color: '#333',
-                fontStyle: 'italic',
-                lineHeight: 1.5,
-                mb: 1.5
-              }}>
-                {data?.message || '"The presence of our family and friends is the greatest gift of all. However, if you wish to honor our new beginning with a gift, a contribution would be sincerely appreciated."'}
-              </Typography>
+              {customMessage ? (
+                <Typography sx={{
+                  fontFamily: '"Prompt", sans-serif',
+                  fontSize: { xs: '0.95rem', md: '1.05rem' },
+                  color: 'rgba(0,0,0,0.72)',
+                  lineHeight: 1.75,
+                  mb: 4,
+                  whiteSpace: 'pre-line'
+                }}>
+                  {customMessage}
+                </Typography>
+              ) : (
+                <>
+                  <Typography sx={{
+                    fontFamily: '"Cormorant Garamond", serif',
+                    fontSize: { xs: '1.2rem', md: '1.4rem' },
+                    color: '#333',
+                    fontStyle: 'italic',
+                    lineHeight: 1.5,
+                    mb: 1.5
+                  }}>
+                    "The presence of our family and friends is the greatest gift of all. However, if you wish to honor our new beginning with a gift, a contribution would be sincerely appreciated."
+                  </Typography>
 
-              <Typography sx={{
-                fontFamily: '"Prompt", sans-serif',
-                fontSize: '0.85rem',
-                color: 'rgba(0,0,0,0.7)',
-                lineHeight: 1.6,
-                mb: 4
-              }}>
-                หากท่านมีความประสงค์ที่จะมอบของขวัญเพื่อเป็นสิริมงคลเริ่มต้นชีวิตใหม่ <br />
-                เราขอน้อมรับด้วยหัวใจและความขอบคุณอย่างยิ่ง
-              </Typography>
+                  <Typography sx={{
+                    fontFamily: '"Prompt", sans-serif',
+                    fontSize: '0.85rem',
+                    color: 'rgba(0,0,0,0.7)',
+                    lineHeight: 1.6,
+                    mb: 4
+                  }}>
+                    หากท่านมีความประสงค์ที่จะมอบของขวัญเพื่อเป็นสิริมงคลเริ่มต้นชีวิตใหม่ <br />
+                    เราขอน้อมรับด้วยหัวใจและความขอบคุณอย่างยิ่ง
+                  </Typography>
+                </>
+              )}
 
               <Box sx={{
                 display: 'flex',

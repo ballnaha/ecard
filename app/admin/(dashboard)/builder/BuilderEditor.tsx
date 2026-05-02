@@ -1330,8 +1330,23 @@ export default function BuilderEditor({ client }: { client: any }) {
             {editingItem.id === 'gift' && (
               <Box component="form" action={handleGiftSave} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 <TextField name="giftTitle" label="หัวข้อ (Title)" defaultValue={client?.giftSection?.title || 'Gifts & Blessings'} size="small" fullWidth />
-                <TextField name="giftSubtitle" label="หัวข้อรอง (Subtitle)" defaultValue={client?.giftSection?.subtitle || 'ของขวัญและคำอวยพร'} size="small" fullWidth />
-                <TextField name="giftMessage" label="ข้อความแสดงความขอบคุณ" multiline rows={3} defaultValue={client?.giftSection?.message || ''} size="small" fullWidth />
+                <TextField
+                  name="giftSubtitle"
+                  label="หัวข้อรอง (Subtitle)"
+                  defaultValue={client?.giftSection && Object.prototype.hasOwnProperty.call(client.giftSection, 'subtitle') ? client.giftSection.subtitle : 'ของขวัญและคำอวยพร'}
+                  size="small"
+                  fullWidth
+                />
+                <TextField
+                  name="giftMessage"
+                  label="ข้อความแสดงความขอบคุณ"
+                  multiline
+                  rows={3}
+                  defaultValue={client?.giftSection?.message || ''}
+                  size="small"
+                  fullWidth
+                  sx={{ '& .MuiInputBase-input': { fontFamily: '"Prompt", sans-serif' } }}
+                />
                 <Divider sx={{ my: 1 }} />
                 <TextField name="bankName" label="ธนาคาร" defaultValue={client?.giftSection?.bankName || ''} size="small" fullWidth />
                 <TextField name="accountName" label="ชื่อบัญชี" value={giftAccountName} onChange={e => setGiftAccountName(e.target.value)} size="small" fullWidth />
