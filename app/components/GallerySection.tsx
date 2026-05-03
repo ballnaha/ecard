@@ -246,7 +246,7 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
           </Typography>
           <Typography sx={{
             fontFamily: getFontFamily('Captured Moments'),
-            fontSize: isThai('Captured Moments') ? { xs: '2rem', md: '3.2rem' } : { xs: '2.5rem', md: '5rem' },
+            fontSize: isThai('Captured Moments') ? { xs: '2rem', md: '3.2rem' } : { xs: '2.3rem', md: '5rem' },
             color: '#1a1a1a',
             fontWeight: isThai('Captured Moments') ? 600 : 400,
             lineHeight: 1.1

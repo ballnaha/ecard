@@ -219,8 +219,8 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
                 {/* Bank Details */}
                 <Box sx={{ textAlign: { xs: 'center', md: data?.qrCode ? 'left' : 'center' } }}>
                   <Typography sx={{
-                    fontFamily: '"Playfair Display", serif',
-                    fontSize: '1.15rem',
+                    fontFamily: '"Prompt", sans-serif',
+                    fontSize: '1.1rem',
                     color: '#8e7d5d',
                     fontWeight: 600,
                     letterSpacing: '0.02em',
