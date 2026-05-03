@@ -54,7 +54,7 @@ export default function LocationSection({ data }: { data?: LocationData }) {
           </Typography>
           <Typography sx={{
             fontFamily: getFontFamily('Location & Map'),
-            fontSize: isThai('Location & Map') ? { xs: '2.5rem', md: '3.5rem' } : { xs: '3.5rem', md: '5rem' },
+            fontSize: isThai('Location & Map') ? { xs: '2.5rem', md: '3.5rem' } : { xs: '2.5rem', md: '5rem' },
             color: '#1a1a1a',
             fontWeight: isThai('Location & Map') ? 600 : 400,
             lineHeight: 1.2
