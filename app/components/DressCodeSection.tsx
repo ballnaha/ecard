@@ -52,7 +52,9 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
             letterSpacing: '0.2em',
             color: 'rgba(0,0,0,0.5)',
             mb: 6,
-            textTransform: 'uppercase'
+            textTransform: 'none',
+            whiteSpace: 'pre-wrap',
+            lineHeight: 1.6
           }}>
             {subtitle}
           </Typography>

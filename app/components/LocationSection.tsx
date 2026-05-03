@@ -86,7 +86,7 @@ export default function LocationSection({ data }: { data?: LocationData }) {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               viewport={{ once: true, margin: "-100px" }}
-              style={{ 
+              style={{
                 WebkitBackfaceVisibility: 'hidden',
                 backfaceVisibility: 'hidden',
                 WebkitTransform: 'translateZ(0)',
@@ -156,7 +156,7 @@ export default function LocationSection({ data }: { data?: LocationData }) {
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, ease: "easeOut" }}
               viewport={{ once: true, margin: "-100px" }}
-              style={{ 
+              style={{
                 WebkitBackfaceVisibility: 'hidden',
                 backfaceVisibility: 'hidden',
                 WebkitTransform: 'translateZ(0)',

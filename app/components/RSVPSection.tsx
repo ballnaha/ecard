@@ -187,7 +187,7 @@ export default function RSVPSection({ clientId, primaryColor = '#8e7d5d' }: { cl
           </Typography>
           <Typography sx={{
             fontFamily: getFontFamily('Join Our Celebration'),
-            fontSize: isThai('Join Our Celebration') ? { xs: '2rem', md: '3.2rem' } : { xs: '3.2rem', md: '4.5rem' },
+            fontSize: isThai('Join Our Celebration') ? { xs: '1.8rem', md: '3.2rem' } : { xs: '2.6rem', md: '4.5rem' },
             color: '#1a1a1a',
             fontWeight: isThai('Join Our Celebration') ? 600 : 400,
             lineHeight: 1.2

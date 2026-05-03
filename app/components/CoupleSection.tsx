@@ -359,7 +359,8 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
 
             <Typography sx={{
               fontFamily: 'Prompt', fontSize: { xs: '1.2rem', md: '2.4rem' },
-              fontStyle: 'italic', lineHeight: 1.6, color: '#333', maxWidth: '900px', mx: 'auto', px: 2, fontWeight: 300
+              fontStyle: 'italic', lineHeight: 1.6, color: '#333', maxWidth: '900px', mx: 'auto', px: 2, fontWeight: 300,
+              whiteSpace: 'pre-wrap'
             }}>
               "{intro}"
             </Typography>

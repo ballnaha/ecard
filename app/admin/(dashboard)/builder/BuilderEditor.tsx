@@ -1472,10 +1472,10 @@ export default function BuilderEditor({ client }: { client: any }) {
                       value={dressCodeSubtitle}
                       onChange={(e) => setDressCodeSubtitle(e.target.value)}
                       multiline
-                      rows={2}
+                      rows={3}
                       size="small"
                       fullWidth
-                      sx={{ bgcolor: 'white' }}
+                      sx={{ bgcolor: 'white', '& .MuiInputBase-input': { lineHeight: 1.5 } }}
                     />
                   </Stack>
                 </Box>
