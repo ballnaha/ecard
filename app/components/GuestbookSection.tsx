@@ -36,9 +36,9 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
   const handleClose = () => setOpen(false);
 
   return (
-    <Box component="section" sx={{ 
-      py: { xs: 8, md: 12 }, 
-      textAlign: 'center', 
+    <Box component="section" sx={{
+      py: { xs: 8, md: 12 },
+      textAlign: 'center',
       backgroundColor: 'transparent',
       isolation: 'isolate', // Create new stacking context
       position: 'relative'
@@ -49,7 +49,7 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{ 
+          style={{
             WebkitBackfaceVisibility: 'hidden',
             backfaceVisibility: 'hidden',
             WebkitTransform: 'translateZ(0)',
@@ -76,7 +76,7 @@ export default function GuestbookSection({ clientId, fontFamily, primaryColor = 
           <Typography
             sx={{
               fontFamily: 'var(--script-font, "Parisienne", cursive)',
-              fontSize: { xs: '2.8rem', md: '4rem' },
+              fontSize: { xs: '2.3rem', md: '4rem' },
               color: 'var(--primary-color)',
               mt: 1,
               lineHeight: 1.2

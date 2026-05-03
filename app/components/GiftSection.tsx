@@ -63,7 +63,7 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
           </Typography>
           <Typography sx={{
             fontFamily: getFontFamily(data?.title || 'Gifts & Blessings'),
-            fontSize: isThai(data?.title || 'Gifts & Blessings') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '3rem', md: '4rem' },
+            fontSize: isThai(data?.title || 'Gifts & Blessings') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '2.2rem', md: '4rem' },
             color: '#1a1a1a',
             fontWeight: isThai(data?.title || 'Gifts & Blessings') ? 600 : 400,
             lineHeight: 1.2
@@ -90,7 +90,7 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
             viewport={{ once: true, margin: "-100px" }}
-            style={{ 
+            style={{
               WebkitBackfaceVisibility: 'hidden',
               backfaceVisibility: 'hidden',
               WebkitTransform: 'translateZ(0)',
@@ -174,7 +174,7 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
                       alt="Wedding Gift QR Code"
                       sx={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
-                    
+
                     {/* QR Center Initial Overlay */}
                     {bankDetails.accountName && (
                       <Box

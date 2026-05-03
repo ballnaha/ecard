@@ -19,12 +19,12 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
   return (
     <Box component="section" className="embossed-paper" sx={{ py: { xs: 8, md: 10 }, backgroundColor: '#fff', textAlign: 'center' }}>
       <Container maxWidth="md">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
-          whileInView={{ opacity: 1, y: 0 }} 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
           viewport={{ once: true, margin: "-100px" }}
-          style={{ 
+          style={{
             WebkitBackfaceVisibility: 'hidden',
             backfaceVisibility: 'hidden',
             WebkitTransform: 'translateZ(0)',
@@ -58,7 +58,7 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
           }}>
             {subtitle}
           </Typography>
- 
+
           <Stack direction="row" justifyContent="center" spacing={{ xs: 2, md: 4 }} flexWrap="wrap" useFlexGap sx={{ gap: 2 }}>
             {colors.map((color, index) => (
               <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -67,7 +67,7 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
                   whileInView={{ scale: 1 }}
                   transition={{ delay: index * 0.1, type: 'spring', stiffness: 100 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  style={{ 
+                  style={{
                     WebkitBackfaceVisibility: 'hidden',
                     backfaceVisibility: 'hidden',
                     WebkitTransform: 'translateZ(0)',
@@ -76,7 +76,7 @@ export default function DressCodeSection({ data }: { data?: DressCodeData }) {
                 >
                   <Box sx={{ width: { xs: 60, md: 80 }, height: { xs: 60, md: 80 }, borderRadius: '50%', backgroundColor: color, border: '4px solid #fff', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }} />
                 </motion.div>
-              </Box>            ))}
+              </Box>))}
           </Stack>
         </motion.div>
       </Container>

@@ -67,54 +67,54 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
               loop={images.length > 2}
               creativeEffect={{
                 prev: {
-                    shadow: false,
-                    translate: ['-120%', 0, 500],
-                    rotate: [0, 0, -15],
-                    opacity: 1
+                  shadow: false,
+                  translate: ['-120%', 0, 500],
+                  rotate: [0, 0, -15],
+                  opacity: 1
                 },
                 next: {
-                    shadow: false,
-                    translate: ['8%', '8%', -1],
-                    scale: 0.93,
-                    opacity: 1
+                  shadow: false,
+                  translate: ['8%', '8%', -1],
+                  scale: 0.93,
+                  opacity: 1
                 },
               }}
               speed={500}
             >
               {images.map((src, index) => (
                 <SwiperSlide key={index}>
-                    <Box 
-                      component={motion.div} 
-                      onClick={() => setSelectedImg(src)}
-                      sx={{ 
-                        width: '100%', 
-                        height: '100%', 
-                        position: 'relative',
-                        cursor: 'zoom-in',
-                        borderRadius: '24px',
-                        overflow: 'hidden',
-                        '.swiper-slide:not(.swiper-slide-active) &': {
-                          pointerEvents: 'none',
-                        },
-                        '.swiper-slide-active &': {
-                          pointerEvents: 'auto',
-                        },
-                        willChange: 'transform',
-                        backfaceVisibility: 'hidden',
-                        transform: 'translateZ(0)'
-                      }}
-                    >
-                        <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
-                        {/* Border overlay — renders on top of the image */}
-                        <Box sx={{
-                          position: 'absolute',
-                          inset: 0,
-                          borderRadius: '20px',
-                          border: '6px solid #fff',
-                          zIndex: 2,
-                          pointerEvents: 'none',
-                        }} />
-                    </Box>
+                  <Box
+                    component={motion.div}
+                    onClick={() => setSelectedImg(src)}
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      position: 'relative',
+                      cursor: 'zoom-in',
+                      borderRadius: '24px',
+                      overflow: 'hidden',
+                      '.swiper-slide:not(.swiper-slide-active) &': {
+                        pointerEvents: 'none',
+                      },
+                      '.swiper-slide-active &': {
+                        pointerEvents: 'auto',
+                      },
+                      willChange: 'transform',
+                      backfaceVisibility: 'hidden',
+                      transform: 'translateZ(0)'
+                    }}
+                  >
+                    <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
+                    {/* Border overlay — renders on top of the image */}
+                    <Box sx={{
+                      position: 'absolute',
+                      inset: 0,
+                      borderRadius: '20px',
+                      border: '6px solid #fff',
+                      zIndex: 2,
+                      pointerEvents: 'none',
+                    }} />
+                  </Box>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -149,9 +149,9 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
             >
               {images.map((src, index) => (
                 <SwiperSlide key={index} onClick={() => setSelectedImg(src)} style={{ cursor: 'zoom-in' }}>
-                   <Box component={motion.div} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} sx={{ width: '100%', aspectRatio: '2/3', position: 'relative', overflow: 'hidden' }}>
-                        <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
-                    </Box>
+                  <Box component={motion.div} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} sx={{ width: '100%', aspectRatio: '2/3', position: 'relative', overflow: 'hidden' }}>
+                    <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
+                  </Box>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -187,9 +187,9 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
             >
               {images.map((src, index) => (
                 <SwiperSlide key={index} onClick={() => setSelectedImg(src)} style={{ cursor: 'zoom-in' }}>
-                   <Box component={motion.div} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} sx={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
-                        <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
-                    </Box>
+                  <Box component={motion.div} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} sx={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+                    <Image src={src} alt={`Gallery Image ${index + 1}`} fill style={{ objectFit: 'cover' }} />
+                  </Box>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -199,42 +199,42 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
   };
 
   return (
-    <Box component="section" className="embossed-paper" sx={{ 
-      py: { xs: 6, md: 10 }, 
-      backgroundColor: '#fff', 
-      position: 'relative', 
+    <Box component="section" className="embossed-paper" sx={{
+      py: { xs: 6, md: 10 },
+      backgroundColor: '#fff',
+      position: 'relative',
       overflow: 'hidden',
       // Global Modern Pagination Styles
       '.swiper-pagination': {
         bottom: '30px !important',
       },
-      '.swiper-pagination-bullet': { 
-        width: '12px', 
-        height: '2px', 
+      '.swiper-pagination-bullet': {
+        width: '12px',
+        height: '2px',
         borderRadius: '2px',
-        backgroundColor: 'var(--primary-color, #8e7d5d)', 
-        opacity: 0.12, 
+        backgroundColor: 'var(--primary-color, #8e7d5d)',
+        opacity: 0.12,
         transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
         margin: '0 4px !important'
       },
-      '.swiper-pagination-bullet-active': { 
-        width: '40px', 
+      '.swiper-pagination-bullet-active': {
+        width: '40px',
         opacity: 1,
         backgroundColor: 'var(--primary-color, #8e7d5d)'
       }
     }}>
       {/* Decorative Text */}
-      <Typography sx={{ 
-        position: 'absolute', 
-        top: '15%', 
-        right: '-5%', 
-        fontSize: { xs: '8rem', md: '16rem' }, 
-        fontFamily: getFontFamily('Memories'), 
-        color: 'rgba(142, 125, 93, 0.03)', 
-        whiteSpace: 'nowrap', 
-        zIndex: 0, 
-        userSelect: 'none', 
-        pointerEvents: 'none' 
+      <Typography sx={{
+        position: 'absolute',
+        top: '15%',
+        right: '-5%',
+        fontSize: { xs: '8rem', md: '16rem' },
+        fontFamily: getFontFamily('Memories'),
+        color: 'rgba(142, 125, 93, 0.03)',
+        whiteSpace: 'nowrap',
+        zIndex: 0,
+        userSelect: 'none',
+        pointerEvents: 'none'
       }}>
         Memories
       </Typography>
@@ -244,12 +244,12 @@ export default function GallerySection({ data }: { data?: GalleryData }) {
           <Typography variant="overline" sx={{ color: '#8e7d5d', letterSpacing: '0.6em', fontSize: '0.75rem', mb: 2, display: 'block' }}>
             Our Love Story
           </Typography>
-          <Typography sx={{ 
-            fontFamily: getFontFamily('Captured Moments'), 
-            fontSize: isThai('Captured Moments') ? { xs: '2rem', md: '3.2rem' } : { xs: '3.2rem', md: '5rem' }, 
-            color: '#1a1a1a', 
+          <Typography sx={{
+            fontFamily: getFontFamily('Captured Moments'),
+            fontSize: isThai('Captured Moments') ? { xs: '2rem', md: '3.2rem' } : { xs: '2.5rem', md: '5rem' },
+            color: '#1a1a1a',
             fontWeight: isThai('Captured Moments') ? 600 : 400,
-            lineHeight: 1.1 
+            lineHeight: 1.1
           }}>
             Captured Moments
           </Typography>

@@ -101,7 +101,7 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
           </Typography>
           <Typography sx={{
             fontFamily: getFontFamily(data?.title || 'Until Forever Begins'),
-            fontSize: isThai(data?.title || 'Until Forever Begins') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '3rem', md: '4.5rem' },
+            fontSize: isThai(data?.title || 'Until Forever Begins') ? { xs: '1.8rem', md: '2.8rem' } : { xs: '2.3rem', md: '4.5rem' },
             color: '#1a1a1a',
             fontWeight: isThai(data?.title || 'Until Forever Begins') ? 600 : 400,
             lineHeight: 1.2
@@ -122,12 +122,12 @@ export default function CountdownSection({ data, eventDate, brideName, groomName
         </Stack>
 
         <Box sx={{ textAlign: 'center' }}>
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            whileInView={{ opacity: 1 }} 
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             transition={{ duration: 1.5, ease: "easeOut" }}
             viewport={{ once: true, margin: "-50px" }}
-            style={{ 
+            style={{
               WebkitBackfaceVisibility: 'hidden',
               backfaceVisibility: 'hidden',
               WebkitTransform: 'translateZ(0)',

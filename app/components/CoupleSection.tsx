@@ -133,12 +133,12 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
     switch (style) {
       case 'rounded-portrait':
         return (
-          <motion.div 
-            variants={staggerContainer} 
-            initial="hidden" 
-            whileInView="show" 
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
             viewport={{ once: true, margin: "-100px" }}
-            style={{ 
+            style={{
               WebkitBackfaceVisibility: 'hidden',
               backfaceVisibility: 'hidden',
               WebkitTransform: 'translateZ(0)',
@@ -194,12 +194,12 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
       case 'arch-duo':
       default:
         return (
-          <motion.div 
-            variants={staggerContainer} 
-            initial="hidden" 
-            whileInView="show" 
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
             viewport={{ once: true, margin: "-100px" }}
-            style={{ 
+            style={{
               WebkitBackfaceVisibility: 'hidden',
               backfaceVisibility: 'hidden',
               WebkitTransform: 'translateZ(0)',
@@ -277,14 +277,14 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
   };
 
   return (
-    <Box 
-      ref={containerRef} 
+    <Box
+      ref={containerRef}
       component="section"
       className="embossed-paper"
-      sx={{ 
-        py: { xs: 5, md: 8 }, 
-        backgroundColor: '#fff', 
-        position: 'relative', 
+      sx={{
+        py: { xs: 5, md: 8 },
+        backgroundColor: '#fff',
+        position: 'relative',
         overflow: 'hidden',
         isolation: 'isolate'
       }}
@@ -300,22 +300,22 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
       <Container maxWidth="lg">
         {/* Section Header */}
         <Box sx={{ mb: { xs: 8, md: 12 }, textAlign: 'center', position: 'relative', zIndex: 1 }}>
-          <Typography 
-            variant="overline" 
-            sx={{ 
-              letterSpacing: '0.6em', 
-              color: 'var(--primary-color)', 
-              opacity: 0.6, 
+          <Typography
+            variant="overline"
+            sx={{
+              letterSpacing: '0.6em',
+              color: 'var(--primary-color)',
+              opacity: 0.6,
               fontWeight: 600,
               fontSize: { xs: '0.65rem', md: '0.8rem' }
             }}
           >
             THE BRIDE & GROOM
           </Typography>
-          <Typography 
-            sx={{ 
-              fontFamily: 'var(--script-font, "Parisienne", cursive)', 
-              fontSize: { xs: '2.8rem', md: '4.2rem' },
+          <Typography
+            sx={{
+              fontFamily: 'var(--script-font, "Parisienne", cursive)',
+              fontSize: { xs: '2.3rem', md: '4.2rem' },
               color: '#1a1a1a',
               mt: 1,
               lineHeight: 1.2
@@ -323,25 +323,25 @@ export default function CoupleSection({ data }: { data?: CoupleData }) {
           >
             Our Beginning
           </Typography>
-          <Box sx={{ 
-            width: '60px', 
-            height: '1px', 
+          <Box sx={{
+            width: '60px',
+            height: '1px',
             bgcolor: '#8e7d5d',
-            opacity: 0.5, 
-            mx: 'auto', 
-            mt: 3 
+            opacity: 0.5,
+            mx: 'auto',
+            mt: 3
           }} />
         </Box>
 
         {renderLayout()}
 
         {/* Cinematic Quote Area */}
-        <motion.div 
-          initial="hidden" 
-          whileInView="show" 
-          viewport={{ once: true, margin: "-50px" }} 
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-50px" }}
           variants={fadeInUp}
-          style={{ 
+          style={{
             WebkitBackfaceVisibility: 'hidden',
             backfaceVisibility: 'hidden',
             WebkitTransform: 'translateZ(0)',
