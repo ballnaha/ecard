@@ -224,7 +224,8 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
                     color: '#8e7d5d',
                     fontWeight: 600,
                     letterSpacing: '0.02em',
-                    mb: 0.5
+                    mb: 0.5,
+                    whiteSpace: 'pre-wrap'
                   }}>
                     {bankDetails.accountName}
                   </Typography>
@@ -242,10 +243,10 @@ export default function GiftSection({ data, primaryColor = '#8e7d5d' }: { data?:
                     <Divider sx={{ width: '20px', borderColor: 'rgba(142, 125, 93, 0.3)' }} />
                     <Typography sx={{
                       fontFamily: '"Prompt", sans-serif',
-                      fontSize: '0.75rem',
-                      color: 'rgba(0,0,0,0.7)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.2em'
+                      fontSize: '0.85rem',
+                      color: 'rgba(0,0,0,0.8)',
+                      fontWeight: 600,
+                      letterSpacing: '0.05em'
                     }}>
                       {bankDetails.bankName}
                     </Typography>

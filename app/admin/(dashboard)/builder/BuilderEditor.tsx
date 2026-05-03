@@ -1349,7 +1349,7 @@ export default function BuilderEditor({ client }: { client: any }) {
                 />
                 <Divider sx={{ my: 1 }} />
                 <TextField name="bankName" label="ธนาคาร" defaultValue={client?.giftSection?.bankName || ''} size="small" fullWidth />
-                <TextField name="accountName" label="ชื่อบัญชี" value={giftAccountName} onChange={e => setGiftAccountName(e.target.value)} size="small" fullWidth />
+                <TextField name="accountName" label="ชื่อบัญชี" multiline rows={2} value={giftAccountName} onChange={e => setGiftAccountName(e.target.value)} size="small" fullWidth />
                 <TextField name="accountNumber" label="เลขบัญชี" defaultValue={client?.giftSection?.accountNumber || ''} size="small" fullWidth />
                 <Box>
                   <Typography variant="caption" fontWeight={700}>รูป QR Code</Typography>
