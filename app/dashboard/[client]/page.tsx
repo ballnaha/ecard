@@ -282,6 +282,32 @@ export default function CoupleDashboard() {
     window.setTimeout(() => window.print(), 450);
   };
 
+  const handleDownloadPhotos = async () => {
+    try {
+      const res = await fetch(`/api/dashboard/${slug}/guestbook-photos`);
+      if (!res.ok) {
+        setSnackbar({ open: true, message: 'ไม่พบรูปภาพสำหรับดาวน์โหลดครับ', severity: 'error' });
+        return;
+      }
+
+      const blob = await res.blob();
+      const disposition = res.headers.get('Content-Disposition') || '';
+      const fileNameMatch = disposition.match(/filename="([^"]+)"/);
+      const fileName = fileNameMatch?.[1] || `Guestbook-Photos-${clientData?.brideName || 'Bride'}-${clientData?.groomName || 'Groom'}.zip`;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setSnackbar({ open: true, message: 'กำลังดาวน์โหลดไฟล์รูปภาพทั้งหมดครับ', severity: 'success' });
+    } catch {
+      setSnackbar({ open: true, message: 'ดาวน์โหลดรูปภาพไม่สำเร็จ กรุณาลองใหม่ครับ', severity: 'error' });
+    }
+  };
+
   const handleDelete = async () => {
     if (!deleteId || !slug) return;
     setIsDeleting(true);
@@ -686,6 +712,23 @@ export default function CoupleDashboard() {
                   }}
                 >
                   ดูตัวอย่างเล่ม
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={handleDownloadPhotos}
+                  startIcon={<DocumentDownload size="20" variant="Bulk" color={successGreen} />}
+                  sx={{
+                    borderRadius: '50px',
+                    borderColor: alpha(successGreen, 0.28),
+                    color: '#1a1a1a',
+                    px: 3,
+                    height: '48px',
+                    fontWeight: 700,
+                    textTransform: 'none',
+                    '&:hover': { bgcolor: alpha(successGreen, 0.04), borderColor: successGreen }
+                  }}
+                >
+                  Download Photos
                 </Button>
                 <Button
                   variant="contained"
