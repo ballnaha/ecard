@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination as SwiperPagination } from 'swiper/modules';
 import 'swiper/css';
@@ -42,7 +42,8 @@ import {
   InfoCircle,
   Danger,
   Trash,
-  Logout
+  Logout,
+  Eye
 } from 'iconsax-react';
 import { useParams } from 'next/navigation';
 import * as XLSX from 'xlsx';
@@ -67,6 +68,32 @@ interface WishData {
   createdAt: string;
 }
 
+interface ClientDashboardData {
+  id: string;
+  slug: string;
+  brideName: string;
+  groomName: string;
+  eventDate: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  fontFamily?: string;
+  hero?: {
+    heroImage?: string;
+    heroPoster?: string;
+  };
+  coupleSection?: {
+    bridePic?: string;
+    groomPic?: string;
+  };
+  locationSection?: {
+    venueName?: string;
+    venueAddress?: string;
+  } | null;
+  galleryImages?: string[] | {
+    items?: string[];
+  } | null;
+}
+
 const brandColor = '#f2a1a1';
 const successGreen = '#10b981'; // Beautiful Emerald Green
 const ITEMS_PER_PAGE = 10;
@@ -78,9 +105,10 @@ export default function CoupleDashboard() {
   const [rsvps, setRsvps] = useState<RSVPData[]>([]);
   const [wishes, setWishes] = useState<WishData[]>([]);
   const [currentView, setCurrentView] = useState<'rsvp' | 'wishes'>('rsvp');
-  const [clientData, setClientData] = useState<any>(null);
+  const [clientData, setClientData] = useState<ClientDashboardData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState('');
   const [viewImages, setViewImages] = useState<string[]>([]);
@@ -89,14 +117,17 @@ export default function CoupleDashboard() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteWishId, setDeleteWishId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [guestbookPreviewOpen, setGuestbookPreviewOpen] = useState(false);
+  const [guestbookPrintReady, setGuestbookPrintReady] = useState(false);
+  const originalDocumentTitleRef = React.useRef<string | null>(null);
 
   // 1. Fetch client names early (unauthenticated)
   useEffect(() => {
     if (slug) {
-      // Check session storage first
-      if (typeof window !== 'undefined' && sessionStorage.getItem(`ecard_auth_${slug}`) === 'true') {
-        setAuthenticated(true);
-      }
+      queueMicrotask(() => {
+        setAuthenticated(sessionStorage.getItem(`ecard_auth_${slug}`) === 'true');
+        setAuthChecked(true);
+      });
 
       fetch(`/api/client/${slug}`)
         .then(res => res.json())
@@ -105,16 +136,19 @@ export default function CoupleDashboard() {
     }
   }, [slug]);
 
-  // 2. Fetch RSVPs only after authentication
   useEffect(() => {
-    if (authenticated && slug) {
-      fetchData();
-    } else {
-      setLoading(false);
-    }
-  }, [authenticated, slug]);
+    const handleAfterPrint = () => {
+      setGuestbookPrintReady(false);
+      if (originalDocumentTitleRef.current) {
+        document.title = originalDocumentTitleRef.current;
+        originalDocumentTitleRef.current = null;
+      }
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, []);
 
-  const fetchData = () => {
+  const fetchData = useCallback(() => {
     setLoading(true);
     Promise.all([
       fetch(`/api/admin/rsvp?slug=${slug}`).then(res => res.json()),
@@ -125,7 +159,20 @@ export default function CoupleDashboard() {
     })
       .catch(err => console.error('Dashboard Error:', err))
       .finally(() => setLoading(false));
-  };
+  }, [slug]);
+
+  // 2. Fetch RSVPs only after authentication
+  useEffect(() => {
+    if (!authChecked) return;
+
+    queueMicrotask(() => {
+      if (authenticated && slug) {
+        fetchData();
+      } else {
+        setLoading(false);
+      }
+    });
+  }, [authChecked, authenticated, fetchData, slug]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,6 +262,26 @@ export default function CoupleDashboard() {
     }
   };
 
+  const getWishImages = (wish: WishData) => {
+    const images: string[] = [];
+    if (wish.drawing) images.push(wish.drawing);
+    if (Array.isArray(wish.images)) images.push(...wish.images);
+    return images;
+  };
+
+  const handlePrintGuestbook = () => {
+    if (!wishes.length) {
+      setSnackbar({ open: true, message: 'ยังไม่มีคำอวยพรสำหรับ Export ครับ', severity: 'error' });
+      return;
+    }
+
+    const ownerName = `${clientData?.brideName || 'Bride'}-${clientData?.groomName || 'Groom'}`.replace(/[\\/:*?"<>|]/g, '-');
+    originalDocumentTitleRef.current = document.title;
+    document.title = `Guestbook-${ownerName}`;
+    setGuestbookPrintReady(true);
+    window.setTimeout(() => window.print(), 450);
+  };
+
   const handleDelete = async () => {
     if (!deleteId || !slug) return;
     setIsDeleting(true);
@@ -259,16 +326,20 @@ export default function CoupleDashboard() {
     window.scrollTo({ top: 400, behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    setPage(1);
-  }, [searchTerm]);
-
   const stats = {
     total: rsvps.length,
     attending: rsvps.filter(r => r.attending).length,
     guests: rsvps.reduce((acc, r) => acc + (r.guestCount || 0), 0),
     notAttending: rsvps.filter(r => !r.attending).length
   };
+
+  if (!authChecked) {
+    return (
+      <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#ffffff' }}>
+        <CircularProgress sx={{ color: brandColor }} />
+      </Box>
+    );
+  }
 
   if (!authenticated) {
     return (
@@ -462,7 +533,10 @@ export default function CoupleDashboard() {
                 placeholder="ค้นหาชื่อแขก..."
                 variant="outlined"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
                 slotProps={{
                   input: {
                     startAdornment: (
@@ -546,7 +620,7 @@ export default function CoupleDashboard() {
                     {rsvp.dietary && (
                       <Box sx={{ mt: 2, p: 2, borderRadius: '16px', bgcolor: '#fcfcfc', border: '1px solid #f5f5f5' }}>
                         <Typography variant="body2" sx={{ fontStyle: 'italic', color: '#444', fontSize: '0.9rem' }}>
-                          " {rsvp.dietary} "
+                          &ldquo; {rsvp.dietary} &rdquo;
                         </Typography>
                       </Box>
                     )}
@@ -586,11 +660,61 @@ export default function CoupleDashboard() {
           </Box>
         ) : (
           <Box>
+            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between" alignItems={{ xs: 'stretch', md: 'center' }} sx={{ mb: 4 }}>
+              <Box>
+                <Typography variant="h5" sx={{ fontWeight: 900, color: '#1a1a1a' }}>
+                  สมุดอวยพร
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#777', fontWeight: 600, mt: 0.5 }}>
+                  รวม {wishes.length} คำอวยพร พร้อมรูปภาพสำหรับส่งมอบให้ลูกค้า
+                </Typography>
+              </Box>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setGuestbookPreviewOpen(true)}
+                  startIcon={<Eye size="20" variant="Bulk" color={brandColor} />}
+                  sx={{
+                    borderRadius: '50px',
+                    borderColor: alpha(brandColor, 0.25),
+                    color: '#1a1a1a',
+                    px: 3,
+                    height: '48px',
+                    fontWeight: 700,
+                    textTransform: 'none',
+                    '&:hover': { bgcolor: alpha(brandColor, 0.04), borderColor: brandColor }
+                  }}
+                >
+                  ดูตัวอย่างเล่ม
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handlePrintGuestbook}
+                  startIcon={<DocumentDownload size="20" variant="Bulk" color="#ffffff" />}
+                  sx={{
+                    borderRadius: '50px',
+                    bgcolor: brandColor,
+                    color: '#fff',
+                    px: 3,
+                    height: '48px',
+                    fontWeight: 800,
+                    textTransform: 'none',
+                    boxShadow: '0 8px 24px rgba(242, 161, 161, 0.24)',
+                    '&:hover': { bgcolor: '#e89191' }
+                  }}
+                >
+                  Export PDF
+                </Button>
+              </Stack>
+            </Stack>
+
             {/* Wishes Grid */}
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }, gap: { xs: 2.5, sm: 3, md: 5 }, p: { xs: 1, md: 3 } }}>
               {wishes.map((wish, index) => {
                 const rot = index % 2 === 0 ? '-2deg' : '2deg';
                 const hasImage = wish.images && wish.images.length > 0;
+                const wishImages = getWishImages(wish);
+                const coverImage = wishImages[0] || '';
 
                 return (
                   <Card
@@ -623,30 +747,23 @@ export default function CoupleDashboard() {
                       <Box
                         sx={{ width: '100%', aspectRatio: '1/1', bgcolor: '#f5f5f5', position: 'relative', overflow: 'hidden', mb: { xs: 1.5, md: 2 }, cursor: 'pointer', border: '1px solid #f0f0f0' }}
                         onClick={() => {
-                          const imgs = [];
-                          if (wish.drawing) imgs.push(wish.drawing);
-                          if (wish.images) imgs.push(...wish.images);
-                          setViewImages(imgs);
+                          if (wishImages.length) setViewImages(wishImages);
                         }}
                       >
-                        <Box component="img" src={wish.drawing || wish.images[0]} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <Box component="img" src={coverImage} sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         {wish.images && wish.images.length > 1 && (
                           <Box sx={{ position: 'absolute', bottom: 4, right: 4, bgcolor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', color: '#fff', px: 1, py: 0.2, borderRadius: 1, fontSize: '0.65rem', fontWeight: 600 }}>
                             +{wish.images.length - 1} รูป
                           </Box>
                         )}
                       </Box>
-                    ) : (
-                      <Box sx={{ width: '100%', aspectRatio: '1/0.6', bgcolor: alpha(brandColor, 0.04), mb: { xs: 1.5, md: 2 }, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <Heart size="24" color={alpha(brandColor, 0.2)} variant="Bulk" />
-                      </Box>
-                    )}
+                    ) : null}
 
                     {/* Message Area */}
                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', px: 0.5 }}>
                       {wish.message && (
                         <Typography sx={{ color: '#444', mb: 1.5, fontFamily: '"Prompt", sans-serif', fontStyle: 'italic', fontSize: { xs: '0.75rem', md: '0.95rem' }, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                          "{wish.message}"
+                          &ldquo;{wish.message}&rdquo;
                         </Typography>
                       )}
                       <Typography sx={{ fontWeight: 800, color: '#1a1a1a', fontSize: { xs: '0.85rem', md: '1.1rem' }, fontFamily: '"Prompt", sans-serif' }}>
@@ -667,6 +784,103 @@ export default function CoupleDashboard() {
           </Box>
         )}
       </Container>
+
+      <Dialog
+        open={guestbookPreviewOpen}
+        onClose={() => setGuestbookPreviewOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{ sx: { borderRadius: { xs: 0, md: '28px' }, overflow: 'hidden' } }}
+      >
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, alignItems: 'center', px: { xs: 2, md: 4 }, py: 2.5 }}>
+          <Box>
+            <Typography sx={{ fontWeight: 900, color: '#1a1a1a', fontSize: { xs: '1.1rem', md: '1.35rem' } }}>
+              ตัวอย่างสมุดอวยพร
+            </Typography>
+            <Typography variant="caption" sx={{ color: '#777', fontWeight: 700 }}>
+              Preview นี้คือหน้าตาเวลา Export เป็น PDF
+            </Typography>
+          </Box>
+          <Button
+            onClick={handlePrintGuestbook}
+            disabled={!wishes.length}
+            startIcon={<DocumentDownload size="18" variant="Bulk" color="#ffffff" />}
+            sx={{ bgcolor: brandColor, color: '#fff', borderRadius: '50px', fontWeight: 800, px: 3, '&:hover': { bgcolor: '#e89191' } }}
+          >
+            Export PDF
+          </Button>
+        </DialogTitle>
+        <DialogContent sx={{ bgcolor: '#f6f1ee', p: { xs: 1.5, md: 3 }, maxHeight: '78vh' }}>
+          {wishes.length ? (
+            <Box id="guestbook-preview-root">
+              <GuestbookPrintable clientData={clientData} wishes={wishes} getWishImages={getWishImages} />
+            </Box>
+          ) : (
+            <Box sx={{ py: 10, textAlign: 'center', bgcolor: '#fff', borderRadius: '20px' }}>
+              <Heart size="48" color="#ddd" variant="Bulk" />
+              <Typography sx={{ mt: 2, fontWeight: 800, color: '#555' }}>ยังไม่มีคำอวยพรให้ Export</Typography>
+            </Box>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {guestbookPrintReady && (
+        <Box id="guestbook-print-root">
+          <GuestbookPrintable clientData={clientData} wishes={wishes} getWishImages={getWishImages} />
+        </Box>
+      )}
+
+      <style jsx global>{`
+        #guestbook-print-root {
+          display: none;
+        }
+
+        @media print {
+          @page {
+            size: A4;
+            margin: 0;
+          }
+
+          html,
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            background: #ffffff !important;
+            overflow: visible !important;
+          }
+
+          body * {
+            visibility: hidden !important;
+          }
+
+          #guestbook-print-root,
+          #guestbook-print-root * {
+            visibility: visible !important;
+          }
+
+          #guestbook-print-root {
+            display: block !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 210mm !important;
+            background: #ffffff !important;
+          }
+
+          .guestbook-page {
+            break-after: page;
+            page-break-after: always;
+            margin: 0 !important;
+            box-shadow: none !important;
+          }
+
+          .guestbook-page:last-child {
+            break-after: auto;
+            page-break-after: auto;
+          }
+        }
+      `}</style>
 
       {/* Delete Confirmation Dialog */}
       <Dialog
@@ -794,6 +1008,215 @@ export default function CoupleDashboard() {
           </IconButton>
         </Box>
       </Dialog>
+    </Box>
+  );
+}
+
+function GuestbookPrintable({
+  clientData,
+  wishes,
+  getWishImages
+}: {
+  clientData: ClientDashboardData | null;
+  wishes: WishData[];
+  getWishImages: (wish: WishData) => string[];
+}) {
+  const primaryColor = clientData?.primaryColor || brandColor;
+  const eventDate = clientData?.eventDate
+    ? new Date(clientData.eventDate).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })
+    : '';
+  const coupleName = `${clientData?.brideName || 'Bride'} & ${clientData?.groomName || 'Groom'}`;
+  const venueText = clientData?.locationSection?.venueName || clientData?.locationSection?.venueAddress || '';
+  const paginateMasonry = <T,>(items: T[], estimateHeight: (item: T) => number, maxColumnHeight = 230) => {
+    const pages: Array<[T[], T[]]> = [];
+    let columns: [T[], T[]] = [[], []];
+    let heights: [number, number] = [0, 0];
+
+    items.forEach(item => {
+      const itemHeight = estimateHeight(item) + 7;
+      let columnIndex: 0 | 1 = heights[0] <= heights[1] ? 0 : 1;
+
+      if (heights[columnIndex] > 0 && heights[columnIndex] + itemHeight > maxColumnHeight) {
+        const otherColumn = columnIndex === 0 ? 1 : 0;
+        if (heights[otherColumn] === 0 || heights[otherColumn] + itemHeight <= maxColumnHeight) {
+          columnIndex = otherColumn;
+        } else {
+          pages.push(columns);
+          columns = [[], []];
+          heights = [0, 0];
+          columnIndex = 0;
+        }
+      }
+
+      columns[columnIndex].push(item);
+      heights[columnIndex] += itemHeight;
+    });
+
+    if (columns[0].length || columns[1].length) pages.push(columns);
+    return pages;
+  };
+  const orderedWishes = [...wishes].sort((a, b) => {
+    const aHasImages = getWishImages(a).length > 0;
+    const bHasImages = getWishImages(b).length > 0;
+    if (aHasImages === bHasImages) return 0;
+    return aHasImages ? -1 : 1;
+  });
+  const printableItems = orderedWishes.flatMap((wish, index) => {
+    const wishImages = getWishImages(wish);
+    return [
+      { type: 'wish' as const, id: wish.id, wish, index, totalImages: wishImages.length },
+      ...wishImages.slice(1).map((imageSrc, imageIndex) => ({
+        type: 'photo' as const,
+        id: `${wish.id}-photo-${imageIndex + 2}`,
+        wish,
+        index,
+        imageSrc,
+        photoNumber: imageIndex + 2,
+        totalImages: wishImages.length
+      }))
+    ];
+  });
+  const estimateTextHeight = (text?: string) => Math.min(72, Math.max(16, Math.ceil((text?.length || 18) / 48) * 7));
+  const wishPages = paginateMasonry(
+    printableItems,
+    (item) => item.type === 'wish'
+      ? 22 + estimateTextHeight(item.wish.message) + (getWishImages(item.wish).length > 0 ? 74 : 0)
+      : 88,
+  );
+  const getWishImageMaxHeight = (itemCount: number) => {
+    if (itemCount <= 2) return '128mm';
+    if (itemCount <= 4) return '92mm';
+    if (itemCount <= 6) return '74mm';
+    return '64mm';
+  };
+  const getPhotoCardImageHeight = (itemCount: number) => {
+    if (itemCount <= 2) return '108mm';
+    if (itemCount <= 4) return '78mm';
+    if (itemCount <= 6) return '64mm';
+    return '56mm';
+  };
+
+  return (
+    <Box sx={{ width: '210mm', maxWidth: '100%', mx: 'auto', color: '#1a1a1a', fontFamily: '"Prompt", sans-serif' }}>
+      <Box className="guestbook-page" sx={{ width: '210mm', height: '297mm', boxSizing: 'border-box', bgcolor: '#ffffff', position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', inset: '14mm', border: `1px solid ${alpha(primaryColor, 0.22)}` }} />
+        <Box sx={{ position: 'absolute', inset: '24mm', border: `1px solid ${alpha(primaryColor, 0.12)}` }} />
+        <Box sx={{ position: 'relative', minHeight: '297mm', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', px: '18mm' }}>
+          <Box sx={{ maxWidth: '150mm' }}>
+            <Typography sx={{ letterSpacing: '0.32em', color: primaryColor, fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', mb: 2 }}>
+              Wedding Guestbook
+            </Typography>
+            <Typography sx={{ fontFamily: '"Parisienne", cursive', color: '#2a211f', fontSize: { xs: '48px', md: '76px' }, lineHeight: 1.05 }}>
+              {coupleName}
+            </Typography>
+            <Box sx={{ width: 96, height: 2, bgcolor: primaryColor, mx: 'auto', my: 3, opacity: 0.45 }} />
+            <Typography sx={{ color: '#3f3430', fontWeight: 800, fontSize: '18px' }}>
+              สมุดอวยพรและความทรงจำ
+            </Typography>
+            <Typography sx={{ color: '#7b6a64', fontWeight: 700, mt: 1, lineHeight: 1.8 }}>
+              {eventDate}
+              {venueText && (
+                <>
+                  <br />
+                  {venueText}
+                </>
+              )}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      {wishPages.map((pageWishes, pageIndex) => (
+        <Box key={`wish-page-${pageIndex}`} className="guestbook-page guestbook-content-page" sx={{ width: '210mm', height: '297mm', boxSizing: 'border-box', overflow: 'hidden', bgcolor: '#fffaf7', p: '14mm' }}>
+          <Stack className="guestbook-content-header" direction="row" justifyContent="space-between" alignItems="flex-end" sx={{ mb: '9mm', borderBottom: '1px solid #eadbd4', pb: '5mm' }}>
+            <Box>
+              <Typography sx={{ color: primaryColor, letterSpacing: '0.24em', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase' }}>
+                Wishes & Blessings
+              </Typography>
+              <Typography sx={{ fontFamily: '"Parisienne", cursive', fontSize: '42px', lineHeight: 1, color: '#2a211f' }}>
+                From Our Guests
+              </Typography>
+            </Box>
+            <Typography sx={{ color: '#7b6a64', fontWeight: 800, fontSize: '12px' }}>
+              {coupleName} • {pageIndex + 1}/{wishPages.length}
+            </Typography>
+          </Stack>
+
+          <Box className="guestbook-wish-grid" sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '7mm', alignItems: 'start' }}>
+            {pageWishes.map((column, columnIndex) => (
+              <Box key={columnIndex} sx={{ display: 'flex', flexDirection: 'column', gap: '7mm' }}>
+                {column.map((item) => {
+                  const pageItemCount = pageWishes[0].length + pageWishes[1].length;
+                  const imageMaxHeight = item.totalImages > 1 ? getPhotoCardImageHeight(pageItemCount) : getWishImageMaxHeight(pageItemCount);
+
+                  if (item.type === 'photo') {
+                    return (
+                      <Box className="guestbook-wish-card" key={item.id} sx={{ bgcolor: '#fff', border: '1px solid #efe4df', p: '4mm', display: 'flex', flexDirection: 'column', breakInside: 'avoid', pageBreakInside: 'avoid' }}>
+                        <Box sx={{ bgcolor: alpha(primaryColor, 0.06), overflow: 'hidden', mb: '3mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Box component="img" src={item.imageSrc} sx={{ display: 'block', width: '100%', height: imageMaxHeight, objectFit: 'contain' }} />
+                        </Box>
+                        <Typography sx={{ color: '#211b19', fontSize: '13px', fontWeight: 900 }}>
+                          Photo by {item.wish.name}
+                        </Typography>
+                        <Typography sx={{ color: '#8b7a74', fontSize: '10px', fontWeight: 800, mt: 0.5 }}>
+                          Wish #{String(item.index + 1).padStart(2, '0')} • Photo {item.photoNumber}
+                        </Typography>
+                      </Box>
+                    );
+                  }
+
+                  const { wish, index } = item;
+                  const wishImages = getWishImages(wish);
+                  const primaryImage = wishImages[0];
+
+                  return (
+                    <Box className="guestbook-wish-card" key={wish.id} sx={{ bgcolor: '#fff', border: '1px solid #efe4df', p: '4mm', display: 'flex', flexDirection: 'column', breakInside: 'avoid', pageBreakInside: 'avoid' }}>
+                      {primaryImage && (
+                        <Box sx={{
+                          bgcolor: alpha(primaryColor, 0.06),
+                          overflow: 'hidden',
+                          position: 'relative',
+                          mb: '4mm',
+                          flexShrink: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <Box component="img" src={primaryImage} sx={{ display: 'block', width: '100%', height: item.totalImages > 1 ? imageMaxHeight : 'auto', maxHeight: item.totalImages > 1 ? 'none' : imageMaxHeight, objectFit: 'contain' }} />
+                          <Box sx={{ position: 'absolute', top: 8, left: 8, bgcolor: 'rgba(255,255,255,0.38)', backdropFilter: 'blur(6px)', color: '#4b3d39', px: 1.2, py: 0.35, borderRadius: '999px', fontSize: '9px', fontWeight: 900, border: '1px solid rgba(255,255,255,0.55)' }}>
+                            #{String(index + 1).padStart(2, '0')}
+                          </Box>
+                          {item.totalImages > 1 && (
+                            <Box sx={{ position: 'absolute', right: 8, bottom: 8, bgcolor: 'rgba(255,255,255,0.72)', backdropFilter: 'blur(6px)', color: '#4b3d39', px: 1.2, py: 0.35, borderRadius: '999px', fontSize: '9px', fontWeight: 900, border: '1px solid rgba(255,255,255,0.8)' }}>
+                              Photo 1/{item.totalImages}
+                            </Box>
+                          )}
+                        </Box>
+                      )}
+                      {wishImages.length === 0 && (
+                        <Typography sx={{ color: primaryColor, letterSpacing: '0.18em', fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', mb: '3mm' }}>
+                          #{String(index + 1).padStart(2, '0')}
+                        </Typography>
+                      )}
+                      <Typography sx={{ color: '#3f3430', fontSize: '13px', lineHeight: 1.7, fontStyle: 'italic', whiteSpace: 'pre-line' }}>
+                        “{wish.message || 'ส่งรูปภาพเป็นที่ระลึก'}”
+                      </Typography>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: '4mm', pt: '3mm', borderTop: '1px solid #f0e7e2' }}>
+                        <Typography sx={{ color: '#211b19', fontSize: '14px', fontWeight: 900 }}>
+                          {wish.name}
+                        </Typography>
+                        <Typography sx={{ color: '#8b7a74', fontSize: '10px', fontWeight: 800 }}>
+                          {new Date(wish.createdAt).toLocaleDateString('th-TH')}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  );
+                })}
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      ))}
     </Box>
   );
 }
